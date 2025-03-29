@@ -20,7 +20,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Base.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Base.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -29,7 +29,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Base.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Base.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -54,7 +54,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Shoulder.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Shoulder.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -63,7 +63,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Shoulder.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Shoulder.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -104,7 +104,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/UpperArm.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/UpperArm.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -113,7 +113,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/UpperArm.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/UpperArm.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -155,7 +155,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Forearm.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Forearm.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -164,7 +164,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Forearm.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Forearm.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -205,7 +205,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Wrist1.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Wrist1.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -214,7 +214,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Wrist1.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Wrist1.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -256,7 +256,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Wrist2.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Wrist2.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -265,7 +265,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Wrist2.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Wrist2.obj</uri>
           </mesh>
         </geometry>
       </visual>
@@ -307,7 +307,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/collision/Wrist3.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/collision/Wrist3.obj</uri>
           </mesh>
         </geometry>
       </collision>
@@ -316,7 +316,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/meng/teleop_ws/install/arm_hand_description/share/arm_hand_description/UR5/urdf/visual/Wrist3.obj</uri>
+            <uri>package://drake_models/ur_description/meshes/ur5/visual/Wrist3.obj</uri>
           </mesh>
         </geometry>
       </visual>

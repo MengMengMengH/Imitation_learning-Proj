@@ -1,0 +1,395 @@
+<?xml version="1.0" ?>
+<sdf xmlns:drake="http://drake.mit.edu" version="1.7">
+  <model name='xMatePro3'>
+    <link name='xMatePro3_base'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.067 0 -0 0</pose>
+        <mass>5.48267</mass>
+        <inertia>
+          <ixx>0.02</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.02</iyy>
+          <iyz>0</iyz>
+          <izz>0.02</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_base_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_base.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_base_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_base.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_1' type='revolute'>
+      <pose relative_to='xMatePro3_base'>0 0 0 0 -0 0</pose>
+      <parent>xMatePro3_base</parent>
+      <child>xMatePro3_link1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.0527</lower>
+          <upper>3.0527</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link1'>
+      <pose relative_to='xmate_joint_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0.018 0.26 0 -0 0</pose>
+        <mass>3.12198</mass>
+        <inertia>
+          <ixx>0.015</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.015</iyy>
+          <iyz>0</iyz>
+          <izz>0.008</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_2' type='revolute'>
+      <pose relative_to='xMatePro3_link1'>0 0 0.342605 0 -0 0</pose>
+      <parent>xMatePro3_link1</parent>
+      <child>xMatePro3_link2</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.0933</lower>
+          <upper>2.0933</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link2'>
+      <pose relative_to='xmate_joint_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.04 0.085 0 -0 0</pose>
+        <mass>3.66021</mass>
+        <inertia>
+          <ixx>0.015</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.015</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_3' type='revolute'>
+      <pose relative_to='xMatePro3_link2'>0 0 0.237439 0 -0 0</pose>
+      <parent>xMatePro3_link2</parent>
+      <child>xMatePro3_link3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.0527</lower>
+          <upper>3.0527</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link3'>
+      <pose relative_to='xmate_joint_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0.01 0.05 0 -0 0</pose>
+        <mass>3.38219</mass>
+        <inertia>
+          <ixx>0.013</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.013</iyy>
+          <iyz>0</iyz>
+          <izz>0.008</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link3_collision'>
+        <pose>0 0 0.1555 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link3_visual'>
+        <pose>0 0 0.1555 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_4' type='revolute'>
+      <pose relative_to='xMatePro3_link3'>0 0 0.1555 0 -0 0</pose>
+      <parent>xMatePro3_link3</parent>
+      <child>xMatePro3_link4</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.0933</lower>
+          <upper>2.0933</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link4'>
+      <pose relative_to='xmate_joint_4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.04 0.075 0 -0 0</pose>
+        <mass>2.73151</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.006</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_5' type='revolute'>
+      <pose relative_to='xMatePro3_link4'>0 0 0.220446 0 -0 0</pose>
+      <parent>xMatePro3_link4</parent>
+      <child>xMatePro3_link5</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.0527</lower>
+          <upper>3.0527</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link5'>
+      <pose relative_to='xmate_joint_5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -0.03 0.035 0 -0 0</pose>
+        <mass>2.21894</mass>
+        <inertia>
+          <ixx>0.008</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.008</iyy>
+          <iyz>0</iyz>
+          <izz>0.005</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link5_collision'>
+        <pose>0 0 0.145126 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link5.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link5_visual'>
+        <pose>0 0 0.145126 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link5.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_6' type='revolute'>
+      <pose relative_to='xMatePro3_link5'>0 0 0.145126 0 -0 0</pose>
+      <parent>xMatePro3_link5</parent>
+      <child>xMatePro3_link6</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-2.0933</lower>
+          <upper>2.0933</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link6'>
+      <pose relative_to='xmate_joint_6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.013 0.05 0 -0 0</pose>
+        <mass>2.18056</mass>
+        <inertia>
+          <ixx>0.007</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.007</iyy>
+          <iyz>0</iyz>
+          <izz>0.0036</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link6_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link6.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link6_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link6.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='xmate_joint_7' type='revolute'>
+      <pose relative_to='xMatePro3_link6'>0 0 0.250909 0 -0 0</pose>
+      <parent>xMatePro3_link6</parent>
+      <child>xMatePro3_link7</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-6.283</lower>
+          <upper>6.283</upper>
+          <effort>300</effort>
+          <velocity>10</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='xMatePro3_link7'>
+      <pose relative_to='xmate_joint_7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.011 -0.038 0 -0 0</pose>
+        <mass>0.94078</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <collision name='xMatePro3_link7_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/collision/xMatePro3_link7.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='xMatePro3_link7_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>package://drake_models/roake_description/meshes/visual/xMatePro3_link7.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

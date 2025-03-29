@@ -54,10 +54,6 @@ class InspireSub(Node):
             self.inspire_set_angle(self.ser,1,write_data)
 
 
-            
-
-
-
     def openSerial(self,port,baudrate):
         ser = serial.Serial()
         ser.port = port

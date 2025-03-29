@@ -21,44 +21,14 @@ class ArmTele_sim(ArmTele):
     def __init__(self,):
         super().__init__()
 
-        self.hand_sub = self.create_subscription(
-            Int32MultiArray,
-            'scaled_data', self.inspire_callback,10)
+        self.quat_sub = self.create_subscription(
+            Float32MultiArray,
+            'quat_data', self.quat_callback, 10)
+        self.model = self.robot.model
+        self.data = self.robot.data
 
-    def quat_callback(self, msg):
-        now = int(time.time())
-        begin = time.time()
-        self.quats = np.array(msg.data)
-
-
-
-
-
-
-    #     self.package_name = 'arm_hand_description'
-
-    #     self.declare_parameter('model_name', 'roake')
-    #     self.model_name = self.get_parameter('model_name').value
-
-    #     if "inspire" in self.model_name:
-    #         self.inspire_ctrl = True
-    #         self.inspire_ctrl_index = [0,1,3,4,7,8,11,12,15,16,17]
-    #         # print(f'self.inspire_ctrl is {self.inspire_ctrl}')
-    #     else:
-    #         self.inspire_ctrl = False
-
-
-    #     self.robot = mj_armHandSys(self.model_name,self.package_name)
-    #     self.get_logger().info(f'Loading MuJoCo model: {self.robot.mjcf_model_path}')
-
-    #     self.model = self.robot.model
-    #     self.data = self.robot.data
-
-    #     # self.get_logger().info(f'{self.mjcf_model_path}')
-    #     self.quat = None
-
-    #     self.exit_event = threading.Event() # 退出事件
-    #     self.start_time = time.time()
+        self.exit_event = threading.Event() # 退出事件
+        self.start_time = time.time()
 
         self._ik = arm_ik(f'{self.robot.sdf_model}',self.model_name)
         if  '_7dof' in self.model_name:
@@ -71,6 +41,7 @@ class ArmTele_sim(ArmTele):
         self.viewer = None
         self.visual_thread = threading.Thread(target=self.visualize)
         self.visual_thread.start()
+        print("visual_thread start")
 
         self.file_counter = 0
         self.save_dir = os.path.expanduser("~/teleop_ws/src/arm_tele_mujo/data")
@@ -120,17 +91,6 @@ class ArmTele_sim(ArmTele):
                     np.savez(full_path, **data)
                     self.file_counter += 1
 
-
-    def inspire_callback(self, msg):
-        if "inspire" in self.model_name:
-            data = np.array(msg.data)
-            ins_cmd = np.array(data/1000 * 3.14)[self.inspire_ctrl_index]
-            self.inspire_q = np.insert(ins_cmd,2,1.3*ins_cmd[0])
-        else:
-            pass
-    
-
-        
     def visualize(self):
         try:
             mujoco.mj_resetData(self.model, self.data)
@@ -139,11 +99,10 @@ class ArmTele_sim(ArmTele):
             self.viewer.cam.distance = 2.5
             self.viewer.cam.azimuth = 0
             # self.viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
-            # self.model.vis.scale.framewidth = 0.01
-            # self.model.vis.scale.framelength = 1
+            self.model.vis.scale.framewidth = 0.01
+            self.model.vis.scale.framelength = 1
 
             while self.viewer.is_running() and not self.exit_event.is_set():
-
                 # now = time.time()
                 # with self.viewer.lock():
                 #     mujoco.mj_step(self.model, self.data)

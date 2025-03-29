@@ -1,9 +1,11 @@
 mujoco_models:
   iiwa14_7dof: "kuka_iiwa_14/mjcf/scene.xml"
   UR5_6dof: "UR5/mjcf/UR5.xml"
+  roake_7dof: "roake/mjcf/roake.xml"
 
 
 sdf_models:
   iiwa14_7dof: "kuka_iiwa_14/urdf/iiwa14.sdf"
   UR5_6dof: "UR5/urdf/UR5.sdf"
+  roake_7dof: "roake/urdf/roake_xMatePro3.sdf"
 

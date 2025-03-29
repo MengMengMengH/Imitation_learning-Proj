@@ -23,16 +23,21 @@ class GloveDataPub : public rclcpp::Node
 public:
     GloveDataPub() : Node("glove_data_pub")
     {
-        angle_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("angle_data", 18);
-        scaled_data_publisher_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("scaled_data", 18);
-        dataOrg_publisher_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("dataOrg_data", 18);
-        quat_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quat_data", 16);
-        quatOrg_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quatOrg_data", 16);
+        angle_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("angle_data", 10);
+        scaled_data_publisher_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("scaled_data", 10);
+        dataOrg_publisher_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("dataOrg_data", 10);
+        quat_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quat_data", 10);
+        quatOrg_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quatOrg_data", 10);
 
-        timer_ = this->create_wall_timer(
-            // std::chrono::milliseconds(20),
-            std::chrono::microseconds(12500),
-            std::bind(&GloveDataPub::timer_callback, this));
+        timer_10hz = this->create_wall_timer(
+            std::chrono::milliseconds(100),
+            // std::chrono::microseconds(12500),
+            std::bind(&GloveDataPub::timer_callback_10, this));
+
+        timer_50hz = this->create_wall_timer(
+            std::chrono::milliseconds(20),
+            std::bind(&GloveDataPub::timer_callback_50, this));
+            
         keyboard_thread_ = std::thread(&GloveDataPub::keyboard_input_thread, this);
         char port[] = "/dev/ttyUSB0";
         if (wg_init(port))
@@ -147,7 +152,7 @@ private:
         return timestamp;
     }
     
-    void timer_callback()
+    void timer_callback_50()
     {
         std_msgs::msg::Float32MultiArray angle_msg;
         angle_msg.data.clear();  // 清空数据
@@ -207,6 +212,29 @@ private:
             std::cout<<std::endl;
         }
 
+
+        if (show_calib_data)
+        {
+            RCLCPP_INFO(this->get_logger(), "--------------------------------");
+            RCLCPP_INFO(this->get_logger(), "Max:");
+            for (int i = 0; i < 18; i++)
+            {
+                std::cout<< max_data[i] << " ";
+            }
+            std::cout<<std::endl;
+            RCLCPP_INFO(this->get_logger(), "Min:");
+            for (int i = 0; i < 18; i++)
+            {
+                std::cout <<min_data[i] << " ";
+            }
+            std::cout<<std::endl;
+
+            RCLCPP_INFO(this->get_logger(), "--------------------------------");
+        }
+    }
+
+    void timer_callback_10()
+    {
         std_msgs::msg::Float32MultiArray quat_msg;
         quat_msg.data.clear();  // 清空数据
         timestamp = wg_getQuat(quat);
@@ -243,25 +271,6 @@ private:
                 std::cout << std::fixed << std::setprecision(1) << quatOrg[i] << " ";
             }
             std::cout<<std::endl;
-
-        }
-        if (show_calib_data)
-        {
-            RCLCPP_INFO(this->get_logger(), "--------------------------------");
-            RCLCPP_INFO(this->get_logger(), "Max:");
-            for (int i = 0; i < 18; i++)
-            {
-                std::cout<< max_data[i] << " ";
-            }
-            std::cout<<std::endl;
-            RCLCPP_INFO(this->get_logger(), "Min:");
-            for (int i = 0; i < 18; i++)
-            {
-                std::cout <<min_data[i] << " ";
-            }
-            std::cout<<std::endl;
-
-            RCLCPP_INFO(this->get_logger(), "--------------------------------");
         }
     }
 
@@ -433,7 +442,8 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr quat_publisher_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr quatOrg_publisher_;
 
-    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr timer_10hz;
+    rclcpp::TimerBase::SharedPtr timer_50hz;
     std::thread keyboard_thread_; 
 
 };

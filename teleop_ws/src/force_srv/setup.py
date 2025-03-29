@@ -1,7 +1,6 @@
 from setuptools import find_packages, setup
-import os
 
-package_name = 'arm_tele_mujo'
+package_name = 'force_srv'
 
 setup(
     name=package_name,
@@ -11,21 +10,17 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-
-        (os.path.join('share', package_name, 'config'), ['config/models.yaml']),
     ],
-    install_requires=['setuptools', 'pyyaml'],
+    install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='meng',
+    maintainer='hanmg',
     maintainer_email='hanmg@buaa.edu.cn',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "arm_tele_real = arm_tele_mujo.arm_tele_real:main",
-            "drake_model = arm_tele_mujo.drake_model:main",
-            "arm_tele_sim = arm_tele_mujo.arm_tele_sim:main",
+            'force_srv = force_srv.force_srv:main'
         ],
     },
 )

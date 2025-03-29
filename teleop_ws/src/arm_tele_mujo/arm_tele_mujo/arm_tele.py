@@ -26,10 +26,11 @@ class ArmTele(Node):
 
         self.package_name = 'arm_hand_description'
 
-        self.declare_parameter('model_name', 'roake')
+        self.declare_parameter('model_name', 'iiwa14_7dof')
         self.model_name = self.get_parameter('model_name').value
 
         self.robot = mj_armHandSys(self.model_name,self.package_name)
+        self.get_logger().info(f'Loading MuJoCo model: {self.robot.mjcf_model_path}')
 
         self._ik = arm_ik(f'{self.robot.sdf_model}',self.model_name)
         if  '_7dof' in self.model_name:
