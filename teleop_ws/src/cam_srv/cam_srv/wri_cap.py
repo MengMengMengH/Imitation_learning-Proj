@@ -38,10 +38,12 @@ class Wri_Cam_Cap(Node):
 
 
     def opencv_init(self):
-        cap = cv2.VideoCapture("/dev/video0")
+        cap = cv2.VideoCapture("/dev/video0",cv2.CAP_FFMPEG)
         if not cap:
             self.get_logger().error("Error: Could not open video.")
             rclpy.shutdown()
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         return cap
 
     def read_frame(self):
@@ -59,6 +61,8 @@ class Wri_Cam_Cap(Node):
                 self.get_logger().error(f"Error: {e}")
 
     def display(self):
+        cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("frame", 800, 600)
         while rclpy.ok() and self.running:
             try:
                 frame = self.q.get()
@@ -106,7 +110,7 @@ def main(args=None):
     try:
         rclpy.spin(wri_cam_cap)
     except KeyboardInterrupt:
-        pass  # 确保按 Ctrl+C 时不会抛异常
+        pass 
     finally:
         wri_cam_cap.destroy_node()
         rclpy.shutdown()
