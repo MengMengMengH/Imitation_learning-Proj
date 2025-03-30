@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'wrist_camera = cam_srv.gopro:main',
+            'wrist_cam_streaming = cam_srv.gopro:main',
+            'wrist_cam_capture = cam_srv.wri_cap:main',
         ],
     },
 )
