@@ -12,8 +12,6 @@
 #include <array>
 
 
-
-
 #include "../include/wiseglove18/Wiseglove.h"
 
 
