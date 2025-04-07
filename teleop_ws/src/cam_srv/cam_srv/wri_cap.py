@@ -23,7 +23,7 @@ class Wri_Cam_Cap(Node):
         self.get_logger().info("Wrist camera node started")
         self.cam_pub_ = self.create_publisher(Image, "wrist_camera_Image", 10)
         self.bridge_ = CvBridge()
-
+        self.get_logger().info(f"{cv2.__file__}")
         self.target_fps = 30
         
         self.q: queue.Queue[Any] = queue.Queue()
@@ -66,10 +66,11 @@ class Wri_Cam_Cap(Node):
         while rclpy.ok() and self.running:
             try:
                 frame = self.q.get()
-                cv2.imshow("frame", frame)
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    self.running = False
-                    break
+                if frame is not None:
+                    cv2.imshow("frame", frame)
+                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                        self.running = False
+                        break
             except queue.Empty:
                 pass
             except Exception as e:

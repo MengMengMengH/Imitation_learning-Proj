@@ -8,11 +8,10 @@ public:
     // 构造函数，传入起始点位置、速度、加速度及终点位置
     CubicSplineTrajectoryPlanner(const Eigen::VectorXd& start_pos,
                                  const Eigen::VectorXd& start_vel,
-                                 const Eigen::VectorXd& start_acc,
                                  const Eigen::VectorXd& end_pos,
                                  int num_points)
-        : p0(start_pos), v0(start_vel), a0(start_acc), p1(end_pos), N(num_points) {
-        if (p0.size() != p1.size() || v0.size() != p0.size() || a0.size() != p0.size()) {
+        : p0(start_pos), v0(start_vel), p1(end_pos), N(num_points) {
+        if (p0.size() != p1.size() || v0.size() != p0.size() ) {
             throw std::invalid_argument("All input vectors must have the same dimension.");
         }
     }
@@ -28,6 +27,7 @@ public:
             Eigen::VectorXd point = evaluatePolynomial(t, coeffs);
             trajectory.push_back(point);
         }
+
         return trajectory;
     }
 
@@ -40,11 +40,11 @@ public:
             Eigen::Vector4d b;
             // 设置边界条件矩阵
             A << 1, 0, 0, 0,    // p(0) = p0
-                    0, 1, 0, 0,    // p'(0) = v0
-                    0, 0, 2, 0,    // p''(0) = a0
-                    1, 1, 1, 1;    // p(1) = p1
+                0, 1, 0, 0,    // p'(0) = v0
+                1, 1, 1, 1,    // p(1) = p1
+                0, 1, 2, 3;     // p'(1) = v1
+            b << p0[d], v0[d], p1[d], 0; // 这里假设末端速度为0
 
-            b << p0[d], v0[d], a0[d], p1[d];
 
             // 解线性方程组 Ax = b
             coeffs.col(d) = A.colPivHouseholderQr().solve(b);
@@ -65,10 +65,6 @@ public:
                 for (int i = 0; i < 4; i++) val += coeffs(i, d) * std::pow(t, i);
             } else if (derivative == 1) { // 速度
                 for (int i = 1; i < 4; i++) val += i * coeffs(i, d) * std::pow(t, i - 1);
-            } else if (derivative == 2) { // 加速度
-                for (int i = 2; i < 4; i++) val += i * (i - 1) * coeffs(i, d) * std::pow(t, i - 2);
-            } else if (derivative == 3) { // 加加速度
-                for (int i = 3; i < 4; i++) val += i * (i - 1) * (i - 2) * coeffs(i, d) * std::pow(t, i - 3);
             }
             result[d] = val;
         }
