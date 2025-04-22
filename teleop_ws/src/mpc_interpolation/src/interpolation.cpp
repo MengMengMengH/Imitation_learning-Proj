@@ -38,7 +38,6 @@ public:
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
             "mimic_send_joint", 10);
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
-
         
     }
 
@@ -194,10 +193,11 @@ private:
                 RCLCPP_ERROR(this->get_logger(), "调用 MPC 计算时 参考点 大小 %zu < 预测步长 %d", mpc_ref.size(), Horizon);
                 return false; // 无法计算
             }
-           std::queue<Eigen::VectorXd> temp_ref_copy = mpc_ref; 
+            std::queue<Eigen::VectorXd> temp_ref_copy = mpc_ref; 
             for (int i = 0; i < Horizon; ++i) 
             {
                 ref_pos_horizon.col(i) = temp_ref_copy.front();
+                // std::cout << "ref_pos_horizon.col(" << i << "): " << ref_pos_horizon.col(i).transpose() << std::endl;
                 temp_ref_copy.pop();
             }
 
@@ -220,7 +220,6 @@ private:
 
         Eigen::Matrix<real_t, jointSize, Horizon> MPCpos_horizon; // 存储计算出的完整时域轨迹
         bool computation_ok = true; // 标记计算是否对所有关节都成功
-    
         for(int i = 0; i < jointSize; i++)
         {
             Eigen::Matrix<real_t,4,1> x0;
@@ -241,6 +240,8 @@ private:
                 break; // 如果任何关节失败，则退出
             }
         }
+
+        // MPCsplines_[0].debugDump();
 
         if(computation_ok)
         {
@@ -330,7 +331,7 @@ private:
 
 
     std::array<MpcSpline<Horizon, InputNum>, 7> MPCsplines_= []<size_t... I>(std::index_sequence<I...>) {
-        return std::array{MpcSpline<Horizon, InputNum>(0.1, I)...};
+        return std::array{MpcSpline<Horizon, InputNum>(0.5, I)...};
     }(std::make_index_sequence<7>{});
 
     const unsigned int N_apply = 1;

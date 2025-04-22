@@ -174,7 +174,7 @@ bool MpcSpline<Horizon, InputNum>::computeMPC() {
 
 template<int Horizon, int InputNum>
 void MpcSpline<Horizon, InputNum>::debugDump() const {
-    std::cout << "[MPC] Current x0: " << current_state_.transpose() << std::endl;
+    std::cout << "\n[MPC] Current x0: " << current_state_.transpose() << std::endl;
     std::cout << "[MPC] Reference: ";
     for (int i = 0; i < Horizon; i++) {
         std::cout << x_ref_(i * StateDim) << " ";
