@@ -7,8 +7,9 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(joint_angles_interface REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
 find_package(Eigen3 REQUIRED)
 find_package(drake REQUIRED)
 find_package(qpOASES REQUIRED)
@@ -32,6 +33,7 @@ add_executable(mpc_interpolation_node src/interpolation.cpp
                                       src/mpc_spline.cpp
 )
 add_executable(cubic_spline_node src/cubic_spline.cpp
+                                 src/mpc_spline.cpp
 )
 
 target_link_directories(mpc_interpolation_node PUBLIC
@@ -41,8 +43,8 @@ target_link_directories(cubic_spline_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-target_compile_features(mpc_interpolation_node PUBLIC c_std_99 cxx_std_17)
-target_compile_features(cubic_spline_node PUBLIC c_std_99 cxx_std_17)
+target_compile_features(mpc_interpolation_node PUBLIC c_std_99 cxx_std_20)
+target_compile_features(cubic_spline_node PUBLIC c_std_99 cxx_std_20)
 
 target_link_libraries(mpc_interpolation_node 
     qpOASES
@@ -51,22 +53,23 @@ target_link_libraries(mpc_interpolation_node
     Qt6::Charts
 )
 
-target_link_libraries(cubic_spline_node 
+target_link_libraries(cubic_spline_node
+    qpOASES
     Eigen3::Eigen
     Qt6::Widgets
     Qt6::Charts
 )
 
 ament_target_dependencies(mpc_interpolation_node
-  rclcpp
-  joint_angles_interface
-  Eigen3
-  qpOASES
+  "rclcpp"
+  "Eigen3"
+  "qpOASES"
+  "std_msgs"
 )
 ament_target_dependencies(cubic_spline_node
-  rclcpp
-  joint_angles_interface
-  Eigen3
+  "Eigen3"
+  "qpOASES"
+  "std_msgs"
 )
 
 install(TARGETS mpc_interpolation_node

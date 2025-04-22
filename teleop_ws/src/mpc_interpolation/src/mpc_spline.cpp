@@ -101,22 +101,21 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
 }
 
 template<int Horizon, int InputNum>
-void MpcSpline<Horizon, InputNum>::UpdateX(Eigen::Matrix<real_t, 4, 1> x0) {
+void MpcSpline<Horizon, InputNum>::setCurrentState(const Eigen::Matrix<real_t, 4, 1>& x0) 
+{
     x_0_ = x0;
+    current_state_ = x0;
 }
 
 template<int Horizon, int InputNum>
-void MpcSpline<Horizon, InputNum>::UpdateXRef(double x_ref) {
-    for(int i = 0; i < Horizon - 1; i++) {
-        x_ref_.block(i * StateDim, 0, StateDim, 1) = x_ref_.block((i + 1) * StateDim, 0, StateDim, 1);
+void MpcSpline<Horizon, InputNum>::setReferenceTrajectory(const Eigen::Matrix<real_t, Horizon, 1>& ref_traj) 
+{
+    for (int i = 0; i < Horizon; i++) {
+        x_ref_.block(i * StateDim, 0, 1, 1) << ref_traj(i);
     }
-    x_ref_.block((Horizon - 1) * StateDim, 0, 1, 1) << x_ref;  // Update position reference only
+    ref_ready_ = true;
 }
 
-template<int Horizon, int InputNum>
-void MpcSpline<Horizon, InputNum>::SetZeroXRef() {
-    x_ref_.setZero();
-}
 
 template<int Horizon, int InputNum>
 void MpcSpline<Horizon, InputNum>::UpdateConstrains() {
@@ -137,16 +136,16 @@ void MpcSpline<Horizon, InputNum>::UpdateConstrains() {
 }
 
 template<int Horizon, int InputNum>
-Eigen::Matrix<real_t, InputNum * Horizon, 1> 
-    MpcSpline<Horizon, InputNum>::RenewDeltaJerk() {
-    // std::cout << "\nx_ref = " << x_ref_.transpose() << std::endl;
-    g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
-    // std::cout << "\nx_ref = " << x_ref_.transpose() << std::endl;
-    UpdateConstrains();
-    // std::cout << "lb_C = " << lb_C.transpose() << std::endl;
-    // std::cout << "ub_C = " << ub_C.transpose() << std::endl;
-    nWSR_ = 10;
+bool MpcSpline<Horizon, InputNum>::computeMPC() {
+    if (!ref_ready_) {
+        std::cerr << "[MPC] Reference trajectory not set.\n";
+        return false;
+    }
 
+    g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
+    UpdateConstrains();
+
+    nWSR_ = 10;
     returnValue status = mpcspline_.hotstart(
         g_.data(),
         NULL,
@@ -155,23 +154,42 @@ Eigen::Matrix<real_t, InputNum * Horizon, 1>
         ub_C.data(),
         nWSR_
     );
-    if (status != SUCCESSFUL_RETURN) {
-        printf("hotstart failed with return value %d\n", status);
-    }
-    mpcspline_.getPrimalSolution( xOpt_ );
 
-    // std::cout << "预测状态: \n" << (A_phi * x_0_ + B_phi * Eigen::Map<Eigen::Matrix<real_t, InputNum * Horizon, 1>>(xOpt_)).transpose() << std::endl;
-    for (int i = 0; i < InputNum * Horizon; i++) {
-        u_(i) = xOpt_[i];
+    if (status != SUCCESSFUL_RETURN) {
+        std::cerr << "[MPC] Hotstart failed! status = " << status << std::endl;
+        return false;
     }
-    return u_;
+
+    mpcspline_.getPrimalSolution(xOpt_);
+    
+    Eigen::Matrix<real_t, StateDim * Horizon, 1> pred_state = A_phi * x_0_ +
+        B_phi * Eigen::Map<Eigen::Matrix<real_t, InputNum * Horizon, 1>>(xOpt_);
+    for (int i = 0; i < Horizon; i++) {
+        prediction_pos_(i) = pred_state(i * StateDim);
+    }
+
+    return true;
+}
+
+
+template<int Horizon, int InputNum>
+void MpcSpline<Horizon, InputNum>::debugDump() const {
+    std::cout << "[MPC] Current x0: " << current_state_.transpose() << std::endl;
+    std::cout << "[MPC] Reference: ";
+    for (int i = 0; i < Horizon; i++) {
+        std::cout << x_ref_(i * StateDim) << " ";
+    }
+    std::cout << "\n[MPC] Predicted: " << prediction_pos_.transpose() << std::endl;
 }
 
 template<int Horizon, int InputNum>
-Eigen::Matrix<real_t, 4, 1> 
-MpcSpline<Horizon, InputNum>::getSimulateState() 
-{
-    return A_ * x_0_ + B_ * xOpt_[0];
+Eigen::Matrix<real_t, Horizon, 1> MpcSpline<Horizon, InputNum>::getPrediction() const {
+    return prediction_pos_;
+}
+
+template<int Horizon, int InputNum>
+Eigen::Matrix<real_t, 4, 1> MpcSpline<Horizon, InputNum>::getCurrentState() const {
+    return current_state_;
 }
 
 // Template instantiations (example)
@@ -182,5 +200,25 @@ template class MpcSpline<20, 1>;
 // template class MpcSpline<50, 1>;
 
 
+// Eigen::MatrixXd mpc4Axis(double dt, double src, double target,size_t index)
+// {
+//     MpcSpline<Horizon, InputNum> mpc_spline(dt, index);
+//     Eigen::Matrix<real_t, 4, 1> x0;
+//     x0 << src, 0.0, 0.0, 0.0;  // 位置、速度、加速度、jerk（初始值）
+
+//     // 测量 QP 求解时间
+//     // auto start = std::chrono::high_resolution_clock::now();
+//     mpc_spline.UpdateX(x0);
+//     mpc_spline.UpdateXRef(target);
+//     mpc_spline.RenewDeltaJerk();
+//     Eigen::Matrix<real_t, Horizon,1> x_pred = mpc_spline.getPredPos();
+//     // std::cout << "x_pred = " << x_pred.transpose() << std::endl;
+//     // std::cout << " | 当前状态：" << x0.transpose() << std::endl;
+
+//     // auto end = std::chrono::high_resolution_clock::now();
+//     // auto total_solve_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+//     // std::cout << "一次求解时间" << total_solve_time << " 微秒" << std::endl;
+//     return x_pred;
+// }
 
 

@@ -1,4 +1,5 @@
 #include "../include/mpc_interpolation/cubic_spline.hpp"
+#include "../include/mpc_interpolation/mpc_spline.hpp"
 #include <iostream>
 #include <chrono>
 #include <random>
@@ -11,6 +12,8 @@
 #include <QPainter>
 
 
+
+
 int main(int argc, char **argv) 
 {
     QApplication app(argc, argv);
@@ -18,15 +21,18 @@ int main(int argc, char **argv)
 
     QChart *chart = new QChart();
     QLineSeries *lineSeries = new QLineSeries();
-    QScatterSeries *scatterSeries = new QScatterSeries();
+    QScatterSeries *cubicIPTScatter = new QScatterSeries();
     QScatterSeries *referencePoints = new QScatterSeries();
+
 
     referencePoints->setMarkerSize(10); // 放大参考点
     referencePoints->setColor(Qt::red); // 设置颜色为红色
 
+    cubicIPTScatter->setColor(Qt::green);
+
     const int num_segs = 5;
-    const int num_points = 50;
-    const double delta = 4.0;
+    const int num_points = 20;
+    const double delta = 1.5;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -46,21 +52,22 @@ int main(int argc, char **argv)
     for(int seg = 0;seg<num_segs; seg++)
     {   
         CubicSplineTrajectoryPlanner planner(start_pos, start_vel, end_pos, num_points);
+
         try {
-            auto start = std::chrono::high_resolution_clock::now();
+            // auto start = std::chrono::high_resolution_clock::now();
+
+            //cubic interpolation method
             auto trajectory = planner.generateTrajectory();
-            // auto coeffs = planner.computeCubicCoefficients();
-            auto end = std::chrono::high_resolution_clock::now();
-            auto solve_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            // auto end = std::chrono::high_resolution_clock::now();
+            // auto solve_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             for (int i = 0; i < num_points; ++i) {
                 double t = static_cast<double>(i) / num_points + seg;
-                std::cout << "t: " << t << std::endl;
+                // std::cout << "t: " << t << std::endl;
                 double y = trajectory[i](0); // 可视化第一个维度的数据
                 lineSeries->append(t, y);
-                scatterSeries->append(t, y);
+                cubicIPTScatter->append(t, y);
             }
             referencePoints->append(seg + 1, end_pos(0));
-            // std::cout << "Coefficients: "<< planner.coeffs << std::endl;
             if (seg < num_segs - 1) 
             {
                 // Update start conditions for next segment
@@ -68,7 +75,8 @@ int main(int argc, char **argv)
                 start_vel = planner.evaluatePolynomial(1.0, planner.coeffs, 1);
                 // Randomly adjust end_pos for next segment
                 for (int i = 0; i < 7; ++i) {
-                    end_pos[i] += dis(gen);
+                    // end_pos[i] += dis(gen);
+                    end_pos[i] += 0.5;
                 }
             }
             
@@ -77,7 +85,7 @@ int main(int argc, char **argv)
         }
     }
     chart->addSeries(lineSeries);
-    chart->addSeries(scatterSeries);
+    chart->addSeries(cubicIPTScatter);
     chart->addSeries(referencePoints);
     chart->createDefaultAxes();
 

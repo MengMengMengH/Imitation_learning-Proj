@@ -15,7 +15,9 @@ public:
             throw std::invalid_argument("All input vectors must have the same dimension.");
         }
     }
-    Eigen::MatrixXd coeffs;
+
+    ~CubicSplineTrajectoryPlanner()
+    {}
 
     // 生成轨迹
     std::vector<Eigen::VectorXd> generateTrajectory() {
@@ -30,7 +32,6 @@ public:
 
         return trajectory;
     }
-
         // 计算三次样条系数
     Eigen::MatrixXd computeCubicCoefficients() {
         int dim = p0.size();
@@ -43,7 +44,7 @@ public:
                 0, 1, 0, 0,    // p'(0) = v0
                 1, 1, 1, 1,    // p(1) = p1
                 0, 1, 2, 3;     // p'(1) = v1
-            b << p0[d], v0[d], p1[d], 0; // 这里假设末端速度为0
+            b << p0[d], v0[d], p1[d], 0; // 这里限制末端速度为0
 
 
             // 解线性方程组 Ax = b
@@ -51,7 +52,6 @@ public:
         }
         return coeffs;
     }
-
     /* 
         计算多项式值及其导数
     */
@@ -70,6 +70,7 @@ public:
         }
         return result;
     }
+    Eigen::MatrixXd coeffs;
     
 private:
 

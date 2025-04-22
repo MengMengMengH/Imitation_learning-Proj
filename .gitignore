@@ -2,3 +2,10 @@ teleop_ws/build/
 teleop_ws/install/
 teleop_ws/log/
 teleop_ws/.vscode/
+teleop_ws/src/mpc_interpolation/src/build/
+teleop_ws/src/mpc_interpolation/src/install/
+teleop_ws/src/mpc_interpolation/src/log/
+teleop_ws/src/start_up/launch/build/
+teleop_ws/src/start_up/launch/install/
+teleop_ws/src/start_up/launch/log/
+teleop_ws/src/start_up/launch/__pycache__/

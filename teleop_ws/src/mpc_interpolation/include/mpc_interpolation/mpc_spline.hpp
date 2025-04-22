@@ -4,6 +4,8 @@
 #include <qpOASES.hpp>
 USING_NAMESPACE_QPOASES
 
+constexpr int InputNum = 1;
+constexpr int Horizon = 5;
 
 template <int Horizon, int InputNum>
 class MpcSpline
@@ -12,14 +14,25 @@ class MpcSpline
 public:
     MpcSpline(double dt, size_t Index);
     ~MpcSpline(){delete[] xOpt_;};
-    void UpdateX(Eigen::Matrix<real_t, 4, 1> x0);
-    void UpdateXRef(double x_ref);
-    void SetZeroXRef();
-    void UpdateConstrains();
-    Eigen::Matrix<real_t, InputNum * Horizon, 1> RenewDeltaJerk();
-    Eigen::Matrix<real_t, 4, 1> getSimulateState();
+
+    // -------------------- 状态更新 --------------------
+    void setCurrentState(const Eigen::Matrix<real_t, 4, 1>& x0);
+    void setReferenceTrajectory(const Eigen::Matrix<real_t, Horizon, 1>& ref_traj);
+
+
+    // -------------------- 求解接口 --------------------
+    bool computeMPC();
+
+    // -------------------- 访问预测结果 --------------------
+    Eigen::Matrix<real_t, Horizon, 1> getPrediction() const;
+
+    // -------------------- 访问状态信息 --------------------
+    Eigen::Matrix<real_t, 4, 1> getCurrentState() const;    
+                               
+    void debugDump() const;            
 
 private:
+    void UpdateConstrains();
     /* data */
     static constexpr int StateDim = 4; // pos, vel, acc, jerk 
 
@@ -55,6 +68,10 @@ private:
     QProblem mpcspline_;
     Options option_mpcspline_;
     real_t *xOpt_;
+
+    Eigen::Matrix<real_t, 4, 1> current_state_;
+    Eigen::Matrix<real_t, Horizon, 1> prediction_pos_; 
+    bool ref_ready_ = false;
 };
 
 
