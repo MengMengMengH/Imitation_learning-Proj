@@ -34,6 +34,8 @@ setup(
         # (os.path.join('share', package_name, 'UR5/urdf/collision'), glob('urdf/UR5/collision/**')),
         (os.path.join('share', package_name, 'roake/urdf'), glob('urdf/roake/**.**')),
 
+        (os.path.join('share', package_name, 'roake/mjcf'),glob('mjcf/roake/**.xml')),
+        (os.path.join('share', package_name, 'roake/mjcf/visual'), glob('mjcf/roake/visual/**')),
 
     ],
     install_requires=['setuptools'],

@@ -1,0 +1,69 @@
+<mujoco model="xMatePro3">
+  <compiler angle="radian"/>
+  <option gravity="0 0 -9.81" integrator = "implicitfast"/>
+
+  <asset>
+    <mesh name="xMatePro3_base" file="visual/xMatePro3_base.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link1" file="visual/xMatePro3_link1.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link2" file="visual/xMatePro3_link2.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link3" file="visual/xMatePro3_link3.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link4" file="visual/xMatePro3_link4.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link5" file="visual/xMatePro3_link5.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link6" file="visual/xMatePro3_link6.obj" scale="0.001 0.001 0.001"/>
+    <mesh name="xMatePro3_link7" file="visual/xMatePro3_link7.obj" scale="0.001 0.001 0.001"/>
+  </asset>
+
+  <worldbody>
+    <body name="xMatePro3_base" pos = "0 0 1.5" euler = "3.1415 0 0">
+      <geom type="mesh" mesh="xMatePro3_base" />
+      <inertial pos="0 0 0.067" mass="5.48267" diaginertia="0.02 0.02 0.02"/>
+      <body name="xMatePro3_link1" pos="0 0 0">
+        <joint name="xmate_joint_1" type="hinge" axis="0 0 1" limited="true" range="-3.0527 3.0527"/>
+        <geom type="mesh" mesh="xMatePro3_link1"/>
+        <inertial pos="0 -0.02 0.26" mass="3.12198" diaginertia="0.015 0.015 0.008"/>
+        <body name="xMatePro3_link2" pos="0 0 0.343">
+          <joint name="xmate_joint_2" type="hinge" axis="0 1 0" limited="true" range="-1.5708 2.1817"/>
+          <geom type="mesh" mesh="xMatePro3_link2" />
+          <inertial pos="0.0 0.025 0.13" mass="3.52461" diaginertia="0.012 0.012 0.008"/>
+          <body name="xMatePro3_link3" pos="0.0 0.0 0.395"> 
+            <joint name="xmate_joint_3" type="hinge" axis="0 0 1" limited="true" range="-3.1415 3.1415"/>
+            <geom type="mesh" mesh="xMatePro3_link3" />
+            <inertial pos="0.0 -0.03 -0.05" mass="2.52965" diaginertia="0.01 0.01 0.003"/>
+            <body name="xMatePro3_link4" pos="0.0 0.0 0.0">
+              <joint name="xmate_joint_4" type="hinge" axis="0 1 0" limited="true" range="-2.1817 1.5708"/>
+              <geom type="mesh" mesh="xMatePro3_link4" />
+              <inertial pos="0.0 0.03 0.1" mass="1.32704" diaginertia="0.005 0.005 0.002"/>
+              <body name="xMatePro3_link5" pos="0.0 0.0 0.367">
+                <joint name="xmate_joint_5" type="hinge" axis="0 0 1" limited="true" range="-3.1415 3.1415"/>
+                <geom type="mesh" mesh="xMatePro3_link5" />
+                <inertial pos="0 -0.03 -0.05" mass="1.63676" diaginertia="0.006 0.006 0.003"/>
+                <body name="xMatePro3_link6" pos="0 0.0 0.0">
+                  <joint name="xmate_joint_6" type="hinge" axis="0 1 0" limited="true" range="-0.8726 2.8798"/>
+                  <geom type="mesh" mesh="xMatePro3_link6" />
+                  <inertial pos="0.0 0.015 0.035" mass="0.92672" diaginertia="0.003 0.003 0.001"/>
+                  <body name="xMatePro3_link7" pos="0 0.0 0.25">
+                    <joint name="xmate_joint_7" type="hinge" axis="0 0 1" limited="true" range="-3.1415 3.1415"/>
+                    <geom type="mesh" mesh="xMatePro3_link7" />
+                    <inertial pos="0 0 -0.03" mass="0.67851" diaginertia="0.001 0.001 0.001"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+<actuator>
+    <position name="joint_1" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_1" kp="2000" kv="200"/>
+    <position name="joint_2" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_2" kp="2000" kv="200"/>
+    <position name="joint_3" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_3" kp="2000" kv="200"/>
+    <position name="joint_4" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_4" kp="2000" kv="200"/>
+    <position name="joint_5" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_5" kp="2000" kv="200"/>
+    <position name="joint_6" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_6" kp="2000" kv="200"/>
+    <position name="joint_7" ctrllimited = "true" ctrlrange="-3.14159 3.14159" joint="xmate_joint_7" kp="2000" kv="200"/>
+</actuator>
+
+
+</mujoco>
