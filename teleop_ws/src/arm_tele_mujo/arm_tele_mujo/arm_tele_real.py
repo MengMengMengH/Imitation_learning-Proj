@@ -14,7 +14,7 @@ class ArmTele_real(ArmTele):
         super().__init__()
         self.get_logger().info('ArmTele_real Node Started')
         self.control_pub_ = self.create_publisher(
-            Float32MultiArray, '/roake_control_joints', 10)
+            Float32MultiArray, '/rokae_control_joints', 10)
 
         if self._q is not None:
             self.real_q = self._q.copy()

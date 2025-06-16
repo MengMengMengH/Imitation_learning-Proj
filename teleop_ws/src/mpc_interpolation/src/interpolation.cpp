@@ -26,7 +26,7 @@ public:
         RCLCPP_INFO(this->get_logger(), "Interpolation node started.");
 
         roake_control_sub_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
-            "/roake_control_joints", 10, std::bind(&interpolation::exec_planning_callback, this,std::placeholders::_1));
+            "/rokae_control_joints", 10, std::bind(&interpolation::exec_planning_callback, this,std::placeholders::_1));
         
         running_ = true;
         {
