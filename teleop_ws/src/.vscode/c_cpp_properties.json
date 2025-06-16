@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/opt/ros/humble/include/**",
+        "/home/hanmg/Imitation_learning-Proj/teleop_ws/src/mpc_interpolation/include/**",
+        "/home/hanmg/Imitation_learning-Proj/teleop_ws/src/qt_mainwin_control/include/**",
+        "/home/hanmg/Imitation_learning-Proj/teleop_ws/src/sixd_interfaces/include/**",
+        "/home/hanmg/Imitation_learning-Proj/teleop_ws/src/start_up/include/**",
+        "/home/hanmg/Imitation_learning-Proj/teleop_ws/src/wiseglove18/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

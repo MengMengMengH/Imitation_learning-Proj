@@ -2,6 +2,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
 #include "std_msgs/msg/int32_multi_array.hpp" 
+#include "std_msgs/msg/int8.hpp"
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -26,6 +27,21 @@ public:
         dataOrg_publisher_ = this->create_publisher<std_msgs::msg::Int32MultiArray>("dataOrg_data", 10);
         quat_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quat_data", 10);
         quatOrg_publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>("quatOrg_data", 10);
+        
+        glove_calib_subscriber_ = this->create_subscription<std_msgs::msg::Int8>("glove_calib_cmd",
+            10, std::bind(&GloveDataPub::glove_calib_callback, this, std::placeholders::_1)
+        );
+
+        glove_imu_calib_subscriber_ = this->create_subscription<std_msgs::msg::Int8>("glove_imu_calib_cmd",
+            10, 
+            [this](const std_msgs::msg::Int8::SharedPtr msg)
+            {
+                if (msg->data == 1)
+                {
+                    m_glove->ResetQuat();
+                }
+            }
+        );
 
         timer_10hz = this->create_wall_timer(
             std::chrono::milliseconds(100),
@@ -295,6 +311,27 @@ private:
         return 0;
     }
 
+    void glove_calib_callback(const std_msgs::msg::Int8::SharedPtr msg)
+    {
+        if(msg->data)
+        {
+            RCLCPP_INFO(this->get_logger(), "Glove Calib Command Received");
+            for(int i = 0; i < 18; i++)
+            {
+                max_data[i] = 0;
+                min_data[i] = USHRT_MAX;
+            }
+            calib_flag = true;
+            show_calib_data = true;
+        }
+        else
+        {
+            RCLCPP_INFO(this->get_logger(), "Glove Calib Command Stop");
+            calib_flag = false;
+            show_calib_data = false;
+        }
+    }
+
     void keyboard_input_thread()
         {
             while (rclcpp::ok())  
@@ -439,6 +476,9 @@ private:
     rclcpp::Publisher<std_msgs::msg::Int32MultiArray>::SharedPtr dataOrg_publisher_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr quat_publisher_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr quatOrg_publisher_;
+
+    rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_calib_subscriber_;
+    rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_imu_calib_subscriber_;
 
     rclcpp::TimerBase::SharedPtr timer_10hz;
     rclcpp::TimerBase::SharedPtr timer_50hz;

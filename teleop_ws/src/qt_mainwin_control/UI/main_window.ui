@@ -63,7 +63,7 @@
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
-         <widget class="QPushButton" name="gloveIMUCalib_button">
+         <widget class="QPushButton" name="inspireCalib_button">
           <property name="geometry">
            <rect>
             <x>90</x>
@@ -77,11 +77,16 @@
             <pointsize>15</pointsize>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4CAF50;
+color: white;
+border: 1px solid #388E3C;</string>
+          </property>
           <property name="text">
            <string>灵巧手传感器标定</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="inspireCalib_button">
+         <widget class="QPushButton" name="gloveIMUCalib_button">
           <property name="geometry">
            <rect>
             <x>90</x>
@@ -95,8 +100,13 @@
             <pointsize>15</pointsize>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4CAF50;
+color: white;
+border: 1px solid #388E3C;</string>
+          </property>
           <property name="text">
-           <string>手臂传感器标定</string>
+           <string>手臂传感器复位</string>
           </property>
          </widget>
          <widget class="QPushButton" name="gloveCalib_button">
@@ -112,6 +122,14 @@
            <font>
             <pointsize>15</pointsize>
            </font>
+          </property>
+          <property name="toolTipDuration">
+           <number>-1</number>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #4CAF50;
+color: white;
+border: 1px solid #388E3C;</string>
           </property>
           <property name="text">
            <string>手套标定</string>
