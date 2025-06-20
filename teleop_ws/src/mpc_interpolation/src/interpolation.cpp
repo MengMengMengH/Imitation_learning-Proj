@@ -36,7 +36,7 @@ public:
         mpc_thread_ = std::thread(&interpolation::mpcTrajCompute, this);
 
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
-            "mimic_send_joint", 10);
+            "sent_joints", 10);
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
         
     }

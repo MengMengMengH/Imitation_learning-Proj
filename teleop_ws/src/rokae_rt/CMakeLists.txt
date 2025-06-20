@@ -19,6 +19,7 @@ option(XCORE_USE_XMATE_MODEL "The library of kinematics and dynamics calculation
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 
 add_subdirectory(lib)
@@ -52,6 +53,7 @@ target_include_directories(rokae_rt_node PRIVATE
 
 ament_target_dependencies(rokae_rt_node
   rclcpp
+  std_msgs
 )
 
 install(TARGETS

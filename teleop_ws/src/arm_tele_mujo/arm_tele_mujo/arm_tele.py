@@ -26,7 +26,7 @@ class ArmTele(Node):
 
         self.package_name = 'arm_hand_description'
 
-        self.declare_parameter('model_name', 'iiwa14_7dof')
+        self.declare_parameter('model_name', 'roake_7dof')
         self.model_name = self.get_parameter('model_name').value
 
         self.robot = mj_armHandSys(self.model_name,self.package_name)

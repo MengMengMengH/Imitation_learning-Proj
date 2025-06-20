@@ -73,7 +73,7 @@ class arm_ik():
         if q_last is not None:
             q_nominal = q_last
         else:
-            q_nominal = np.array([0.2, 0.4, 0.6, 0.0, -0.3, -0.0,0.7]) \
+            q_nominal = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0]) \
             if '_7dof' in self.arm_type else np.array([0.0, 0.0, 0.0, 0.0, -0.0, 0.0])
 
         self.plant.SetPositions(self.context, q_nominal)

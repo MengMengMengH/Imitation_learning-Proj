@@ -52,15 +52,13 @@ class ArmTele_sim(ArmTele):
         
     def quat_callback(self, msg):
         now = int(time.time())
-        begin = time.time()
         self.quats = np.array(msg.data) # 50HZ
         rots = Quatnumpy_to_Rotation(self.quats)
         self._q = self._ik.ori_inv(up_ori=rots[2].matrix(),elbow_ori=rots[1].matrix(),wrist_ori=rots[0].matrix(),q_last=self._q)
-        self.get_logger().info(f"Time consumption: {time.time()-begin}")
         if self.viewer is not None:
             with self.viewer.lock():
                 if self._q is not None:
-                    self.data.ctrl = self._q if not self.inspire_ctrl else np.concatenate((self._q,self.inspire_q))
+                    self.data.ctrl = self._q 
                 mujoco.mj_step(self.model, self.data)
 
                 if self.record_flag:
