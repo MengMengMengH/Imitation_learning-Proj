@@ -96,9 +96,9 @@ class ArmTele_sim(ArmTele):
             self.viewer.cam.lookat = np.array([0, 0, 0.5])
             self.viewer.cam.distance = 2.5
             self.viewer.cam.azimuth = 0
-            # self.viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
-            self.model.vis.scale.framewidth = 0.01
-            self.model.vis.scale.framelength = 1
+            self.viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
+            self.model.vis.scale.framewidth = 0.1
+            self.model.vis.scale.framelength = 3
 
             while self.viewer.is_running() and not self.exit_event.is_set():
                 # now = time.time()

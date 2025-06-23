@@ -157,6 +157,7 @@ class arm_ik():
         if up_ori is not None:
             up_WG = up_ori
             AddOrientationConstraint(ik, up_WG, orientation_bounds,base_frame=_Base,rela_frame=_UP_Arm)
+            # print(f'up_ori: {up_WG.ToRollPitchYaw()}')
         
         elbow_WG_rela = up_WG.inverse() @ elbow_ori
         # print(f'{elbow_WG_rela.ToRollPitchYaw()}')
@@ -280,8 +281,8 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
         rot = Quaternion(quat)
         rot = RotationMatrix(rot).ToRollPitchYaw().vector()
         ################## make sure the RollPitchYaw is correct##################
-        rot[[1, 2]] = rot[[2, 1]]  
-        rot[1] = -rot[1]
+        rot[[1, 2, 0]] = rot[[0, 1 ,2]]
+        rot = -rot
         ###########################################################################
         rot = RotationMatrix(RollPitchYaw(rot))
         rots.append(rot)
