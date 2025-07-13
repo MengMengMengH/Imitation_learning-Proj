@@ -16,8 +16,8 @@ class ArmTele_real(ArmTele):
         self.control_pub_ = self.create_publisher(
             Float32MultiArray, '/rokae_control_joints', 10)
 
-        if self._q is not None:
-            self.real_q = self._q.copy()
+        # if self._q is not None:
+        #     self.real_q = self._q.copy()
 
     def quat_callback(self, msg):
 
@@ -28,9 +28,11 @@ class ArmTele_real(ArmTele):
             up_ori=rots[2].matrix(),
             elbow_ori=rots[1].matrix(),
             wrist_ori=rots[0].matrix(),
-            q_last=self.real_q
+            q_last=self._q
+            # q_last=self.real_q
         )
 
+        # print(self._q)
         goal_msg = Float32MultiArray()
         if self._q is not None:
             goal_msg.data = self._q.tolist()

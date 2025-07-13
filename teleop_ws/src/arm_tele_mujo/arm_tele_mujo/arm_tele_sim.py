@@ -53,8 +53,12 @@ class ArmTele_sim(ArmTele):
     def quat_callback(self, msg):
         now = int(time.time())
         self.quats = np.array(msg.data) # 50HZ
+
         rots = Quatnumpy_to_Rotation(self.quats)
         self._q = self._ik.ori_inv(up_ori=rots[2].matrix(),elbow_ori=rots[1].matrix(),wrist_ori=rots[0].matrix(),q_last=self._q)
+        
+        print(self._q)
+
         if self.viewer is not None:
             with self.viewer.lock():
                 if self._q is not None:

@@ -14,6 +14,7 @@
 
 
 constexpr int jointSize = 7;
+using namespace std::chrono_literals;
 
 
 class interpolation : public rclcpp::Node
@@ -24,6 +25,11 @@ public:
     {
         // Initialize the node
         RCLCPP_INFO(this->get_logger(), "Interpolation node started.");
+
+        auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
+            .reliability(rclcpp::ReliabilityPolicy::BestEffort)
+            .durability(rclcpp::DurabilityPolicy::Volatile)
+            .deadline(rclcpp::Duration(1ms));
 
         roake_control_sub_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
             "/rokae_control_joints", 10, std::bind(&interpolation::exec_planning_callback, this,std::placeholders::_1));
@@ -36,7 +42,7 @@ public:
         mpc_thread_ = std::thread(&interpolation::mpcTrajCompute, this);
 
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
-            "sent_joints", 10);
+            "sent_joints", qos);
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
         
     }
@@ -308,7 +314,7 @@ private:
         return vec;
     }
 
-    const int IPT_NUM = 20;
+    const int IPT_NUM = 100;
 
 
     Eigen::VectorXd start_position = Eigen::VectorXd::Zero(jointSize);
@@ -331,7 +337,7 @@ private:
 
 
     std::array<MpcSpline<Horizon, InputNum>, 7> MPCsplines_= []<size_t... I>(std::index_sequence<I...>) {
-        return std::array{MpcSpline<Horizon, InputNum>(0.5, I)...};
+        return std::array{MpcSpline<Horizon, InputNum>(0.25, I)...};
     }(std::make_index_sequence<7>{});
 
     const unsigned int N_apply = 1;

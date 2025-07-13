@@ -1,9 +1,10 @@
 #include <iostream>
-#include <iostream>
 #include <cmath>
 #include <thread>
 #include <mutex> // 用于线程同步
 #include <array>
+#include <termios.h>
+#include <fcntl.h>
 
 #include "rokae_rt/robot.h"
 #include "rclcpp/rclcpp.hpp"
@@ -48,6 +49,10 @@ public:
             "sent_joints", qos, 
             std::bind(&rt_RobotCtrlNode::jointPositionCallback, this, std::placeholders::_1)
         );
+
+        // filted_joints = this->create_publisher<std_msgs::msg::Float32MultiArray>(
+        //     "filted_joints", qos
+        // );
         // 初始化关节位置
         try
         {
@@ -97,32 +102,48 @@ public:
             std::cerr << e.what();
         }
 
-        std::function<JointPosition()> rokae_callback = [&,this] ()
-        {
-            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-            // std::array<double, 7> current_pos = robot_.jointPos(ec);
-            current_target_joint_pos_ = rec_joint_positions_;
-            if(current_target_joint_pos_ == zero_pos && !init_joint_pos_set_ && has_received_joint_positions_) 
-            {init_joint_pos_set_ = true;}
+        // std::function<JointPosition()> rokae_callback = [&,this] ()
+        // {
+        //     bool is_ready_to_move = false;
+        //     std::array<double,7> current_target_joint_pos_;
+        //     {
+        //         std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+        //         current_target_joint_pos_ = rec_joint_positions_;
+        //         if(!init_joint_pos_set_ && has_received_joint_positions_ && init_move_completed) 
+        //         {
+        //             init_joint_pos_set_ = true;
+        //         }
+        //         is_ready_to_move = init_joint_pos_set_ ;
+        //     }
+        //     // else
+        //     // {
+        //     //     RCLCPP_INFO(this->get_logger(), "Received No init pos.Stay at zero position.");
+        //     // }
+        //     JointPosition cmd;
+        //     // std::cout << init_joint_pos_set_<< std::endl;
+        //     if(is_ready_to_move)
+        //     {
+        //         cmd.joints = std::vector<double>(current_target_joint_pos_.begin(), current_target_joint_pos_.end());
+        //     }
+        //     else
+        //     {
+        //         std::array<double, 7> current_pos {};
+        //         robot_.getStateData(RtSupportedFields::jointPos_m, current_pos);
+        //         cmd.joints = std::vector<double>(current_pos.begin(), current_pos.end());
+        //     }
+        //     return cmd;
+        // };
 
-            JointPosition cmd;
-            std::cout << init_joint_pos_set_<< std::endl;
-            if(init_joint_pos_set_)
-            {
-                cmd.joints = std::vector<double>(current_target_joint_pos_.begin(), current_target_joint_pos_.end());
-            }
-            else
-            {
-                cmd.joints = std::vector<double>(zero_pos.begin(), zero_pos.end());
-            }
-            return cmd;
-        };
+        // motion_controller_->setControlLoop(rokae_callback);
+        // motion_controller_->startMove(RtControllerMode::jointPosition);
+        // control_thread_ = std::thread([this]() 
+        // {
+        //     this->motion_controller_->startLoop(true);
+        // });
 
-        motion_controller_->setControlLoop(rokae_callback);
-        motion_controller_->startMove(RtControllerMode::jointPosition);
-        control_thread_ = std::thread([this]() 
+        keyboard_thread_ = std::thread([this]()
         {
-            this->motion_controller_->startLoop(true);
+            this->keyboard_input_thread();
         });
     };
 
@@ -130,7 +151,9 @@ public:
     {
         if(control_thread_.joinable())
         {
+            motion_controller_->stopLoop();
             control_thread_.join();
+            keyboard_thread_.join();
         }
         std::error_code ec;
         robot_.setPowerState(false, ec);
@@ -146,14 +169,153 @@ private:
             RCLCPP_ERROR(this->get_logger(), "Received joint positions size is not 7.");
             return;
         }
-        std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-        if(!msg->data.empty())
         {
-            for(size_t i = 0; i < 7; ++i)
+            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+            if(!msg->data.empty())
             {
-                rec_joint_positions_[i] = msg->data[i];
+                if(!filter_initialized_)
+                {
+                    for(size_t i = 0; i < 7; i++)
+                    {
+                        rec_joint_positions_[i] = msg->data[i];
+                    }
+                    filter_initialized_ = true;
+                }
+                else
+                {
+                    for(size_t i = 0; i < 7; i++)
+                    {
+                        rec_joint_positions_[i] = filter_alpha_ * msg->data[i] + (1 - filter_alpha_) * rec_joint_positions_[i];
+                    }
+                }
+                has_received_joint_positions_ = true;
             }
-            has_received_joint_positions_ = true;
+        }
+        // std_msgs::msg::Float32MultiArray filted_msg;
+        // filted_msg.data.assign(rec_joint_positions_.begin(), rec_joint_positions_.end());
+        // filted_joints->publish(filted_msg);
+    }
+
+    JointPosition rokae_callback()
+    {
+        bool is_ready_to_move = false;
+        std::array<double,7> current_target_joint_pos_;
+        {
+            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+            current_target_joint_pos_ = rec_joint_positions_;
+            if(!init_joint_pos_set_ && has_received_joint_positions_ && init_move_completed) 
+            {
+                init_joint_pos_set_ = true;
+            }
+            is_ready_to_move = init_joint_pos_set_ ;
+        }
+        // else
+        // {
+        //     RCLCPP_INFO(this->get_logger(), "Received No init pos.Stay at zero position.");
+        // }
+        JointPosition cmd;
+        // std::cout << init_joint_pos_set_<< std::endl;
+        if(is_ready_to_move)
+        {
+            cmd.joints = std::vector<double>(current_target_joint_pos_.begin(), current_target_joint_pos_.end());
+        }
+        else
+        {
+            std::array<double, 7> current_pos {};
+            robot_.getStateData(RtSupportedFields::jointPos_m, current_pos);
+            cmd.joints = std::vector<double>(current_pos.begin(), current_pos.end());
+        }
+        return cmd;
+    }
+
+
+
+    int kbhit(void)
+    {
+        struct termios oldt, newt;
+        int ch;
+        int oldf;
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+        oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+        fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+        ch = getchar();
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+        fcntl(STDIN_FILENO, F_SETFL, oldf);
+        if (ch != EOF)
+        {
+            ungetc(ch, stdin);
+            return 1;
+        }
+        return 0;
+    }
+
+    void keyboard_input_thread()
+    {
+        while (rclcpp::ok())  
+        {
+            if (kbhit())
+            {
+                char ch = getchar();
+                switch (ch)
+                {
+                    case 'm':
+                    {
+                        std::array<double, 7> target_pos {};
+                        {
+                            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+                            target_pos = rec_joint_positions_;
+                        }
+                        if(!move_init)
+                        {
+                            std::array<double, 7> cur_pos {};
+                            robot_.getStateData(RtSupportedFields::jointPos_m, cur_pos);
+                            std::cout << "Current target positions: ";
+                            for (double value : target_pos) {
+                                std::cout << value << " ";
+                            }
+                            std::cout << std::endl;                
+                            motion_controller_->MoveJ(0.5,cur_pos,target_pos);
+                            move_init = true;
+                        }
+                    }
+                        break;
+                    case 'c':
+                        if (!control_loop_started_) 
+                        {
+                            {
+                                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+                                init_move_completed = true;
+                            }
+                            motion_controller_->setControlLoop(
+                                std::function<JointPosition()>(std::bind(&rt_RobotCtrlNode::rokae_callback, this))
+                            );
+                            motion_controller_->startMove(RtControllerMode::jointPosition);
+                            RCLCPP_INFO(this->get_logger(), "Control loop started.");
+                            control_thread_ = std::thread([this]() 
+                            {
+                                try 
+                                {
+                                    this->motion_controller_->startLoop(true);
+                                } catch (const std::exception& e) 
+                                {
+                                    RCLCPP_ERROR(this->get_logger(), "startLoop exception: %s", e.what());
+                                }
+                            });
+                            control_loop_started_ = true;
+                        }
+                        break;
+                    case 'q':
+                        std::cout << "Exiting..." << std::endl;
+                        rclcpp::shutdown();  
+                        return;
+                    default:
+                        break;
+                }
+            }
+            usleep(10000);  // 10ms
         }
     }
 
@@ -161,6 +323,8 @@ private:
 
     std::shared_ptr<RtMotionControlCobot<7>> motion_controller_;
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr joint_positions_sub_;
+
+    // rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr filted_joints;
     
     const std::array<double, 7> zero_pos = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     //线程共享数据
@@ -169,9 +333,16 @@ private:
 
     bool init_joint_pos_set_ = false;
     bool has_received_joint_positions_ = false;
+    bool move_init = false;
+    bool init_move_completed = false;
+    bool control_loop_started_ = false;
 
-    std::array<double, 7> current_target_joint_pos_ ;
     std::thread control_thread_;
+    std::thread keyboard_thread_; 
+
+    //filter variables
+    const double filter_alpha_ = 0.1; //滤波系数
+    bool filter_initialized_ = false;
 };
 
 

@@ -16,7 +16,7 @@ class ForceSrv(Node):
         print("force_srv node started")
         self.force_srv = self.create_service(SixDForce, 'force_srv', self.force_callback)
         self.force_pub_ = self.create_publisher(Float32MultiArray, 'force_data', 10)
-        self.port = '/dev/ttyUSB1'
+        self.port = '/dev/ttyUSB2'
         self.baudrate = 460800
         self.grav = 9.8015   #  gravity in Beijing
         np.set_printoptions(precision=3)
@@ -25,8 +25,8 @@ class ForceSrv(Node):
         self.force_init(self.ser)
         self.isrectify = False
         self.ori_force = self.send_once(self.ser)
-        # self.send_continous(self.ser)
-        # self.timer_ = self.create_timer(0.001, self.timer_callback)
+        self.send_continous(self.ser)
+        self.timer_ = self.create_timer(0.001, self.timer_callback)
 
     def timer_callback(self):
 
