@@ -283,6 +283,7 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
         ################## make sure the RollPitchYaw is correct##################
         rot[[1, 2, 0]] = rot[[0, 1 ,2]]
         rot[1] = -rot[1]
+        rot[0] = -rot[0]
         ###########################################################################
         rot = RotationMatrix(RollPitchYaw(rot))
         rots.append(rot)

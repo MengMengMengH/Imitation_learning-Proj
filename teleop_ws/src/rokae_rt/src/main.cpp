@@ -290,7 +290,9 @@ private:
                                 init_move_completed = true;
                             }
                             motion_controller_->setControlLoop(
-                                std::function<JointPosition()>(std::bind(&rt_RobotCtrlNode::rokae_callback, this))
+                                std::function<JointPosition()>(std::bind(&rt_RobotCtrlNode::rokae_callback, this)),
+                                0,
+                                true
                             );
                             motion_controller_->startMove(RtControllerMode::jointPosition);
                             RCLCPP_INFO(this->get_logger(), "Control loop started.");
