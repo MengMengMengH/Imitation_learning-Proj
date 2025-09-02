@@ -79,14 +79,14 @@ class arm_ik():
         self.plant.SetPositions(self.context, q_nominal)
 
         if up_ori is None:
-            up_ori = np.array([1,0,0,0])
-        up_ori = RotationMatrix(Quaternion(up_ori))
+            up_ori = np.eye(3)
+        up_ori = RotationMatrix(up_ori)
         if elbow_ori is None:
-            elbow_ori = np.array([1,0,0,0])
-        elbow_ori = RotationMatrix(Quaternion(elbow_ori))
+            elbow_ori = np.eye(3)
+        elbow_ori = RotationMatrix(elbow_ori)
         if wrist_ori is None:
-            wrist_ori = np.array([1,0,0,0])
-        wrist_ori = RotationMatrix(Quaternion(wrist_ori))
+            wrist_ori = np.eye(3)
+        wrist_ori = RotationMatrix(wrist_ori)
 
         if 'iiwa14' in self.arm_type:
             _Base = self.plant.GetFrameByName("iiwa_link_0")
@@ -147,11 +147,11 @@ class arm_ik():
 
         orientation_bounds = 0.05
         # position_bounds = np.array([0.0, 0.0, 0.0]) 
-        ik = inverse_kinematics.InverseKinematics(self.plant)
+        ik = inverse_kinematics.InverseKinematics(self.plant,with_joint_limits=True)
         q_variables = ik.q()
         prog = ik.prog()
 
-        prog.SetInitialGuess(q_variables,q_nominal)
+        # prog.SetInitialGuess(q_variables,q_nominal)
 
         assert up_ori is not None ,"up_ori is None"
         if up_ori is not None:
@@ -159,12 +159,10 @@ class arm_ik():
             AddOrientationConstraint(ik, up_WG, orientation_bounds,base_frame=_Base,rela_frame=_UP_Arm)
             # print(f'up_ori: {up_WG.ToRollPitchYaw()}')
         
-        elbow_WG_rela = up_WG.inverse() @ elbow_ori
-        # print(f'{elbow_WG_rela.ToRollPitchYaw()}')
-        elbow_angle = - elbow_WG_rela.ToRollPitchYaw().pitch_angle()
+        elbow_angle = elbow_ori.ToRollPitchYaw().roll_angle()
 
         if wrist_ori is not None:
-            wrist_WG = wrist_ori@self.amend_frame
+            wrist_WG = wrist_ori @ self.amend_frame
             AddOrientationConstraint(ik, wrist_WG, orientation_bounds,base_frame=_Base,rela_frame=_Wrist)
 
         # ik.prog().AddCost(np.linalg.norm(ik.q() - q_nominal))
@@ -177,10 +175,14 @@ class arm_ik():
         result_q = result.GetSolution(q_variables)
         # print(f"result_q: {result_q}")
         if 'iiwa14' in self.arm_type or 'roake' in self.arm_type:
-            result_q[3] = elbow_angle
+            result_q[3] = np.abs(elbow_angle)
         elif 'UR5' in self.arm_type:
             result_q[2] = -elbow_angle
-            
+        
+        # print(f'wri_ori: {wrist_ori.ToRollPitchYaw()}')
+        # print(f'elb_ori: {elbow_ori.ToRollPitchYaw()}')
+        # print(f'up_ori: {up_ori.ToRollPitchYaw()}')
+        # print("--------------------------------")
         # if np.linalg.norm(result_q - q_nominal) > 0.5:
         #     return None
         self._q = result_q
@@ -272,10 +274,11 @@ class arm_ik():
 
 def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
     
-    assert q.shape == (16,), "Input shape must be (16,)"
+    # assert q.shape == (16,), "Input shape must be (16,)"
     rots = []
 
-    quats = q.reshape(-1, 4)  # shape(4, 4)
+    quats = q[0:12].reshape(-1, 4)  # shape(4, 4)
+
 
     for quat in quats:
         rot = Quaternion(quat)

@@ -57,7 +57,7 @@ class ArmTele_sim(ArmTele):
         rots = Quatnumpy_to_Rotation(self.quats)
         self._q = self._ik.ori_inv(up_ori=rots[2].matrix(),elbow_ori=rots[1].matrix(),wrist_ori=rots[0].matrix(),q_last=self._q)
         
-        print(self._q)
+        # print(self._q)
 
         if self.viewer is not None:
             with self.viewer.lock():
