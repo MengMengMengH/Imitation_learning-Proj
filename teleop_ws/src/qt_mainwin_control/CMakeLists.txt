@@ -20,7 +20,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/UI)
 add_executable(qtControl_node src/main.cpp
                               src/main_window.cpp
                               include/qt_mainwin_control/main_window.hpp
-)   
+)
 
 
 target_include_directories(qtControl_node PUBLIC

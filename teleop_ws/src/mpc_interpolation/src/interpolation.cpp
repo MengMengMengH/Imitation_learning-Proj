@@ -14,6 +14,7 @@
 
 
 constexpr int jointSize = 7;
+constexpr double mpc_dt = 0.001; // 1000Hz
 using namespace std::chrono_literals;
 
 
@@ -75,34 +76,50 @@ private:
     void mimicSendGoal()
     {
         rclcpp::Rate rate(1000);
-        Eigen::Vector<real_t, jointSize> last_valid_goal = Eigen::Vector<real_t, jointSize>::Zero();
+
+        Eigen::Vector<real_t, jointSize> last_goal = Eigen::Vector<real_t, jointSize>::Zero();
+        double dt = 0.001; // 1000Hz
+
         static int empty_counter = 0;
         while(rclcpp::ok() && running_)
         {
+            Eigen::Vector<real_t, jointSize> current_goal;
             {
                 std::unique_lock<std::mutex> lock(queue_mutex_);
+                // RCLCPP_INFO(this->get_logger(), "mpc_traj_ size: %lu", mpc_traj_.size());
                 if (!mpc_traj_.empty())
                 {
-                    last_valid_goal = mpc_traj_.front();
+                    current_goal = mpc_traj_.front();
                     mpc_traj_.pop();
                 }
-            }    
+                else
+                {
+                    current_goal = last_goal; // 如果没有新点，保持上一个点
+                }
+            }
+
             std_msgs::msg::Float32MultiArray msg;
             msg.data.resize(jointSize);
             for (size_t i = 0; i < jointSize; i++)
             {
-                msg.data[i] = last_valid_goal(i);
+                msg.data[i] = current_goal(i);
             }
             mimic_send_goal_->publish(msg);
+
+
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex_);
             if (mpc_traj_.empty())
             {
                 if (++empty_counter % 1000 == 0) 
                 {
-                    std::stringstream ss = lst2stream(std::vector<float>(last_valid_goal.data(), last_valid_goal.data() + jointSize));
-                    RCLCPP_WARN(this->get_logger(), "mpc_traj_ is empty, sending last known value: \n%s", ss.str().c_str());
+                    std::stringstream ss = lst2stream(std::vector<float>(current_goal.data(), current_goal.data() + jointSize));
+                    RCLCPP_WARN(this->get_logger(), "mpc_traj_ is empty, re-sending last known value: \n%s", ss.str().c_str());
                 }
             }
+
             else { empty_counter = 0; }
+        }
             rate.sleep();
         }
     }
@@ -194,7 +211,7 @@ private:
 
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
-            if (mpc_ref.size() < Horizon) 
+            if (mpc_ref.size() < Horizon)
             {
                 RCLCPP_ERROR(this->get_logger(), "调用 MPC 计算时 参考点 大小 %zu < 预测步长 %d", mpc_ref.size(), Horizon);
                 return false; // 无法计算
@@ -212,6 +229,8 @@ private:
             {
                 // 首次运行，使用第一个参考点作为位置
                 current_x0_pos = ref_pos_horizon.col(0);
+                last_computed_vel_.setZero();
+                last_computed_acc_.setZero();
                 // TODO: 理想情况下，即使在这里也应尽可能从实际机器人状态获取初始速度/加速度
                 first_mpc_run_ = false; // 清除标志，下次不再使用此逻辑直到重置
                     RCLCPP_INFO(this->get_logger(), "首次 MPC 运行，从参考初始化 x0。");
@@ -220,7 +239,7 @@ private:
             {
                 // 对于后续运行，使用上一步计算出的位置
                 current_x0_pos = last_computed_pos_;
-                // TODO: 从机器人状态反馈或上次 MPC 预测中获取速度/加速度
+
             }
         } // 锁定范围结束
 
@@ -228,14 +247,18 @@ private:
         bool computation_ok = true; // 标记计算是否对所有关节都成功
         for(int i = 0; i < jointSize; i++)
         {
-            Eigen::Matrix<real_t,4,1> x0;
-            x0 << current_x0_pos(i), 0, 0, 0; 
-            // TODO:
-            /* using robot real state to update x0 */
+            // // TODO: 从机器人状态反馈或上次 MPC 预测中获取速度/加速度
+            
+            Eigen::Matrix<real_t,3,1> x0;
+            x0 << current_x0_pos(i), last_computed_vel_(i), last_computed_acc_(i); 
+
             MPCsplines_[i].setCurrentState(x0);
             MPCsplines_[i].setReferenceTrajectory(ref_pos_horizon.row(i));
             if(MPCsplines_[i].computeMPC())
             {
+                auto state_pred = MPCsplines_[i].getFullStatePrediction();
+                last_computed_vel_(i) = state_pred(1);
+                last_computed_acc_(i) = state_pred(2);
                 auto x_pred = MPCsplines_[i].getPrediction();
                 MPCpos_horizon.row(i) = x_pred.transpose();
             }
@@ -256,8 +279,8 @@ private:
                 mpc_traj_.push(MPCpos_horizon.col(i)); // 推送计算结果的第一步（或前 N_apply 步）
             }
             // 存储*最后一个应用点*的位置，用于下一次迭代的 x0
+            // // TODO: 如果需要用于 x0，也在此处存储上次计算的速度等
             last_computed_pos_ = MPCpos_horizon.col(N_apply - 1);
-            // TODO: 如果需要用于 x0，也在此处存储上次计算的速度等
 
             return true;
         }
@@ -309,9 +332,9 @@ private:
 
     Eigen::VectorXd conv2EigenVec(const std::vector<float>& lst)
     {
-        std::vector<double> double_angles(lst.begin(), lst.end());
-        Eigen::Map<const Eigen::VectorXd> vec(double_angles.data(), double_angles.size());
-        return vec;
+        Eigen::VectorXd v(lst.size());
+        for (size_t i = 0; i < lst.size(); ++i) v(i) = static_cast<double>(lst[i]);
+        return v;
     }
 
     const int IPT_NUM = 100;
@@ -334,14 +357,16 @@ private:
 
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr roake_control_sub_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr mimic_send_goal_;
-
+    
 
     std::array<MpcSpline<Horizon, InputNum>, 7> MPCsplines_= []<size_t... I>(std::index_sequence<I...>) {
-        return std::array{MpcSpline<Horizon, InputNum>(0.25, I)...};
+        return std::array{MpcSpline<Horizon, InputNum>(mpc_dt, I)...};
     }(std::make_index_sequence<7>{});
 
     const unsigned int N_apply = 1;
     Eigen::Matrix<real_t, jointSize, 1> last_computed_pos_ = Eigen::VectorXd::Zero(jointSize);
+    Eigen::Matrix<real_t, jointSize, 1> last_computed_vel_ = Eigen::VectorXd::Zero(jointSize);
+    Eigen::Matrix<real_t, jointSize, 1> last_computed_acc_ = Eigen::VectorXd::Zero(jointSize);
     bool first_mpc_run_ = true;
 
 };

@@ -2,9 +2,11 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray,Int32MultiArray
+from cust_msgs.msg import Stampint32array
 import numpy as np
 import serial
 from pynput import keyboard
+from typing import List
 
 from .ins_read import write_data_6,read_data_6,forceClb,init_pos
 
@@ -16,7 +18,8 @@ class InspireSub(Node):
             'scaled_data',
             self.inspire_callback,
             10)
-        
+        self.pub_hand_states_ = self.create_publisher(
+            Stampint32array, 'hand_states', 10)
         self.port = '/dev/ttyUSB1'
         self.baudrate = 115200
         self.joints = {
@@ -47,6 +50,12 @@ class InspireSub(Node):
         # self.get_logger().info(f'data_receive: {msg.data}')
 
         write_data = self.integrate_data(msg.data)
+
+        hand_states_msg = Stampint32array()
+        hand_states_msg.header.stamp = self.get_clock().now().to_msg()
+        hand_states_msg.data = write_data
+        self.pub_hand_states_.publish(hand_states_msg)
+
         force = self.inspire_read_force(self.ser,1)
         if self.disp_force:
             self.get_logger().info(f'force: {force}')
@@ -74,7 +83,7 @@ class InspireSub(Node):
 
         return ser
     
-    def integrate_data(self,scaled_data):
+    def integrate_data(self,scaled_data)->List[int]:
         scaled_data = np.array(scaled_data)
         write_data = list(init_pos)
         # write_data = np.zeros(6)

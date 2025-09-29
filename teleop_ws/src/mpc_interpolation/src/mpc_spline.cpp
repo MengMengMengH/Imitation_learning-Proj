@@ -8,15 +8,14 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     assert(Index < 7 && "This implementation supports for 7 joints only");
     constrain_index = Index;
     //define A and B matrix
-    A_ << 1.0, dt,  dt * dt / 2.0, dt * dt * dt / 6.0,
-          0.0, 1.0, dt,            dt * dt / 2.0,
-          0.0, 0.0, 1.0,           dt,
-          0.0, 0.0, 0.0,           1.0;
+    A_ << 1.0, dt,  dt * dt / 2.0,
+          0.0, 1.0, dt,
+          0.0, 0.0, 1.0,
+
     
-    B_ << dt * dt * dt *dt /24.0,
-          dt * dt * dt / 6.0,
-          dt * dt / 2.0,
-          dt;
+    B_ << dt * dt / 2.0,
+          dt,
+          1.0;
     // initialize A_phi and B_phi 
     A_phi.setZero();
     B_phi.setZero();
@@ -42,13 +41,23 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     R_.setZero();
     for(int i = 0; i < Horizon; i++)
     {
-        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e4, 0, 0, 0;
-        R_(i, i) = 1.0;
+        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e5, 1.0e2, 1.0;
+        R_(i, i) = 1.0e-4;
     }
     // std::cout<<"Q_ = \n" << Q_ << std::endl;
     // compute H and g
     H_ = (B_phi.transpose() * Q_ * B_phi + R_);
     g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
+
+
+    ////      Debug
+    // double minB = B_.minCoeff();
+    // double maxB = B_.maxCoeff();
+    // std::cerr << "[DEBUG] B_ min=" << minB << " max=" << maxB << " norm=" << B_.norm() << std::endl;
+
+    // double minBphi = B_phi.minCoeff();
+    // double maxBphi = B_phi.maxCoeff();
+    // std::cerr << "[DEBUG] B_phi min=" << minBphi << " max=" << maxBphi << " norm=" << B_phi.norm() << std::endl;
 
     // QP constraints
     C_.setZero();
@@ -59,21 +68,21 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     {
         // velocity constraints
         C_.block(i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 1, 0, 1, InputNum * Horizon);
-        lb_C(i) = vMin[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
-        ub_C(i) = vMax[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
-
         // acceleration constraints
         C_.block(Horizon + i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 2, 0, 1, InputNum * Horizon);
-        lb_C(Horizon + i) = aMin[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
-        ub_C(Horizon + i) = aMax[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
-
-        // jerk constraints
-        C_.block(2 * Horizon + i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 3, 0, 1, InputNum * Horizon);
-        lb_C(2 * Horizon + i) = jMin[constrain_index] - (A_phi.block(i * StateDim + 3, 0, 1, StateDim) * x_0_)(0);
-        ub_C(2 * Horizon + i) = jMax[constrain_index] - (A_phi.block(i * StateDim + 3, 0, 1, StateDim) * x_0_)(0);
     }
-    // std::cout << "A_phi = \n" << A_phi << std::endl;
-    // std::cout << "C_ = \n" << C_ << std::endl;
+        // direct u rows
+    int base = 2 * Horizon;
+    for (int i = 0; i < Horizon; ++i) {
+        C_(base + i, i) = 1.0; // pick u_i
+    }
+        // delta-u rows (jerk ~ (u_{k+1}-u_k)/dt)
+    base += Horizon;
+    for (int k = 0; k < Horizon - 1; ++k) {
+        C_(base + k, k) = -1.0 / (dt);
+        C_(base + k, k+1) = 1.0 / (dt);
+    }
+
 
     // initialize options
     option_mpcspline_.printLevel = PL_NONE;
@@ -101,10 +110,16 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
 }
 
 template<int Horizon, int InputNum>
-void MpcSpline<Horizon, InputNum>::setCurrentState(const Eigen::Matrix<real_t, 4, 1>& x0) 
+void MpcSpline<Horizon, InputNum>::setCurrentState(const Eigen::Matrix<real_t, 3, 1>& x0) 
 {
     x_0_ = x0;
     current_state_ = x0;
+}
+
+template<int Horizon, int InputNum>
+Eigen::Matrix<real_t, 3 * Horizon, 1> MpcSpline<Horizon, InputNum>::getFullStatePrediction() const {
+    Eigen::Map<const Eigen::Matrix<real_t, InputNum * Horizon, 1>> xOpt_vec(xOpt_);
+    return A_phi * x_0_ + B_phi * xOpt_vec;
 }
 
 template<int Horizon, int InputNum>
@@ -118,7 +133,8 @@ void MpcSpline<Horizon, InputNum>::setReferenceTrajectory(const Eigen::Matrix<re
 
 
 template<int Horizon, int InputNum>
-void MpcSpline<Horizon, InputNum>::UpdateConstrains() {
+void MpcSpline<Horizon, InputNum>::UpdateConstrains() 
+{
     lb_C.setZero();
     ub_C.setZero();
     for (int i = 0; i < Horizon; i++)
@@ -129,14 +145,26 @@ void MpcSpline<Horizon, InputNum>::UpdateConstrains() {
         // acceleration constraints
         lb_C(Horizon + i) = aMin[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
         ub_C(Horizon + i) = aMax[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
-        // jerk constraints
-        lb_C(2 * Horizon + i) = jMin[constrain_index] - (A_phi.block(i * StateDim + 3, 0, 1, StateDim) * x_0_)(0);
-        ub_C(2 * Horizon + i) = jMax[constrain_index] - (A_phi.block(i * StateDim + 3, 0, 1, StateDim) * x_0_)(0);
+    }
+    // direct u bounds (u is acceleration)
+    int base = 2 * Horizon;
+    for (int i = 0; i < Horizon; i++) 
+    {
+        lb_C(base + i) = aMin[constrain_index];
+        ub_C(base + i) = aMax[constrain_index];
+    }
+    // delta-u (jerk) bounds: (u_{k+1}-u_k)/dt ∈ [jMin, jMax]
+    base += Horizon;
+    for (int k = 0; k < Horizon - 1; k++) 
+    {
+        lb_C(base + k) = jMin[constrain_index];
+        ub_C(base + k) = jMax[constrain_index];
     }
 }
 
 template<int Horizon, int InputNum>
-bool MpcSpline<Horizon, InputNum>::computeMPC() {
+bool MpcSpline<Horizon, InputNum>::computeMPC() 
+{
     if (!ref_ready_) {
         std::cerr << "[MPC] Reference trajectory not set.\n";
         return false;
@@ -145,7 +173,7 @@ bool MpcSpline<Horizon, InputNum>::computeMPC() {
     g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
     UpdateConstrains();
 
-    nWSR_ = 10;
+    nWSR_ = 50;
     returnValue status = mpcspline_.hotstart(
         g_.data(),
         NULL,
@@ -183,12 +211,14 @@ void MpcSpline<Horizon, InputNum>::debugDump() const {
 }
 
 template<int Horizon, int InputNum>
-Eigen::Matrix<real_t, Horizon, 1> MpcSpline<Horizon, InputNum>::getPrediction() const {
+Eigen::Matrix<real_t, Horizon, 1> MpcSpline<Horizon, InputNum>::getPrediction() const 
+{
     return prediction_pos_;
 }
 
 template<int Horizon, int InputNum>
-Eigen::Matrix<real_t, 4, 1> MpcSpline<Horizon, InputNum>::getCurrentState() const {
+Eigen::Matrix<real_t, 3, 1> MpcSpline<Horizon, InputNum>::getCurrentState() const 
+{
     return current_state_;
 }
 
@@ -198,27 +228,3 @@ template class MpcSpline<5, 1>;
 template class MpcSpline<10, 1>;
 template class MpcSpline<20, 1>;
 // template class MpcSpline<50, 1>;
-
-
-// Eigen::MatrixXd mpc4Axis(double dt, double src, double target,size_t index)
-// {
-//     MpcSpline<Horizon, InputNum> mpc_spline(dt, index);
-//     Eigen::Matrix<real_t, 4, 1> x0;
-//     x0 << src, 0.0, 0.0, 0.0;  // 位置、速度、加速度、jerk（初始值）
-
-//     // 测量 QP 求解时间
-//     // auto start = std::chrono::high_resolution_clock::now();
-//     mpc_spline.UpdateX(x0);
-//     mpc_spline.UpdateXRef(target);
-//     mpc_spline.RenewDeltaJerk();
-//     Eigen::Matrix<real_t, Horizon,1> x_pred = mpc_spline.getPredPos();
-//     // std::cout << "x_pred = " << x_pred.transpose() << std::endl;
-//     // std::cout << " | 当前状态：" << x0.transpose() << std::endl;
-
-//     // auto end = std::chrono::high_resolution_clock::now();
-//     // auto total_solve_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-//     // std::cout << "一次求解时间" << total_solve_time << " 微秒" << std::endl;
-//     return x_pred;
-// }
-
-

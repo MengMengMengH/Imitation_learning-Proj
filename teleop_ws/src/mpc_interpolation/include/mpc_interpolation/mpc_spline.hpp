@@ -16,7 +16,7 @@ public:
     ~MpcSpline(){delete[] xOpt_;};
 
     // -------------------- 状态更新 --------------------
-    void setCurrentState(const Eigen::Matrix<real_t, 4, 1>& x0);
+    void setCurrentState(const Eigen::Matrix<real_t, 3, 1>& x0);
     void setReferenceTrajectory(const Eigen::Matrix<real_t, Horizon, 1>& ref_traj);
 
 
@@ -27,14 +27,31 @@ public:
     Eigen::Matrix<real_t, Horizon, 1> getPrediction() const;
 
     // -------------------- 访问状态信息 --------------------
-    Eigen::Matrix<real_t, 4, 1> getCurrentState() const;    
-                               
-    void debugDump() const;            
+    Eigen::Matrix<real_t, 3, 1> getCurrentState() const; 
+
+    Eigen::Matrix<real_t, 3 * Horizon, 1> getFullStatePrediction() const;
+
+
+    // -------------------- 访问速度、加速度、加加速度约束 --------------------
+    std::pair<double,double> getVelLimit(size_t joint_index) const {
+        return {real_vMin[joint_index], real_vMax[joint_index]};
+    }
+    
+    std::pair<double,double> getAccLimit(size_t joint_index) const {
+        return {real_aMin[joint_index], real_aMax[joint_index]};
+    }
+    
+    std::pair<double,double> getJerkLimit(size_t joint_index) const {
+        return {real_jMin[joint_index], real_jMax[joint_index]};
+    } 
+
+    // -------------------- 调试接口 --------------------
+    void debugDump() const;      
 
 private:
     void UpdateConstrains();
     /* data */
-    static constexpr int StateDim = 4; // pos, vel, acc, jerk 
+    static constexpr int StateDim = 3; // pos, vel, acc, jerk 
 
     Eigen::Matrix<real_t, StateDim, StateDim> A_;         //A matrix for single joint
     Eigen::Matrix<real_t, StateDim, InputNum> B_;         //B matrix for single joint
@@ -50,17 +67,26 @@ private:
     Eigen::Matrix<real_t, InputNum * Horizon, 1> u_;
 
     // Constraints: v, a
-    Eigen::Matrix<real_t, 3 * InputNum * Horizon, InputNum * Horizon> C_;
-    Eigen::Matrix<real_t, 3 * InputNum * Horizon, 1> lb_C;
-    Eigen::Matrix<real_t, 3 * InputNum * Horizon, 1> ub_C;
+    static constexpr int ConstrRows = 4 * Horizon - 1;
+    Eigen::Matrix<real_t, ConstrRows, InputNum * Horizon> C_;
+    Eigen::Matrix<real_t, ConstrRows, 1> lb_C;
+    Eigen::Matrix<real_t, ConstrRows, 1> ub_C;
 
 
-    real_t vMin[7] = {-2.175, -2.175, -2.175, -2.175, -2.610, -2.610, -2.610};
-    real_t vMax[7] = { 2.175,  2.175,  2.175,  2.175,  2.610,  2.610,  2.610};
-    real_t aMin[7] = {-15, -7.5, -10, -10, -15, -15, -20};
-    real_t aMax[7] = { 15,  7.5,  10,  10,  15,  15,  20};
-    real_t jMin[7] = {-5000, -3500, -5000, -5000, -7500, -7500, -7500};
-    real_t jMax[7] = { 5000,  3500,  5000,  5000,  7500,  7500,  7500};
+    real_t vMin[7] = {-1.5, -1.5, -1.5, -1.5, -1.5, -1.5, -1.5};
+    real_t vMax[7] = { 1.5,  1.5,  1.5,  1.5,  1.5,  1.5,  1.5};
+    real_t aMin[7] = {-5, -5, -5, -5, -5, -5, -5};
+    real_t aMax[7] = { 5,  5,  5,  5,  5,  5,  5};
+    real_t jMin[7] = {-2000, -2000, -2000, -2000, -2000, -2000, -2000};
+    real_t jMax[7] = { 2000,  2000,  2000,  2000,  2000,  2000,  2000};
+
+
+    real_t real_vMin[7] = {-2.175, -2.175, -2.175, -2.175, -2.610, -2.610, -2.610};
+    real_t real_vMax[7] = { 2.175,  2.175,  2.175,  2.175,  2.610,  2.610,  2.610};
+    real_t real_aMin[7] = {-15, -7.5, -10, -10, -15, -15, -20};
+    real_t real_aMax[7] = { 15,  7.5,  10,  10,  15,  15,  20};
+    real_t real_jMin[7] = {-5000, -3500, -5000, -5000, -7500, -7500, -7500};
+    real_t real_jMax[7] = { 5000,  3500,  5000,  5000,  7500,  7500,  7500};
 
 
     int nWSR_ = 10;
@@ -69,8 +95,8 @@ private:
     Options option_mpcspline_;
     real_t *xOpt_;
 
-    Eigen::Matrix<real_t, 4, 1> current_state_;
-    Eigen::Matrix<real_t, Horizon, 1> prediction_pos_; 
+    Eigen::Matrix<real_t, 3, 1> current_state_;
+    Eigen::Matrix<real_t, Horizon, 1> prediction_pos_;
     bool ref_ready_ = false;
 };
 

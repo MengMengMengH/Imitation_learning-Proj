@@ -5,6 +5,7 @@
 #include <array>
 #include <termios.h>
 #include <fcntl.h>
+#include <deque>
 
 #include "rokae_rt/robot.h"
 #include "rclcpp/rclcpp.hpp"
@@ -34,9 +35,9 @@ public:
             return;
         }
 
-        robot_.setOperateMode(OperateMode::automatic, ec);
-        robot_.setRtNetworkTolerance(20, ec);
         robot_.setMotionControlMode(MotionControlMode::RtCommand, ec);
+        robot_.setRtNetworkTolerance(20, ec);
+        robot_.setOperateMode(OperateMode::automatic, ec);
         robot_.setPowerState(true,ec);
         
         //订阅节点
@@ -93,7 +94,8 @@ public:
                     break;
             }
             std::cout << "Robot power state: " << state_str << std::endl;
-
+            
+            
             motion_controller_->MoveJ(0.5,cur_pos,zero_pos);
             RCLCPP_INFO(this->get_logger(), "Robot joint positions initialized to zero.");
         }
@@ -164,55 +166,48 @@ private:
 
     void jointPositionCallback(const std_msgs::msg::Float32MultiArray::SharedPtr msg)
     {
-        if(msg->data.size() != 7)
+        if(msg->data.size() == 7)
         {
-            RCLCPP_ERROR(this->get_logger(), "Received joint positions size is not 7.");
-            return;
-        }
-        {
-            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-            if(!msg->data.empty())
+            std::array<double, 7> new_positions;
+            for (size_t i = 0; i < 7; i++)
             {
-                if(!filter_initialized_)
-                {
-                    for(size_t i = 0; i < 7; i++)
-                    {
-                        rec_joint_positions_[i] = msg->data[i];
-                    }
-                    filter_initialized_ = true;
+                new_positions[i] = static_cast<double>(msg->data[i]);
+            }
+            {
+                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+                if(joint_queue_.size() >= max_queue_size_) {
+                    joint_queue_.pop_front();
                 }
-                else
-                {
-                    for(size_t i = 0; i < 7; i++)
-                    {
-                        rec_joint_positions_[i] = filter_alpha_ * msg->data[i] + (1 - filter_alpha_) * rec_joint_positions_[i];
-                    }
-                }
-                has_received_joint_positions_ = true;
+                joint_queue_.push_back(new_positions);
             }
         }
-        // std_msgs::msg::Float32MultiArray filted_msg;
-        // filted_msg.data.assign(rec_joint_positions_.begin(), rec_joint_positions_.end());
-        // filted_joints->publish(filted_msg);
     }
+
+    
 
     JointPosition rokae_callback()
     {
         bool is_ready_to_move = false;
-        std::array<double,7> current_target_joint_pos_;
+        std::array<double,7> current_target_joint_pos_ {};
         {
             std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-            current_target_joint_pos_ = rec_joint_positions_;
-            if(!init_joint_pos_set_ && has_received_joint_positions_ && init_move_completed) 
+            if(!joint_queue_.empty()) 
+            {
+                current_target_joint_pos_ = joint_queue_.front();
+                joint_queue_.pop_front();
+            }
+            else
+            {
+                robot_.getStateData(RtSupportedFields::jointPos_m, current_target_joint_pos_);
+            }
+
+            if(!init_joint_pos_set_ && init_move_completed) 
             {
                 init_joint_pos_set_ = true;
             }
             is_ready_to_move = init_joint_pos_set_ ;
         }
-        // else
-        // {
-        //     RCLCPP_INFO(this->get_logger(), "Received No init pos.Stay at zero position.");
-        // }
+
         JointPosition cmd;
         // std::cout << init_joint_pos_set_<< std::endl;
         if(is_ready_to_move)
@@ -261,30 +256,27 @@ private:
                 char ch = getchar();
                 switch (ch)
                 {
-                    case 'm':
-                    {
-                        std::array<double, 7> target_pos {};
+
+                        break;
+                    case 'c':
+                        if (!control_loop_started_) 
                         {
-                            std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                            target_pos = rec_joint_positions_;
-                        }
-                        if(!move_init)
-                        {
+                            std::array<double, 7> target_pos {};
+                            {
+                                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+                                target_pos = joint_queue_.empty() ? zero_pos : joint_queue_.front();
+                                joint_queue_.clear();
+                            }
+
                             std::array<double, 7> cur_pos {};
                             robot_.getStateData(RtSupportedFields::jointPos_m, cur_pos);
                             std::cout << "Current target positions: ";
                             for (double value : target_pos) {
                                 std::cout << value << " ";
                             }
-                            std::cout << std::endl;                
-                            motion_controller_->MoveJ(0.5,cur_pos,target_pos);
-                            move_init = true;
-                        }
-                    }
-                        break;
-                    case 'c':
-                        if (!control_loop_started_) 
-                        {
+                            std::cout << std::endl;
+                            motion_controller_->MoveJ(0.1,cur_pos,target_pos);
+
                             {
                                 std::lock_guard<std::mutex> lock(joint_positions_mutex_);
                                 init_move_completed = true;
@@ -317,7 +309,7 @@ private:
                         break;
                 }
             }
-            usleep(10000);  // 10ms
+            std::this_thread::sleep_for(10ms);
         }
     }
 
@@ -330,21 +322,18 @@ private:
     
     const std::array<double, 7> zero_pos = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     //线程共享数据
-    std::array<double, 7> rec_joint_positions_;
     std::mutex joint_positions_mutex_;
+    std::deque<std::array<double,7>> joint_queue_;
+    const size_t max_queue_size_ = 100; // 定长队列大小
+
 
     bool init_joint_pos_set_ = false;
-    bool has_received_joint_positions_ = false;
-    bool move_init = false;
     bool init_move_completed = false;
     bool control_loop_started_ = false;
 
     std::thread control_thread_;
     std::thread keyboard_thread_; 
 
-    //filter variables
-    const double filter_alpha_ = 0.1; //滤波系数
-    bool filter_initialized_ = false;
 };
 
 

@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
+from cust_msgs.msg import Stampfloat32array
 from sixd_interfaces.srv import SixDForce
 
 import serial
@@ -15,7 +16,7 @@ class ForceSrv(Node):
         super().__init__('force_srv')
         print("force_srv node started")
         self.force_srv = self.create_service(SixDForce, 'force_srv', self.force_callback)
-        self.force_pub_ = self.create_publisher(Float32MultiArray, 'force_data', 10)
+        self.force_pub_ = self.create_publisher(Stampfloat32array, 'force_data', 10)
         self.port = '/dev/ttyUSB2'
         self.baudrate = 460800
         self.grav = 9.8015   #  gravity in Beijing
@@ -31,8 +32,9 @@ class ForceSrv(Node):
     def timer_callback(self):
 
         force_data = self.send_once(self.ser)
-        msg = Float32MultiArray()
+        msg = Stampfloat32array()
         if force_data is not None:
+            msg.header.stamp = self.get_clock().now().to_msg()
             msg.data = force_data.tolist()
             self.force_pub_.publish(msg)
     
