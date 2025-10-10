@@ -41,8 +41,8 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     R_.setZero();
     for(int i = 0; i < Horizon; i++)
     {
-        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e5, 1.0e2, 1.0;
-        R_(i, i) = 1.0e-4;
+        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e4, 5.0e1, 5e-1;
+        R_(i, i) = 5.0e-3;
     }
     // std::cout<<"Q_ = \n" << Q_ << std::endl;
     // compute H and g

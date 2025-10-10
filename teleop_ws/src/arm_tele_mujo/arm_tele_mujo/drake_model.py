@@ -87,6 +87,7 @@ class arm_ik():
         if wrist_ori is None:
             wrist_ori = np.eye(3)
         wrist_ori = RotationMatrix(wrist_ori)
+        # print(wrist_ori.ToRollPitchYaw().vector())
 
         if 'iiwa14' in self.arm_type:
             _Base = self.plant.GetFrameByName("iiwa_link_0")
@@ -287,6 +288,7 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
         rot[[1, 2, 0]] = rot[[0, 1 ,2]]
         rot[1] = -rot[1]
         rot[0] = -rot[0]
+        # rot[2] = -rot[2]
         ###########################################################################
         rot = RotationMatrix(RollPitchYaw(rot))
         rots.append(rot)

@@ -43,10 +43,10 @@ public:
             }
         );
 
-        timer_10hz = this->create_wall_timer(
-            std::chrono::milliseconds(100),
+        timer_2hz = this->create_wall_timer(
+            std::chrono::milliseconds(500),
             // std::chrono::microseconds(12500),
-            std::bind(&GloveDataPub::timer_callback_10, this));
+            std::bind(&GloveDataPub::timer_callback_2, this));
 
         timer_50hz = this->create_wall_timer(
             std::chrono::milliseconds(20),
@@ -247,7 +247,7 @@ private:
         }
     }
 
-    void timer_callback_10()
+    void timer_callback_2()
     {
         std_msgs::msg::Float32MultiArray quat_msg;
         quat_msg.data.clear();  // 清空数据
@@ -480,7 +480,7 @@ private:
     rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_calib_subscriber_;
     rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_imu_calib_subscriber_;
 
-    rclcpp::TimerBase::SharedPtr timer_10hz;
+    rclcpp::TimerBase::SharedPtr timer_2hz;
     rclcpp::TimerBase::SharedPtr timer_50hz;
     std::thread keyboard_thread_; 
 

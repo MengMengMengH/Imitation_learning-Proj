@@ -46,16 +46,21 @@ class ArmTele_sim(ArmTele):
         self.file_counter = 0
         self.save_dir = os.path.expanduser("~/teleop_ws/src/arm_tele_mujo/data")
 
-        self.record_flag = False
-        self.listener = keyboard.Listener(on_press=self.on_press)
-        self.listener.start()
+        # self.record_flag = False
+        # self.listener = keyboard.Listener(on_press=self.on_press)
+        # self.listener.start()
         
     def quat_callback(self, msg):
-        now = int(time.time())
+
         self.quats = np.array(msg.data) # 50HZ
 
         rots = Quatnumpy_to_Rotation(self.quats)
-        self._q = self._ik.ori_inv(up_ori=rots[2].matrix(),elbow_ori=rots[1].matrix(),wrist_ori=rots[0].matrix(),q_last=self._q)
+        self._q = self._ik.ori_inv(
+            up_ori=rots[2].matrix(),
+            elbow_ori=rots[1].matrix(),
+            wrist_ori=rots[0].matrix(),
+            q_last=self._q
+            )
         
         # print(self._q)
 
@@ -65,33 +70,7 @@ class ArmTele_sim(ArmTele):
                     self.data.ctrl = self._q 
                 mujoco.mj_step(self.model, self.data)
 
-                if self.record_flag:
-                    real_Rs,real_Re,real_Rw,T = self._ik.record_rot_data()
-                    des_Rs = rots[2].matrix()
-                    des_Re = rots[1].matrix()
-                    des_Rw = rots[0].matrix()
-                    qpos = self.data.qpos
-                    qvel = self.data.qvel
-                    energy = self.data.energy
-                    qacc = self.data.qacc
 
-                    data = {
-                        "real_Rs":real_Rs,
-                        "real_Re":real_Re,
-                        "real_Rw":real_Rw,
-                        "des_Rs":des_Rs,
-                        "des_Re":des_Re,
-                        "des_Rw":des_Rw,
-                        "qpos":qpos,
-                        "qvel":qvel,
-                        "qacc":qacc,
-                        "energy":energy,
-                        "real_T":T
-                    }
-                    npz_name = f'{self.model_name}_data_{now}_{self.file_counter}.npz'
-                    full_path = os.path.join(self.save_dir, npz_name)
-                    np.savez(full_path, **data)
-                    self.file_counter += 1
 
     def visualize(self):
         try:
@@ -118,17 +97,6 @@ class ArmTele_sim(ArmTele):
                 self.viewer.close()  # 确保关闭 Viewer
             self.exit_event.set()
             self.get_logger().info("visual线程结束")
-
-    def on_press(self,key):
-        try:
-
-            if key.char == 'c':
-                self.record_flag = True
-            elif key.char == 'v':
-                self.record_flag = False
-
-        except AttributeError:
-            pass
 
 
 def main(args=None):

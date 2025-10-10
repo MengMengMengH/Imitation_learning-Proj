@@ -16,7 +16,6 @@ find_package(qpOASES REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
 
 
-
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -62,12 +61,12 @@ target_link_libraries(cubic_spline_node
 
 ament_target_dependencies(mpc_interpolation_node
   "rclcpp"
-  "Eigen3"
-  "qpOASES"
+  # "Eigen3"
+  # "qpOASES"
   "std_msgs"
 )
 ament_target_dependencies(cubic_spline_node
-  "Eigen3"
+  # "Eigen3"
   "qpOASES"
   "std_msgs"
 )

@@ -41,7 +41,7 @@ public:
         robot_.setPowerState(true,ec);
         
         //订阅节点
-        auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
+        auto qos = rclcpp::QoS(rclcpp::KeepLast(1))
         .reliability(rclcpp::ReliabilityPolicy::BestEffort)
         .durability(rclcpp::DurabilityPolicy::Volatile)
         .deadline(rclcpp::Duration(1ms));
@@ -181,6 +181,23 @@ private:
                 joint_queue_.push_back(new_positions);
             }
         }
+
+        //debug:检测消息间隔
+        static rclcpp::Time last_msg_time = this->get_clock()->now();
+        rclcpp::Time current_msg_time = this->get_clock()->now();
+        double interval_ms = (current_msg_time - last_msg_time).seconds() * 1000.0;
+        last_msg_time = current_msg_time;
+        if (interval_ms > 1.5) 
+        {
+            RCLCPP_WARN(this->get_logger(), "Large message interval detected: %.4f ms", interval_ms);
+        }
+
+        // {
+        //     std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+        //     if(joint_queue_.size() > 5) { // 如果隊列長度異常增長
+        //         RCLCPP_WARN(this->get_logger(), "Joint queue size is growing: %zu", joint_queue_.size());
+        //     }
+        // }
     }
 
     
@@ -188,6 +205,7 @@ private:
     JointPosition rokae_callback()
     {
         bool is_ready_to_move = false;
+        bool has_new_command = false;
         std::array<double,7> current_target_joint_pos_ {};
         {
             std::lock_guard<std::mutex> lock(joint_positions_mutex_);
@@ -195,12 +213,9 @@ private:
             {
                 current_target_joint_pos_ = joint_queue_.front();
                 joint_queue_.pop_front();
+                last_valid_command_ = current_target_joint_pos_;
+                has_new_command = true;
             }
-            else
-            {
-                robot_.getStateData(RtSupportedFields::jointPos_m, current_target_joint_pos_);
-            }
-
             if(!init_joint_pos_set_ && init_move_completed) 
             {
                 init_joint_pos_set_ = true;
@@ -210,9 +225,13 @@ private:
 
         JointPosition cmd;
         // std::cout << init_joint_pos_set_<< std::endl;
-        if(is_ready_to_move)
+        if(is_ready_to_move && has_new_command)
         {
             cmd.joints = std::vector<double>(current_target_joint_pos_.begin(), current_target_joint_pos_.end());
+        }
+        else if(is_ready_to_move &&  !has_new_command)
+        {
+            cmd.joints = std::vector<double>(last_valid_command_.begin(), last_valid_command_.end());
         }
         else
         {
@@ -275,7 +294,7 @@ private:
                                 std::cout << value << " ";
                             }
                             std::cout << std::endl;
-                            motion_controller_->MoveJ(0.1,cur_pos,target_pos);
+                            motion_controller_->MoveJ(0.5,cur_pos,target_pos);
 
                             {
                                 std::lock_guard<std::mutex> lock(joint_positions_mutex_);
@@ -321,10 +340,11 @@ private:
     // rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr filted_joints;
     
     const std::array<double, 7> zero_pos = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    std::array<double, 7> last_valid_command_ = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     //线程共享数据
     std::mutex joint_positions_mutex_;
     std::deque<std::array<double,7>> joint_queue_;
-    const size_t max_queue_size_ = 100; // 定长队列大小
+    const size_t max_queue_size_ = 30; // 定长队列大小
 
 
     bool init_joint_pos_set_ = false;

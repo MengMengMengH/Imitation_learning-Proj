@@ -4,7 +4,9 @@
 #include <array>
 #include <sstream> 
 #include <mutex>
-
+#include <pthread.h>
+#include <sched.h>
+#include <unistd.h>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
@@ -17,6 +19,32 @@ constexpr int jointSize = 7;
 constexpr double mpc_dt = 0.001; // 1000Hz
 using namespace std::chrono_literals;
 
+bool setRealtimePriority(pthread_t thread, int priority)
+{
+    sched_param sch_params;
+    sch_params.sched_priority = priority;
+
+    if (pthread_setschedparam(thread, SCHED_FIFO, &sch_params)) 
+    {
+        std::cerr << "Failed to set thread priority (need CAP_SYS_NICE)." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool setThreadAffinity(pthread_t thread, int cpu_core_id)
+{
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(cpu_core_id, &cpuset);
+
+    if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset)) 
+    {
+        std::cerr << "Failed to set thread affinity to CPU " << cpu_core_id << std::endl;
+        return false;
+    }
+    return true;
+}
 
 class interpolation : public rclcpp::Node
 {
@@ -27,7 +55,7 @@ public:
         // Initialize the node
         RCLCPP_INFO(this->get_logger(), "Interpolation node started.");
 
-        auto qos = rclcpp::QoS(rclcpp::KeepLast(10))
+        auto qos = rclcpp::QoS(rclcpp::KeepLast(1))
             .reliability(rclcpp::ReliabilityPolicy::BestEffort)
             .durability(rclcpp::DurabilityPolicy::Volatile)
             .deadline(rclcpp::Duration(1ms));
@@ -45,15 +73,17 @@ public:
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
             "sent_joints", qos);
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
-        
+
+        //  设置 mimic_thread_ 为实时线程 + 绑定 CPU core1
+        pthread_t handle = mimic_thread_.native_handle();
+        setRealtimePriority(handle, 60);  // 建议 40~70 之间，不要太高
+        setThreadAffinity(handle, 1);     // 绑到 CPU core1
     }
 
     ~interpolation()
     {
-        {
-            std::lock_guard<std::mutex> lock(queue_mutex_);
-            running_ = false;
-        }
+        running_ = false;
+        queue_cv_.notify_all();
         if (mpc_thread_.joinable())
         {
             mpc_thread_.join();
@@ -105,7 +135,7 @@ private:
                 msg.data[i] = current_goal(i);
             }
             mimic_send_goal_->publish(msg);
-
+            last_goal = current_goal;
 
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
@@ -337,7 +367,7 @@ private:
         return v;
     }
 
-    const int IPT_NUM = 100;
+    const int IPT_NUM = 500;
 
 
     Eigen::VectorXd start_position = Eigen::VectorXd::Zero(jointSize);
@@ -353,7 +383,7 @@ private:
     std::condition_variable queue_cv_;
     std::thread mpc_thread_;
     std::thread mimic_thread_;
-    bool running_;
+    std::atomic<bool> running_;
 
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr roake_control_sub_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr mimic_send_goal_;
