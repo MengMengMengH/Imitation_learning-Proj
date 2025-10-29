@@ -24,6 +24,10 @@ from pydrake.multibody import inverse_kinematics
 # from pydrake.visualization import AddFrameTriadIllustration
 from launch_ros.substitutions import FindPackageShare
 
+imu_to_base = RotationMatrix.MakeXRotation(- np.pi / 2) @ RotationMatrix.MakeZRotation(np.pi / 2)
+
+
+
 class arm_ik():
     def __init__(self,model_path,arm_type:str):
         self.model_path = model_path
@@ -279,18 +283,13 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
     rots = []
 
     quats = q[0:12].reshape(-1, 4)  # shape(4, 4)
-
-
-    for quat in quats:
+    ###  Conjugation transformation
+    for i,quat in enumerate(quats):
         rot = Quaternion(quat)
-        rot = RotationMatrix(rot).ToRollPitchYaw().vector()
-        ################## make sure the RollPitchYaw is correct##################
-        rot[[1, 2, 0]] = rot[[0, 1 ,2]]
-        rot[1] = -rot[1]
-        rot[0] = -rot[0]
-        # rot[2] = -rot[2]
-        ###########################################################################
-        rot = RotationMatrix(RollPitchYaw(rot))
+        rot = imu_to_base.transpose() @ RotationMatrix(rot) @ imu_to_base
+        # rot = rot.ToRollPitchYaw().vector()
+        # if i == 2:
+        #     print(rot)
         rots.append(rot)
     return rots
 
