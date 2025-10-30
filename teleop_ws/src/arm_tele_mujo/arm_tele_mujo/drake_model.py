@@ -24,9 +24,12 @@ from pydrake.multibody import inverse_kinematics
 # from pydrake.visualization import AddFrameTriadIllustration
 from launch_ros.substitutions import FindPackageShare
 
-imu_to_base = RotationMatrix.MakeXRotation(- np.pi / 2) @ RotationMatrix.MakeZRotation(np.pi / 2)
+shoulder_to_base = RotationMatrix.MakeXRotation(- np.pi / 2) @ RotationMatrix.MakeZRotation(np.pi / 2)
+elbow_to_base = RotationMatrix.MakeZRotation(np.pi)
+# wrist_to_base = RotationMatrix.MakeYRotation(np.pi)
+wrist_to_base = RotationMatrix.MakeXRotation(- np.pi / 2) @ RotationMatrix.MakeZRotation(np.pi / 2)
 
-
+Conju_trans = [wrist_to_base,elbow_to_base,shoulder_to_base]
 
 class arm_ik():
     def __init__(self,model_path,arm_type:str):
@@ -282,14 +285,18 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
     # assert q.shape == (16,), "Input shape must be (16,)"
     rots = []
 
-    quats = q[0:12].reshape(-1, 4)  # shape(4, 4)
+    quats = q[0:12].reshape(-1, 4)  # shape(3, 4)
     ###  Conjugation transformation
     for i,quat in enumerate(quats):
         rot = Quaternion(quat)
-        rot = imu_to_base.transpose() @ RotationMatrix(rot) @ imu_to_base
+        rot = Conju_trans[i].transpose() @ RotationMatrix(rot) @ Conju_trans[i]
         # rot = rot.ToRollPitchYaw().vector()
+        # if i == 0:
+        #     print(f'wri:{rot.ToRollPitchYaw().vector()}')
+        # if i == 1:
+        #     print(f'elb:{rot.ToRollPitchYaw().vector()}')
         # if i == 2:
-        #     print(rot)
+        #     print(f'shoulder{rot.ToRollPitchYaw().vector()}')
         rots.append(rot)
     return rots
 
