@@ -11,9 +11,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Using static/shared libraries option
-option(XCORE_LINK_SHARED_LIBS "Example executables link shared library" OFF)
+option(XCORE_LINK_SHARED_LIBS "Example executables link shared library" ON)
 # Compile option: whether using xMateModel library, supports Linux x86_64 and Windows 64bit
-option(XCORE_USE_XMATE_MODEL "The library of kinematics and dynamics calculation for cobot" OFF)
+option(XCORE_USE_XMATE_MODEL "The library of kinematics and dynamics calculation for cobot" ON)
 
 
 # find dependencies
@@ -58,6 +58,27 @@ ament_target_dependencies(rokae_rt_node
 
 install(TARGETS
   rokae_rt_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
+
+add_executable(topictest
+src/topictest.cpp
+)
+target_link_libraries(topictest
+  Eigen3::Eigen
+)
+target_include_directories(topictest PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(topictest
+  rclcpp
+  std_msgs
+)
+install(TARGETS
+  topictest
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -27,7 +27,7 @@ class ForceSrv(Node):
         self.isrectify = False
         self.ori_force = self.send_once(self.ser)
         self.send_continous(self.ser)
-        self.timer_ = self.create_timer(0.001, self.timer_callback)
+        self.timer_ = self.create_timer(0.01, self.timer_callback)
 
     def timer_callback(self):
 
@@ -90,7 +90,7 @@ class ForceSrv(Node):
         if len(dataFrame) < 28:
             self.get_logger().warn("接收到的数据长度不足28字节")
             return
-        self.get_logger().info(f"接收到数据长度：{len(dataFrame)}")
+        # self.get_logger().info(f"接收到数据长度：{len(dataFrame)}")
         frm_header = fst_byte + b'\xAA'
         frm_tail = b'\x0D\x0A'
         if dataFrame[0:2] != frm_header:
@@ -107,7 +107,7 @@ class ForceSrv(Node):
             return
         if self.isrectify:
             force_ary = np.array([Fx, Fy, Fz, Mx, My, Mz])-self.ori_force
-            self.get_logger().info(f'{force_ary}')
+            # self.get_logger().info(f'{force_ary}')
         else: # 首次上电要矫正
             force_ary = np.array([Fx, Fy, Fz, Mx, My, Mz])
             self.isrectify = True

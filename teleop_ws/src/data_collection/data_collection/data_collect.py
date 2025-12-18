@@ -5,15 +5,17 @@ import cv2
 import h5py
 import numpy as np
 from datetime import datetime
+import threading
+import queue
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from std_msgs.msg import Float32MultiArray
 from cust_msgs.msg import Stampfloat32array,Stampint32array
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import message_filters
-
 
 class DataCollector(Node):
     def __init__(self):
@@ -21,46 +23,17 @@ class DataCollector(Node):
         self.get_logger().info('Data Collector Node has been started.')
 
         # === 数据保存路径 ===
-        save_root = os.path.expanduser("~/robot_dataset")
+        save_root = os.path.expanduser("~/Imitation_learning-Proj/robot_dataset")
         os.makedirs(save_root, exist_ok=True)
         self.episode_name = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.save_dir = os.path.join(save_root, self.episode_name)
         os.makedirs(self.save_dir, exist_ok=True)
-        os.makedirs(os.path.join(self.save_dir, "images"), exist_ok=True)
+        self.img_save_dir = os.path.join(self.save_dir, "images")
+        os.makedirs(self.img_save_dir, exist_ok=True)
 
         self.bridge = CvBridge()
-        # Initialize data collection mechanisms here
-        self.sub_arm_states_ = message_filters.Subscriber(self,
-            Stampfloat32array,
-            'origin_quat_data_used',
-            # self.listener_callback,
-            # 10,
-            )
-        self.sub_hand_states = message_filters.Subscriber(self,
-            Stampint32array,
-            'hand_states',
-            # self.listener_callback,
-            # 10,
-            )
-        self.sub_force_data = message_filters.Subscriber(self,
-            Stampfloat32array,
-            'force_data',
-            # self.listener_callback,
-            # 10,
-            )
-        self.sub_image_data = message_filters.Subscriber(self,
-            Image,
-            'wrist_camera_Image',
-            # self.listener_callback,
-            # 10,
-            )
-        
-        ats = message_filters.ApproximateTimeSynchronizer(
-            [self.sub_arm_states_,self.sub_hand_states,self.sub_force_data,self.sub_image_data],
-            queue_size=10,
-            slop=0.01)
-        
-        ats.registerCallback(self.sync_callback)
+
+        # === 数据缓存列表 ===
         self.timestamps = []
         self.arm_states = []
         self.hand_states = []
@@ -68,71 +41,211 @@ class DataCollector(Node):
         self.image_paths = []
         self.frame_count = 0
 
-        self.get_logger().info("Data synchronization node started!")
+        # === 最新消息缓存 ===
+        self.latest_cam_image = None
+        self.latest_force_data = None
 
-    def sync_callback(self, arm_states, hand_states, force_data, image_data):
-        # 处理同步后的消息
-        timestamp = image_data.header.stamp.sec + image_data.header.stamp.nanosec * 1e-9
+        # === 新鲜度检查 ===
+        self.tolerances_ns = {
+            'camera': 50_000_000,     # 50 ms
+            'force': 20_000_000,      # 20 ms
+        }
+
+        # === 创建I/O线程和队列
+
+        self.save_que = queue.Queue(maxsize=500)
+        self.save_thread = threading.Thread(target=self.img_save_loop)
+        self.save_thread_running = True
+        self.save_thread.start()
+        self.get_logger().info("✅ I/O 线程已启动，用于异步保存图像")
+
+        # === QoS 配置 ===
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+
+        # === 订阅器 ===
+        self.arm_states_sub = message_filters.Subscriber(
+            self,
+            Stampfloat32array,
+            'origin_quat_data_used',
+            qos_profile=qos_profile
+        )
+        self.hand_states_sub = message_filters.Subscriber(
+            self,
+            Stampint32array,
+            'hand_states',
+            qos_profile=qos_profile
+        )
+
+        self.force_sub = self.create_subscription(
+            Stampfloat32array,
+            'force_data',
+            self.force_callback,
+            qos_profile
+        )
+        self.cam_sub = self.create_subscription(
+            Image,
+            'wrist_camera_Image',
+            self.cam_callback,
+            qos_profile
+        )
+
+        # === 创建动作同步器(ATS) ===
+        self.action_synchronizer = message_filters.ApproximateTimeSynchronizer(
+            [self.arm_states_sub, self.hand_states_sub],
+            queue_size=10,
+            slop=0.02 
+        )
+        self.action_synchronizer.registerCallback(self.main_trigger_callback)
+        self.get_logger().info("✅ (Arm, Hand) 动作同步器已启动。")
+        self.get_logger().info("...等待所有数据源的初始消息...")
+
+    def img_save_loop(self):
+        while self.save_thread_running:
+            try:
+                task = self.save_que.get(timeout=1)
+                if task is None:
+                    continue
+                (img_path,img_data) = task
+
+                cv_img = self.bridge.imgmsg_to_cv2(img_data,desired_encoding='bgr8')
+                cv2.imwrite(img_path,cv_img)
+            except queue.Empty:
+                pass
+            except Exception as e:
+                self.get_logger().error(f'图像线程保存出错:{e}')
+        self.get_logger().info("图像保存线程已退出")
         
-        # ---- 图像保存 ----
-        cv_image = self.bridge.imgmsg_to_cv2(image_data, desired_encoding='bgr8')
+    # === 简单更新回调 ===
+    def force_callback(self, msg):
+        self.latest_force_data = msg
+    def cam_callback(self, msg):
+        self.latest_cam_image = msg
+
+    # === 主触发回调 ===
+    def main_trigger_callback(self, arm_msg,hand_msg):
+        # 检查所有数据源是否都有最新消息
+        if (self.latest_cam_image is None or 
+            self.latest_force_data is None):
+            self.get_logger().warn('仍在等待传感器的初始消息...', throttle_duration_sec=5.0)
+            return
+        try:
+            t_anchor = rclpy.time.Time.from_msg(arm_msg.header.stamp)
+        except AttributeError:
+            self.get_logger().error(f'自定义消息中没有时间辍',once = True)
+            return
+        
+        # 数据新鲜度检查
+        t_camera = rclpy.time.Time.from_msg(self.latest_cam_image.header.stamp)
+        dt_camera_ns = (t_anchor - t_camera).nanoseconds
+        if dt_camera_ns < 0 or dt_camera_ns > self.tolerances_ns['camera']:
+            self.get_logger().warn(f'⚠️ 丢弃帧：相机数据陈旧 (dt={dt_camera_ns/1e6:.1f}ms)')
+            return
+
+        t_force = rclpy.time.Time.from_msg(self.latest_force_data.header.stamp)
+        dt_force_ns = (t_anchor - t_force).nanoseconds
+        if dt_force_ns < 0 or dt_force_ns > self.tolerances_ns['force']:
+            self.get_logger().warn(f'⚠️ 丢弃帧：力传感器数据陈旧 (dt={dt_force_ns/1e6:.1f}ms)')
+            return
+
+        
+        #  === 检查通过 ===
+        timestamp = t_anchor.seconds_nanoseconds()[0] + t_anchor.seconds_nanoseconds()[1] * 1e-9
+        
+        # ---- 图像数据 ----
+        image_data = self.latest_cam_image
+        # cv_image = self.bridge.imgmsg_to_cv2(image_data, desired_encoding='bgr8')
         image_filename = f"img_{self.frame_count:06d}.png"
         img_path = os.path.join(self.save_dir, "images", image_filename)
-        cv2.imwrite(img_path, cv_image)
+        try:
+            # self.save_que.put_nowait((img_path, cv_image))
+            self.save_que.put_nowait((img_path, image_data))
+        except queue.Full:
+            self.get_logger().warn("I/O 队列已满！图像保存滞后，丢弃此帧。")
+            return
 
         # ---- 缓存数据 ----
         self.timestamps.append(timestamp)
         self.image_paths.append(img_path)
-        self.arm_states.append(np.array(arm_states.data,dtype=np.float32))
-        self.hand_states.append(np.array(hand_states.data,dtype=np.int32))
-        self.force_data.append(np.array(force_data.data,dtype=np.float32))
+
+        self.arm_states.append(np.array(arm_msg.data,dtype=np.float32))
+        self.hand_states.append(np.array(hand_msg.data,dtype=np.int32))
+        self.force_data.append(np.array(self.latest_force_data.data,dtype=np.float32))
+
         self.frame_count += 1
 
         if self.frame_count % 100 == 0:
             self.get_logger().info(f"Collected {self.frame_count} frames.")
 
-    def save2csv(self):
-        csv_path = os.path.join(self.save_dir, "data_log.csv")
-        self.get_logger().info(f"💾 Writing CSV data to {csv_path}")
-        with open(csv_path, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['timestamp', 'image_path', 'arm_states[]', 'hand_states[]', 'force_data'])
-            for i, ts in enumerate(self.timestamps):
-                writer.writerow([
-                    ts,
-                    self.image_paths[i],
-                    ' '.join(map(str, self.arm_states[i])),
-                    ' '.join(map(str, self.hand_states[i])),
-                    ' '.join(map(str, self.force_data[i]))
-                ])
-        self.get_logger().info(f"Data saved to {csv_path}")
-    
     def save2hdf5(self):
         h5_path = os.path.join(self.save_dir, "data_log.h5")
         self.get_logger().info(f"💾 Converting to HDF5: {h5_path}")
+        if not self.image_paths:
+            self.get_logger().warn("⚠️ No images captured, skipping HDF5 save.")
+            return
+        try:
+            sample_img = cv2.imread(self.image_paths[0])
+            if sample_img is None:
+                raise IOError(f"Failed to read sample image: {self.image_paths[0]}")
+            H, W, C = sample_img.shape
+            N = len(self.image_paths) # 总帧数
+            dtype = sample_img.dtype
+        except Exception as e:
+            self.get_logger().error(f"无法读取样本图像！错误: {e}")
+            return
 
-        imgs = [cv2.imread(p) for p in self.image_paths]
-        imgs = np.stack(imgs)
         arm = np.stack(self.arm_states)
         hand = np.stack(self.hand_states)
         force = np.stack(self.force_data)
         ts = np.array(self.timestamps)
 
         with h5py.File(h5_path, "w") as f:
-            f.create_dataset("images", data=imgs, compression="gzip")
+            img_dset = f.create_dataset(
+                "images",
+                shape=(N, H, W, C),
+                dtype=dtype,
+                chunks=(1, H, W, C), # 按单帧分块
+                compression="gzip"
+            )
+            img_dset[0] = sample_img
+            
+            for i in range(1, N):
+                img_path = self.image_paths[i]
+                img_data = cv2.imread(img_path)
+                if img_data is not None:
+                    img_dset[i] = img_data
+                else:
+                    self.get_logger().warn(f"无法读取图像 {img_path}，跳过该帧！")
+                
+                if i % 100 == 0 or i == N - 1:
+                    self.get_logger().info(f"  ... saving image {i+1}/{N}")
+
             f.create_dataset("arm_states", data=arm)
             f.create_dataset("hand_states", data=hand)
             f.create_dataset("forces", data=force)
             f.create_dataset("timestamps", data=ts)
+
+            f.create_dataset("image_paths", data=np.array(self.image_paths, dtype='S'))
         self.get_logger().info("✅ HDF5 dataset saved successfully.")
     
     def stop_and_save(self):
         """任务结束时调用：保存所有文件"""
         self.get_logger().info("🧹 Stopping collector, saving all data...")
+        self.get_logger().info("Stopping I/O threading,等待所有图像写入磁盘...")
+        self.save_thread_running = False
+        self.save_que.put(None)
+        self.save_thread.join(timeout=10.0)
+        if self.save_thread.is_alive():
+             self.get_logger().error("I/O 线程未能及时停止！")
+        else:
+             self.get_logger().info("✅ I/O 线程已停止。所有图像均已写入磁盘。")
+
         if len(self.timestamps) == 0:
             self.get_logger().warn("⚠️ No data captured, skipping save.")
             return
-        self.save2csv()
         self.save2hdf5()
         self.get_logger().info("🎉 All data saved successfully.")
 

@@ -11,10 +11,9 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
 find_package(Eigen3 REQUIRED)
-find_package(drake REQUIRED)
 find_package(qpOASES REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
-
+find_package(Boost REQUIRED COMPONENTS system thread atomic)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -31,6 +30,7 @@ endif()
 add_executable(mpc_interpolation_node src/interpolation.cpp
                                       src/mpc_spline.cpp
 )
+
 add_executable(cubic_spline_node src/cubic_spline.cpp
                                  src/mpc_spline.cpp
 )
@@ -48,15 +48,18 @@ target_compile_features(cubic_spline_node PUBLIC c_std_99 cxx_std_20)
 target_link_libraries(mpc_interpolation_node 
     qpOASES
     Eigen3::Eigen
-    Qt6::Widgets
-    Qt6::Charts
+    # Qt6::Widgets
+    # Qt6::Charts
+    Boost::system 
+    Boost::thread 
+    Boost::atomic
 )
 
 target_link_libraries(cubic_spline_node
     qpOASES
     Eigen3::Eigen
-    Qt6::Widgets
-    Qt6::Charts
+    # Qt6::Widgets
+    # Qt6::Charts
 )
 
 ament_target_dependencies(mpc_interpolation_node

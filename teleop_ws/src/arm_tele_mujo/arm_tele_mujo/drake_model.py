@@ -159,7 +159,7 @@ class arm_ik():
         q_variables = ik.q()
         prog = ik.prog()
 
-        # prog.SetInitialGuess(q_variables,q_nominal)
+        prog.SetInitialGuess(q_variables,q_nominal)
 
         assert up_ori is not None ,"up_ori is None"
         if up_ori is not None:
@@ -173,11 +173,15 @@ class arm_ik():
             wrist_WG = wrist_ori @ self.amend_frame
             AddOrientationConstraint(ik, wrist_WG, orientation_bounds,base_frame=_Base,rela_frame=_Wrist)
 
-        # ik.prog().AddCost(np.linalg.norm(ik.q() - q_nominal))
+        weight = 1e3
+        Q = weight * np.eye(len(q_nominal))
+        # b = -Q.dot(q_nominal)
+        # prog.AddQuadraticCost(Q,b,q_variables)
+        prog.AddQuadraticErrorCost(Q,q_nominal,q_variables)
 
         result = Solve(prog)
         if not result.is_success():
-            print('IK failed')
+            # print('IK failed')
             return None
         # assert result.is_success()
         result_q = result.GetSolution(q_variables)
@@ -187,12 +191,6 @@ class arm_ik():
         elif 'UR5' in self.arm_type:
             result_q[2] = -elbow_angle
         
-        # print(f'wri_ori: {wrist_ori.ToRollPitchYaw()}')
-        # print(f'elb_ori: {elbow_ori.ToRollPitchYaw()}')
-        # print(f'up_ori: {up_ori.ToRollPitchYaw()}')
-        # print("--------------------------------")
-        # if np.linalg.norm(result_q - q_nominal) > 0.5:
-        #     return None
         self._q = result_q
         return result_q
     

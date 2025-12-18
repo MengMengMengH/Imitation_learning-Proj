@@ -5,7 +5,7 @@ add_library(${PROJECT_NAME}_lib SHARED IMPORTED GLOBAL)
 # 定义导入的静态库
 add_library(${PROJECT_NAME}_static STATIC IMPORTED GLOBAL)
 # 定义导入的xMateModel静态库
-add_library(xmatemodel_lib STATIC IMPORTED) # 这里的GLOBAL可以根据需要移除
+add_library(xmatemodel_lib STATIC IMPORTED) 
 
 if(UNIX)
     if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
@@ -15,17 +15,18 @@ if(UNIX)
         if(XCORE_USE_XMATE_MODEL)
             set_target_properties(${PROJECT_NAME}_lib PROPERTIES
                 INTERFACE_LINK_LIBRARIES xmatemodel_lib)
+            target_compile_definitions(${PROJECT_NAME}_lib INTERFACE XMATEMODEL_LIB_SUPPORTED)
+            message(STATUS "[xCoreSDK] Building with XMate model support (XMATEMODEL_LIB_SUPPORTED defined)")
         else()
             set(SHARED_LIB_SUFFIX ".nomodel")
         endif()
-
 
         # set path to model library
         set_target_properties(xmatemodel_lib PROPERTIES
             IMPORTED_LOCATION ${XCORESDK_LIBRARY_DIR}/libxMateModel.a
         )
         set_target_properties(${PROJECT_NAME}_lib PROPERTIES
-            IMPORTED_LOCATION ${XCORESDK_LIBRARY_DIR}/lib${PROJECT_NAME}${SHARED_LIB_SUFFIX}.so
+            IMPORTED_LOCATION ${XCORESDK_LIBRARY_DIR}/lib${PROJECT_NAME}${SHARED_LIB_SUFFIX}.so.0.3.4
         )
         set_target_properties(${PROJECT_NAME}_static PROPERTIES
             IMPORTED_LOCATION ${XCORESDK_LIBRARY_DIR}/lib${PROJECT_NAME}.a

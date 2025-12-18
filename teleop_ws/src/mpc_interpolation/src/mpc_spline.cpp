@@ -8,13 +8,13 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     assert(Index < 7 && "This implementation supports for 7 joints only");
     constrain_index = Index;
     //define A and B matrix
-    A_ << 1.0, dt,  dt * dt / 2.0,
-          0.0, 1.0, dt,
+    dt_ = dt;
+    A_ << 1.0, dt_,  dt_ * dt_ / 2.0,
+          0.0, 1.0, dt_,
           0.0, 0.0, 1.0,
 
-    
-    B_ << dt * dt / 2.0,
-          dt,
+    B_ << dt_ * dt_ / 2.0,
+          dt_,
           1.0;
     // initialize A_phi and B_phi 
     A_phi.setZero();
@@ -41,7 +41,7 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     R_.setZero();
     for(int i = 0; i < Horizon; i++)
     {
-        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e4, 5.0e1, 5e-1;
+        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e4, 5.0e1, 5.0e-1;
         R_(i, i) = 5.0e-3;
     }
     // std::cout<<"Q_ = \n" << Q_ << std::endl;
@@ -49,15 +49,6 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     H_ = (B_phi.transpose() * Q_ * B_phi + R_);
     g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
 
-
-    ////      Debug
-    // double minB = B_.minCoeff();
-    // double maxB = B_.maxCoeff();
-    // std::cerr << "[DEBUG] B_ min=" << minB << " max=" << maxB << " norm=" << B_.norm() << std::endl;
-
-    // double minBphi = B_phi.minCoeff();
-    // double maxBphi = B_phi.maxCoeff();
-    // std::cerr << "[DEBUG] B_phi min=" << minBphi << " max=" << maxBphi << " norm=" << B_phi.norm() << std::endl;
 
     // QP constraints
     C_.setZero();
@@ -76,11 +67,11 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     for (int i = 0; i < Horizon; ++i) {
         C_(base + i, i) = 1.0; // pick u_i
     }
-        // delta-u rows (jerk ~ (u_{k+1}-u_k)/dt)
+        // delta-u rows (jerk ~ (u_{k+1}-u_k)/dt_)
     base += Horizon;
     for (int k = 0; k < Horizon - 1; ++k) {
-        C_(base + k, k) = -1.0 / (dt);
-        C_(base + k, k+1) = 1.0 / (dt);
+        C_(base + k, k) = -1.0 / (dt_);
+        C_(base + k, k+1) = 1.0 / (dt_);
     }
 
 
@@ -127,6 +118,15 @@ void MpcSpline<Horizon, InputNum>::setReferenceTrajectory(const Eigen::Matrix<re
 {
     for (int i = 0; i < Horizon; i++) {
         x_ref_.block(i * StateDim, 0, 1, 1) << ref_traj(i);
+        if(i < Horizon - 1)
+        {
+            x_ref_(i * StateDim + 1, 0) = (ref_traj(i+1) - ref_traj(i)) / dt_ ;
+        }
+        else
+        {
+            x_ref_(i * StateDim + 1, 0) = 0.0;
+        }
+        x_ref_(i * StateDim + 2, 0) = 0.0;
     }
     ref_ready_ = true;
 }
@@ -153,7 +153,7 @@ void MpcSpline<Horizon, InputNum>::UpdateConstrains()
         lb_C(base + i) = aMin[constrain_index];
         ub_C(base + i) = aMax[constrain_index];
     }
-    // delta-u (jerk) bounds: (u_{k+1}-u_k)/dt ∈ [jMin, jMax]
+    // delta-u (jerk) bounds: (u_{k+1}-u_k)/dt_ ∈ [jMin, jMax]
     base += Horizon;
     for (int k = 0; k < Horizon - 1; k++) 
     {

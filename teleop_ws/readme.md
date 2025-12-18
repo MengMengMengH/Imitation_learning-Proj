@@ -15,3 +15,9 @@
 #### When Rebuild
     ~/Imitation_learning-Proj/teleop_ws:sudo setcap cap_sys_nice=eip install/mpc_interpolation/lib/mpc_interpolation/mpc_interpolation_node
 Then mpc_interpolation node could run.
+
+
+
+#### port check
+
+bash: sudo dmesg | grep ttyUSB*

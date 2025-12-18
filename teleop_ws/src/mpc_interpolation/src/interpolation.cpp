@@ -1,12 +1,15 @@
 #include <iostream>
 #include <chrono>
-#include <queue>
 #include <array>
 #include <sstream> 
 #include <mutex>
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
+#include <queue>
+
+#include <boost/lockfree/queue.hpp>
+#include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
@@ -17,6 +20,13 @@
 
 constexpr int jointSize = 7;
 constexpr double mpc_dt = 0.001; // 1000Hz
+constexpr uint32_t MPC_START_REF = 40;
+constexpr uint32_t MIMIC_START_MPC_NUM = 10;
+// constexpr size_t MPC_BUFFER_CAP = 16;
+using Vector7d = Eigen::Vector<real_t, jointSize>;
+using Matrix7H = Eigen::Matrix<real_t, jointSize, Horizon>;
+using JointArray = std::array<double, jointSize>;
+
 using namespace std::chrono_literals;
 
 bool setRealtimePriority(pthread_t thread, int priority)
@@ -50,106 +60,140 @@ class interpolation : public rclcpp::Node
 {
 public:
 
-    explicit interpolation() : Node("interpolation_node")
+    explicit interpolation() : Node("interpolation_node"),running_(true)
     {
         // Initialize the node
         RCLCPP_INFO(this->get_logger(), "Interpolation node started.");
 
         auto qos = rclcpp::QoS(rclcpp::KeepLast(1))
-            .reliability(rclcpp::ReliabilityPolicy::BestEffort)
+            .reliability(rclcpp::ReliabilityPolicy::Reliable)
             .durability(rclcpp::DurabilityPolicy::Volatile)
             .deadline(rclcpp::Duration(1ms));
 
         roake_control_sub_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
-            "/rokae_control_joints", 10, std::bind(&interpolation::exec_planning_callback, this,std::placeholders::_1));
+            "/rokae_control_joints", qos, std::bind(&interpolation::update_ref_points, this,std::placeholders::_1));
         
-        running_ = true;
-        {
-            std::lock_guard<std::mutex> lock(queue_mutex_);
-            mpc_traj_.push(Eigen::VectorXd::Zero(jointSize));
-        }
+        // {
+        //     std::lock_guard<std::mutex> lock(queue_mutex_);
+        //     mpc_traj_.push(Eigen::VectorXd::Zero(jointSize));
+        // }
+        exec_plan_thread_ = std::thread(&interpolation::exec_planning,this);
+        pthread_t handle_exec = exec_plan_thread_.native_handle();
+        setRealtimePriority(handle_exec,85);
+        setThreadAffinity(handle_exec,1);
+
         mpc_thread_ = std::thread(&interpolation::mpcTrajCompute, this);
+        //  设置 mpc_thread_ 为实时线程 + 绑定 CPU core1
+        pthread_t handle_mpc = mpc_thread_.native_handle();
+        setRealtimePriority(handle_mpc,85);
+        setThreadAffinity(handle_mpc,2);
 
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
             "sent_joints", qos);
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
 
-        //  设置 mimic_thread_ 为实时线程 + 绑定 CPU core1
+        //  设置 mimic_thread_ 为实时线程 + 绑定 CPU core2
         pthread_t handle = mimic_thread_.native_handle();
-        setRealtimePriority(handle, 60);  // 建议 40~70 之间，不要太高
-        setThreadAffinity(handle, 1);     // 绑到 CPU core1
+        setRealtimePriority(handle, 75);  // 建议 40~70 之间，不要太高
+        setThreadAffinity(handle, 3);     // 绑到 CPU core2
     }
 
     ~interpolation()
     {
         running_ = false;
-        queue_cv_.notify_all();
-        if (mpc_thread_.joinable())
-        {
-            mpc_thread_.join();
-        }
-        if (mimic_thread_.joinable())
-        {
-            mimic_thread_.join();
-        }
+        if (mpc_thread_.joinable()) mpc_thread_.join();
+        if (mimic_thread_.joinable())mimic_thread_.join();
     }
 
 private:
 
 
-    void exec_planning_callback(const std_msgs::msg::Float32MultiArray::SharedPtr msg)
+    void update_ref_points(const std_msgs::msg::Float32MultiArray::SharedPtr msg)
     {
-        end_position = conv2EigenVec(msg->data);
-        getRefPoints(start_position, start_velocity, end_position, IPT_NUM);
+        Vector7d new_target = conv2EigenVec(msg->data);
+        {
+            std::lock_guard<std::mutex> lk(target_mtx_);
+            end_position_ = new_target;
+            target_updated_ = true;
+        }
+    }
+
+    void exec_planning()
+    {
+        rclcpp::Rate rate(50);
+
+        Vector7d local_end_position;
+        while(rclcpp::ok() && running_)
+        {
+            {
+                std::lock_guard<std::mutex> lk(target_mtx_);
+                if (target_updated_)
+                {
+                    local_end_position = end_position_;
+                    target_updated_ = false;
+                }
+            }
+
+            CubicSplineTrajectoryPlanner planner(
+                start_position_, start_velocity_, local_end_position, IPT_NUM);
+            planner.coeffs = planner.computeCubicCoefficients();
+            for (int i = 0; i < IPT_NUM; ++i)
+            {
+                double t = static_cast<double>(i) / (IPT_NUM - 1);
+                JointArray pt{};
+                Vector7d eigen_pt = planner.evaluatePolynomial(t, planner.coeffs);
+                for (int j = 0; j < jointSize; ++j)
+                {
+                    pt[j] = eigen_pt(j);
+                }
+                if (ref_traj_queue_.push(pt)) 
+                {
+                    ref_produced_.fetch_add(1, std::memory_order_relaxed);
+                }
+            }
+
+            if (!mpc_enabled_.load(std::memory_order_acquire) &&
+                ref_produced_.load(std::memory_order_relaxed) >= MPC_START_REF)
+            {
+                mpc_enabled_.store(true, std::memory_order_release);
+            }
+
+            start_position_ = local_end_position;
+            start_velocity_ = planner.evaluatePolynomial(1.0, planner.coeffs, 1);
+
+            rate.sleep();
+        }
     }
 
     void mimicSendGoal()
     {
         rclcpp::Rate rate(1000);
 
-        Eigen::Vector<real_t, jointSize> last_goal = Eigen::Vector<real_t, jointSize>::Zero();
-        double dt = 0.001; // 1000Hz
-
-        static int empty_counter = 0;
-        while(rclcpp::ok() && running_)
+        while (rclcpp::ok() && running_)
         {
-            Eigen::Vector<real_t, jointSize> current_goal;
+            if (!mimic_enabled_.load(std::memory_order_acquire)) 
             {
-                std::unique_lock<std::mutex> lock(queue_mutex_);
-                // RCLCPP_INFO(this->get_logger(), "mpc_traj_ size: %lu", mpc_traj_.size());
-                if (!mpc_traj_.empty())
-                {
-                    current_goal = mpc_traj_.front();
-                    mpc_traj_.pop();
-                }
-                else
-                {
-                    current_goal = last_goal; // 如果没有新点，保持上一个点
-                }
+                rate.sleep();
+                continue;
+            }
+
+            JointArray cmd;
+            if (!mpc_traj_queue_.pop(cmd)) 
+            {
+                // 这里理论上不应该发生
+                RCLCPP_ERROR_THROTTLE(
+                    this->get_logger(), *this->get_clock(), 1000,
+                    "mimic enabled but mpc_traj_queue empty!"
+                );
+                rate.sleep();
+                continue;
             }
 
             std_msgs::msg::Float32MultiArray msg;
             msg.data.resize(jointSize);
-            for (size_t i = 0; i < jointSize; i++)
-            {
-                msg.data[i] = current_goal(i);
-            }
+            for (int i = 0; i < jointSize; ++i)
+                msg.data[i] = static_cast<float>(cmd[i]);
             mimic_send_goal_->publish(msg);
-            last_goal = current_goal;
-
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex_);
-            if (mpc_traj_.empty())
-            {
-                if (++empty_counter % 1000 == 0) 
-                {
-                    std::stringstream ss = lst2stream(std::vector<float>(current_goal.data(), current_goal.data() + jointSize));
-                    RCLCPP_WARN(this->get_logger(), "mpc_traj_ is empty, re-sending last known value: \n%s", ss.str().c_str());
-                }
-            }
-
-            else { empty_counter = 0; }
-        }
             rate.sleep();
         }
     }
@@ -161,189 +205,114 @@ private:
     void mpcTrajCompute()
     {
         rclcpp::Rate rate(1000);
+        std::deque<JointArray> ref_window;
+
         while(rclcpp::ok() && running_)
         {
-            std::unique_lock<std::mutex> lock(queue_mutex_);
-            queue_cv_.wait_for(lock, std::chrono::milliseconds(5), [&]() {
-                return !running_ ||
-                       (mpc_ref.size() < Horizon && des_traj_.size() >= (Horizon - mpc_ref.size())) || // 有足够的点来填充初始窗口
-                       (mpc_ref.size() == Horizon && des_traj_.size() >= N_apply);                   // 有足够的点来滑动窗口
-            });
-            if (!running_){break;}
 
+            // uint64_t prod = ref_produced_.load();
+            // uint64_t cons = ref_consumed_.load();
 
-            while (mpc_ref.size() < Horizon && !des_traj_.empty())
+            if (!mpc_enabled_.load(std::memory_order_acquire)) 
             {
-                mpc_ref.push(des_traj_.front());
-                des_traj_.pop();
-            }
-            if (mpc_ref.size() < Horizon || des_traj_.size() < N_apply)
-            {
-                lock.unlock();
-                rate.sleep(); 
+                // printf("[REF STAT] produced=%lu consumed=%lu\n",
+                // prod, cons);
+                rate.sleep();
                 continue;
             }
-            lock.unlock();
-
-            assert(mpc_ref.size() == Horizon && "mpc ref size error");
-
-            bool success = getNextMpcPos();
-
-            if(success)
+            // printf("[REF STAT] produced=%lu consumed=%lu in_queue≈%ld\n",
+            //     prod, cons, (long)(prod - cons));
+            auto t0 = std::chrono::high_resolution_clock::now();            
+            JointArray raw{};
+            Vector7d pt;
+            while (ref_window.size() < Horizon && ref_traj_queue_.pop(raw))
             {
-                std::unique_lock<std::mutex> lock(queue_mutex_);
-                for (size_t i = 0; i < N_apply; ++i)
+                ref_window.push_back(raw);
+                ref_consumed_.fetch_add(1, std::memory_order_relaxed);
+            }
+
+            if (ref_window.size() < Horizon) 
+            {
+                printf("ref windows less than 5\n");
+                rate.sleep();
+                continue;
+            }
+
+            Matrix7H ref_horizon;
+            for (int i = 0; i < Horizon; ++i)
+            {
+                for (int j = 0; j < jointSize; ++j)
                 {
-                    if (!mpc_ref.empty())
-                    {
-                        mpc_ref.pop(); // 移除最旧的参考点
-                    }
-                    if (!des_traj_.empty())
-                    {
-                        mpc_ref.push(des_traj_.front()); // 添加最新的参考点
-                        des_traj_.pop();
-                    }
-                    else
-                    {
-                        // 由于等待条件，这不应发生，但做防御性处理
-                        RCLCPP_WARN(this->get_logger(), "滑动窗口时 des_traj_ 意外为空!");
-                        // 选项：复制 mpc_ref 中最后一个点以保持大小？
-                        if (!mpc_ref.empty()) {
-                           mpc_ref.push(mpc_ref.back());
-                        }
-                    }
+                    ref_horizon(j, i) = ref_window[i][j];
                 }
-                assert(mpc_ref.size() == Horizon && "滑动后 MPC 参考窗口大小不正确");
+            }
+
+            Vector7d x0 = first_mpc_run_ ? ref_horizon.col(0) : last_pos_;
+            if (first_mpc_run_) {
+                last_vel_.setZero();
+                last_acc_.setZero();
+                first_mpc_run_ = false;
+            }
+            
+            Matrix7H mpc_out;
+            bool mpc_compute_ok = true;
+            for (int j = 0; j < jointSize; ++j)
+            {
+                Eigen::Vector3d state0;
+                state0 << x0(j), last_vel_(j), last_acc_(j);
+
+                MPCsplines_[j].setCurrentState(state0);
+                MPCsplines_[j].setReferenceTrajectory(ref_horizon.row(j));
+
+                if (!MPCsplines_[j].computeMPC()) {
+                    mpc_compute_ok = false;
+                    break;
+                }
+                mpc_out.row(j) = MPCsplines_[j].getPrediction().transpose();
+                auto full = MPCsplines_[j].getFullStatePrediction();
+                last_vel_(j) = full(1);
+                last_acc_(j) = full(2);
+            }
+            if (mpc_compute_ok)
+            {
+                JointArray mpc_out_arr{};
+                for(int j = 0;j<jointSize;j++)
+                {
+                    mpc_out_arr[j] = mpc_out(j,N_apply - 1);
+                }
+
+                if(mpc_traj_queue_.push(mpc_out_arr))
+                {
+                    mpc_produced_.fetch_add(1, std::memory_order_relaxed);
+                }
+                if (!mimic_enabled_.load(std::memory_order_acquire) &&
+                    mpc_produced_.load(std::memory_order_relaxed) >= MIMIC_START_MPC_NUM)
+                {
+                    mimic_enabled_.store(true, std::memory_order_release);
+                }
+
+                last_pos_ = mpc_out.col(N_apply - 1);
+                for (unsigned i = 0; i < N_apply; ++i)
+                {    
+                    ref_window.pop_front();
+                }
             }
             else
             {
-                RCLCPP_WARN(this->get_logger(), "MPC 计算失败!");
-                // TODO:
-                //--- 需要错误处理策略 ---
+                RCLCPP_ERROR(this->get_logger(),"MPC Compute Failed!");
             }
+
+            auto dt = std::chrono::duration_cast<std::chrono::microseconds>(
+                          std::chrono::high_resolution_clock::now() - t0)
+                          .count();
+
+            if (dt > 1200)
+                RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
+                                     "MPC loop took %ld us", dt);
+
             rate.sleep();
         }
     }
-
-    /**
-     * @brief 使用当前参考窗口执行一步 MPC 计算
-     * 使用上次计算的状态（首次运行时使用参考）作为初始状态
-     * 将计算出的第一个 N_apply 点推送到 mpc_traj_
-     * @return 如果所有关节计算成功则返回 true，否则 false
-     */
-
-    bool getNextMpcPos()
-    {
-        Eigen::Matrix<real_t, jointSize, Horizon> ref_pos_horizon; // 存储从队列复制的参考轨迹
-        Eigen::Matrix<real_t, jointSize, 1> current_x0_pos;
-        // TODO: 
-        // 如果需要/可用，添加速度/加速度/加加速度状态变量
-
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex_);
-            if (mpc_ref.size() < Horizon)
-            {
-                RCLCPP_ERROR(this->get_logger(), "调用 MPC 计算时 参考点 大小 %zu < 预测步长 %d", mpc_ref.size(), Horizon);
-                return false; // 无法计算
-            }
-            std::queue<Eigen::VectorXd> temp_ref_copy = mpc_ref; 
-            for (int i = 0; i < Horizon; ++i) 
-            {
-                ref_pos_horizon.col(i) = temp_ref_copy.front();
-                // std::cout << "ref_pos_horizon.col(" << i << "): " << ref_pos_horizon.col(i).transpose() << std::endl;
-                temp_ref_copy.pop();
-            }
-
-            //确定 MPC 的初始状态 x0
-            if (first_mpc_run_)
-            {
-                // 首次运行，使用第一个参考点作为位置
-                current_x0_pos = ref_pos_horizon.col(0);
-                last_computed_vel_.setZero();
-                last_computed_acc_.setZero();
-                // TODO: 理想情况下，即使在这里也应尽可能从实际机器人状态获取初始速度/加速度
-                first_mpc_run_ = false; // 清除标志，下次不再使用此逻辑直到重置
-                    RCLCPP_INFO(this->get_logger(), "首次 MPC 运行，从参考初始化 x0。");
-            } 
-            else 
-            {
-                // 对于后续运行，使用上一步计算出的位置
-                current_x0_pos = last_computed_pos_;
-
-            }
-        } // 锁定范围结束
-
-        Eigen::Matrix<real_t, jointSize, Horizon> MPCpos_horizon; // 存储计算出的完整时域轨迹
-        bool computation_ok = true; // 标记计算是否对所有关节都成功
-        for(int i = 0; i < jointSize; i++)
-        {
-            // // TODO: 从机器人状态反馈或上次 MPC 预测中获取速度/加速度
-            
-            Eigen::Matrix<real_t,3,1> x0;
-            x0 << current_x0_pos(i), last_computed_vel_(i), last_computed_acc_(i); 
-
-            MPCsplines_[i].setCurrentState(x0);
-            MPCsplines_[i].setReferenceTrajectory(ref_pos_horizon.row(i));
-            if(MPCsplines_[i].computeMPC())
-            {
-                auto state_pred = MPCsplines_[i].getFullStatePrediction();
-                last_computed_vel_(i) = state_pred(1);
-                last_computed_acc_(i) = state_pred(2);
-                auto x_pred = MPCsplines_[i].getPrediction();
-                MPCpos_horizon.row(i) = x_pred.transpose();
-            }
-            else
-            {
-                RCLCPP_ERROR(this->get_logger(), "MPC 计算失败，关节 %d", i);
-                computation_ok = false;
-                break; // 如果任何关节失败，则退出
-            }
-        }
-
-        // MPCsplines_[0].debugDump();
-
-        if(computation_ok)
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex_);
-            for(size_t i = 0; i < N_apply; ++i) {
-                mpc_traj_.push(MPCpos_horizon.col(i)); // 推送计算结果的第一步（或前 N_apply 步）
-            }
-            // 存储*最后一个应用点*的位置，用于下一次迭代的 x0
-            // // TODO: 如果需要用于 x0，也在此处存储上次计算的速度等
-            last_computed_pos_ = MPCpos_horizon.col(N_apply - 1);
-
-            return true;
-        }
-        else
-        {
-            RCLCPP_ERROR(this->get_logger(), "一个或多个关节的 MPC 步骤失败。");
-            // 可选地清除上次计算的状态？
-            first_mpc_run_ = true; // 强制重新初始化？
-            return false; // 表示失败
-        }
-    }
-
-
-    void getRefPoints(Eigen::VectorXd start_pos, Eigen::VectorXd start_vel,Eigen::VectorXd end_pos,int num_points)
-    {
-        CubicSplineTrajectoryPlanner planner(start_pos, start_vel, end_pos, num_points);
-        planner.coeffs = planner.computeCubicCoefficients();
-
-        std::unique_lock<std::mutex> lock(queue_mutex_);
-        for (int i = 0; i < num_points; i++)
-        {
-            double t = static_cast<double>(i) / (num_points - 1);
-            Eigen::VectorXd point = planner.evaluatePolynomial(t, planner.coeffs);
-            des_traj_.push(point);
-        }
-        lock.unlock();
-        queue_cv_.notify_one();
-        //update start state
-        start_position = end_pos;
-        start_velocity = planner.evaluatePolynomial(1.0, planner.coeffs, 1);
-    }
-
-
 
     std::stringstream lst2stream(const std::vector<float>& lst)
     {
@@ -360,45 +329,51 @@ private:
         return ss;
     }
 
-    Eigen::VectorXd conv2EigenVec(const std::vector<float>& lst)
+    Vector7d conv2EigenVec(const std::vector<float>& lst)
     {
-        Eigen::VectorXd v(lst.size());
-        for (size_t i = 0; i < lst.size(); ++i) v(i) = static_cast<double>(lst[i]);
-        return v;
+        Vector7d out;
+        for (size_t i = 0; i < lst.size(); ++i) out(i)= lst[i];
+        return out;
     }
 
-    const int IPT_NUM = 500;
+    const int IPT_NUM = 20;
+    // ===================== 无锁队列 =====================
+    // 上层规划 → MPC
+    boost::lockfree::queue<JointArray, boost::lockfree::capacity<8192>> ref_traj_queue_;
+    // MPC → 发送线程
+    boost::lockfree::queue<JointArray, boost::lockfree::capacity<4096>> mpc_traj_queue_;
+    // boost::lockfree::queue<JointArray,boost::lockfree::capacity<MPC_BUFFER_CAP>> mpc_buffer_queue_;
 
+    // ===================== 状态 =====================
+    Vector7d start_position_ = Vector7d::Zero();
+    Vector7d start_velocity_ = Vector7d::Zero();
+    Vector7d end_position_ = Vector7d::Zero();
+    std::mutex target_mtx_;
+    bool target_updated_{false};
 
-    Eigen::VectorXd start_position = Eigen::VectorXd::Zero(jointSize);
-    Eigen::VectorXd end_position = Eigen::VectorXd::Zero(jointSize);
-    Eigen::VectorXd start_velocity = Eigen::VectorXd::Zero(jointSize);
-
-
-    std::queue<Eigen::VectorXd> des_traj_;
-    std::queue<Eigen::VectorXd> mpc_traj_;
-    std::queue<Eigen::VectorXd> mpc_ref;
-
-    std::mutex queue_mutex_;
-    std::condition_variable queue_cv_;
-    std::thread mpc_thread_;
-    std::thread mimic_thread_;
-    std::atomic<bool> running_;
+    Vector7d last_pos_ = Vector7d::Zero();
+    Vector7d last_vel_ = Vector7d::Zero();
+    Vector7d last_acc_ = Vector7d::Zero();
+    bool first_mpc_run_ = true;
 
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr roake_control_sub_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr mimic_send_goal_;
     
-
     std::array<MpcSpline<Horizon, InputNum>, 7> MPCsplines_= []<size_t... I>(std::index_sequence<I...>) {
         return std::array{MpcSpline<Horizon, InputNum>(mpc_dt, I)...};
     }(std::make_index_sequence<7>{});
 
-    const unsigned int N_apply = 1;
-    Eigen::Matrix<real_t, jointSize, 1> last_computed_pos_ = Eigen::VectorXd::Zero(jointSize);
-    Eigen::Matrix<real_t, jointSize, 1> last_computed_vel_ = Eigen::VectorXd::Zero(jointSize);
-    Eigen::Matrix<real_t, jointSize, 1> last_computed_acc_ = Eigen::VectorXd::Zero(jointSize);
-    bool first_mpc_run_ = true;
+    std::atomic<bool> running_;
+    std::thread mpc_thread_, mimic_thread_,exec_plan_thread_;
 
+    std::atomic<bool> mpc_enabled_{false};
+    std::atomic<uint32_t> ref_produced_{0};
+    std::atomic<uint64_t> ref_consumed_{0};
+
+    std::atomic<uint32_t> mpc_produced_{0};    // MPC 已产生的点数
+    std::atomic<bool> mimic_enabled_{false};  // mimic 启动闸门
+
+    const unsigned int N_apply = 1;
 };
 
 

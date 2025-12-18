@@ -43,14 +43,14 @@ public:
             }
         );
 
-        timer_2hz = this->create_wall_timer(
-            std::chrono::milliseconds(500),
-            // std::chrono::microseconds(12500),
-            std::bind(&GloveDataPub::timer_callback_2, this));
-
-        timer_50hz = this->create_wall_timer(
+        timer_arm_hz = this->create_wall_timer(
             std::chrono::milliseconds(20),
-            std::bind(&GloveDataPub::timer_callback_50, this));
+            // std::chrono::microseconds(12500),
+            std::bind(&GloveDataPub::timer_callback_arm, this));
+
+        timer_hand_hz = this->create_wall_timer(
+            std::chrono::milliseconds(20),
+            std::bind(&GloveDataPub::timer_callback_hand, this));
             
         keyboard_thread_ = std::thread(&GloveDataPub::keyboard_input_thread, this);
         char port[] = "/dev/ttyUSB0";
@@ -166,7 +166,7 @@ private:
         return timestamp;
     }
     
-    void timer_callback_50()
+    void timer_callback_hand()
     {
         std_msgs::msg::Float32MultiArray angle_msg;
         angle_msg.data.clear();  // 清空数据
@@ -247,7 +247,7 @@ private:
         }
     }
 
-    void timer_callback_2()
+    void timer_callback_arm()
     {
         std_msgs::msg::Float32MultiArray quat_msg;
         quat_msg.data.clear();  // 清空数据
@@ -480,8 +480,8 @@ private:
     rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_calib_subscriber_;
     rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr glove_imu_calib_subscriber_;
 
-    rclcpp::TimerBase::SharedPtr timer_2hz;
-    rclcpp::TimerBase::SharedPtr timer_50hz;
+    rclcpp::TimerBase::SharedPtr timer_arm_hz;
+    rclcpp::TimerBase::SharedPtr timer_hand_hz;
     std::thread keyboard_thread_; 
 
 };
