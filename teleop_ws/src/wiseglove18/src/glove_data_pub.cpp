@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <queue>
 #include <array>
+#include <atomic>
 
 
 #include "../include/wiseglove18/Wiseglove.h"
@@ -249,6 +250,8 @@ private:
 
     void timer_callback_arm()
     {
+        if(!sent_quat_flag) return;
+
         std_msgs::msg::Float32MultiArray quat_msg;
         quat_msg.data.clear();  // 清空数据
         timestamp = wg_getQuat(quat);
@@ -259,15 +262,14 @@ private:
                 quat_msg.data.push_back(quat[i]);
             }
             quat_publisher_->publish(quat_msg);
-
             RCLCPP_INFO(this->get_logger(), "Quat Data:");
             for (int i = 0; i < 16; i++)
             {
                 std::cout << std::fixed << std::setprecision(1) << quat[i] << " ";
             }
             std::cout<<std::endl;
-
         }
+
         std_msgs::msg::Float32MultiArray quatOrg_msg;
         quatOrg_msg.data.clear();  // 清空数据
         timestamp = wg_getQuatOrg(quatOrg);
@@ -362,6 +364,7 @@ private:
                             break;
                         case 'a':
                             m_glove->ResetQuat();
+                            sent_quat_flag = !sent_quat_flag;
                             break;
                         default:
                             break;
@@ -461,8 +464,9 @@ private:
     std::vector<std::array<unsigned short, 18>> min_vec;
 
 
-    bool calib_flag = false;
-    bool show_calib_data = false;
+    std::atomic<bool> calib_flag = false;
+    std::atomic<bool> show_calib_data = false;
+    std::atomic<bool> sent_quat_flag = false;
 
     float angle[18] = {0};
     float quat[16] = {0};

@@ -19,7 +19,6 @@ from pydrake.all import (
     MathematicalProgram,
 )
 from pydrake.math import arccos
-from pydrake.all import AutoDiffXd,ExtractGradient,ExtractValue
 from pydrake.multibody import inverse_kinematics
 # from pydrake.visualization import AddFrameTriadIllustration
 from launch_ros.substitutions import FindPackageShare
@@ -83,6 +82,7 @@ class arm_ik():
             q_nominal = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0]) \
             if '_7dof' in self.arm_type else np.array([0.0, 0.0, 0.0, 0.0, -0.0, 0.0])
 
+  
         self.plant.SetPositions(self.context, q_nominal)
 
         if up_ori is None:
@@ -288,13 +288,6 @@ def Quatnumpy_to_Rotation(q: np.ndarray) -> List[np.ndarray]:
     for i,quat in enumerate(quats):
         rot = Quaternion(quat)
         rot = Conju_trans[i].transpose() @ RotationMatrix(rot) @ Conju_trans[i]
-        # rot = rot.ToRollPitchYaw().vector()
-        # if i == 0:
-        #     print(f'wri:{rot.ToRollPitchYaw().vector()}')
-        # if i == 1:
-        #     print(f'elb:{rot.ToRollPitchYaw().vector()}')
-        # if i == 2:
-        #     print(f'shoulder{rot.ToRollPitchYaw().vector()}')
         rots.append(rot)
     return rots
 

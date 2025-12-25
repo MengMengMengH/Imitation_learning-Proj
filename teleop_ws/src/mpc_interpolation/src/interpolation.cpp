@@ -14,8 +14,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
 
-#include "../include/mpc_interpolation/mpc_spline.hpp"
-#include "../include/mpc_interpolation/cubic_spline.hpp"
+#include "mpc_interpolation/mpc_spline.hpp"
+#include "mpc_interpolation/cubic_spline.hpp"
 
 
 constexpr int jointSize = 7;
@@ -73,10 +73,46 @@ public:
         roake_control_sub_ = this->create_subscription<std_msgs::msg::Float32MultiArray>(
             "/rokae_control_joints", qos, std::bind(&interpolation::update_ref_points, this,std::placeholders::_1));
         
-        // {
-        //     std::lock_guard<std::mutex> lock(queue_mutex_);
-        //     mpc_traj_.push(Eigen::VectorXd::Zero(jointSize));
-        // }
+
+        std::vector<double> default_pos(7, 4.0);
+        std::vector<double> default_vel(7, 0.006);
+        std::vector<double> default_acc(7, 0.000005);
+        std::vector<double> default_ctrl(7, 5e-10);
+
+        this->declare_parameter<std::vector<double>>("mpc_weights.position", default_pos);
+        this->declare_parameter<std::vector<double>>("mpc_weights.velocity", default_vel);
+        this->declare_parameter<std::vector<double>>("mpc_weights.acceleration", default_acc);
+        this->declare_parameter<std::vector<double>>("mpc_weights.control", default_ctrl);
+
+        // 读取参数
+        pos_weights_ = this->get_parameter("mpc_weights.position").as_double_array();
+        vel_weights_ = this->get_parameter("mpc_weights.velocity").as_double_array();
+        acc_weights_ = this->get_parameter("mpc_weights.acceleration").as_double_array();
+        ctrl_weights_ = this->get_parameter("mpc_weights.control").as_double_array();
+
+        MPCsplines_.reserve(jointSize);
+        MPCsplines_.clear();
+
+        for (size_t i = 0; i < jointSize; ++i) 
+        {
+            MPCsplines_.emplace_back(
+                mpc_dt, 
+                i, 
+                pos_weights_[i], 
+                vel_weights_[i], 
+                acc_weights_[i], 
+                ctrl_weights_[i]
+            );
+            std::cout << "Joint_" << i << ": " << "pos_w:" << pos_weights_[i]
+            << "; vel_w: " << vel_weights_[i] << "; acc_w: " << acc_weights_[i] <<std::endl;
+        }
+        // MPCsplines_= [this]<size_t... I>(std::index_sequence<I...>) {
+        //         return std::vector{
+        //             MpcSpline<Horizon, InputNum>
+        //             (mpc_dt, I,pos_weights_[I], vel_weights_[I], acc_weights_[I], ctrl_weights_[I])
+        //             ...};
+        //     }(std::make_index_sequence<7>{});
+
         exec_plan_thread_ = std::thread(&interpolation::exec_planning,this);
         pthread_t handle_exec = exec_plan_thread_.native_handle();
         setRealtimePriority(handle_exec,85);
@@ -90,6 +126,9 @@ public:
 
         mimic_send_goal_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
             "sent_joints", qos);
+        mimic_send_cuberef_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
+            "sent_cube_ref", qos);
+
         mimic_thread_ = std::thread(&interpolation::mimicSendGoal, this);
 
         //  设置 mimic_thread_ 为实时线程 + 绑定 CPU core2
@@ -194,6 +233,25 @@ private:
             for (int i = 0; i < jointSize; ++i)
                 msg.data[i] = static_cast<float>(cmd[i]);
             mimic_send_goal_->publish(msg);
+
+            JointArray cmd_ref;
+
+            if (!cube_traj_.pop(cmd_ref)) 
+            {
+                // 这里理论上不应该发生
+                RCLCPP_ERROR_THROTTLE(
+                    this->get_logger(), *this->get_clock(), 1000,
+                    "mimic enabled but cube_traj_ empty!"
+                );
+                rate.sleep();
+                continue;
+            }
+            std_msgs::msg::Float32MultiArray cube_msg;
+            cube_msg.data.resize(jointSize);
+            for (int i = 0; i < jointSize; ++i)
+                cube_msg.data[i] = static_cast<float>(cmd_ref[i]);
+            mimic_send_cuberef_->publish(cube_msg);
+
             rate.sleep();
         }
     }
@@ -228,6 +286,7 @@ private:
             while (ref_window.size() < Horizon && ref_traj_queue_.pop(raw))
             {
                 ref_window.push_back(raw);
+                cube_traj_.push(raw);
                 ref_consumed_.fetch_add(1, std::memory_order_relaxed);
             }
 
@@ -270,6 +329,10 @@ private:
                 }
                 mpc_out.row(j) = MPCsplines_[j].getPrediction().transpose();
                 auto full = MPCsplines_[j].getFullStatePrediction();
+                
+                // std::cout << "ref traj:" << "(joint"<< j  << ") "<< ref_horizon.row(j) << std::endl;
+                // std::cout << "real traj:" << "(joint"<< j  << ") "<< full << std::endl;
+
                 last_vel_(j) = full(1);
                 last_acc_(j) = full(2);
             }
@@ -344,6 +407,8 @@ private:
     boost::lockfree::queue<JointArray, boost::lockfree::capacity<4096>> mpc_traj_queue_;
     // boost::lockfree::queue<JointArray,boost::lockfree::capacity<MPC_BUFFER_CAP>> mpc_buffer_queue_;
 
+    boost::lockfree::queue<JointArray, boost::lockfree::capacity<4096>> cube_traj_;
+
     // ===================== 状态 =====================
     Vector7d start_position_ = Vector7d::Zero();
     Vector7d start_velocity_ = Vector7d::Zero();
@@ -358,10 +423,14 @@ private:
 
     rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr roake_control_sub_;
     rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr mimic_send_goal_;
-    
-    std::array<MpcSpline<Horizon, InputNum>, 7> MPCsplines_= []<size_t... I>(std::index_sequence<I...>) {
-        return std::array{MpcSpline<Horizon, InputNum>(mpc_dt, I)...};
-    }(std::make_index_sequence<7>{});
+
+    rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr mimic_send_cuberef_;
+
+    std::vector<double> pos_weights_;
+    std::vector<double> vel_weights_;
+    std::vector<double> acc_weights_;
+    std::vector<double> ctrl_weights_;
+    std::vector<MpcSpline<Horizon, InputNum>> MPCsplines_;
 
     std::atomic<bool> running_;
     std::thread mpc_thread_, mimic_thread_,exec_plan_thread_;
@@ -374,6 +443,8 @@ private:
     std::atomic<bool> mimic_enabled_{false};  // mimic 启动闸门
 
     const unsigned int N_apply = 1;
+
+
 };
 
 

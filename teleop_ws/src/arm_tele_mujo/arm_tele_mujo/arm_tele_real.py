@@ -24,6 +24,10 @@ class ArmTele_real(ArmTele):
             deadline=rclpy.duration.Duration(seconds=0, nanoseconds=1000000)
         )
 
+        self.received_first_msg = False
+        self.timer = self.create_timer(0.05, self.timer_callback)
+        self.zero_joints = np.zeros(7, dtype=np.float32)
+
         self.control_pub_ = self.create_publisher(
             Float32MultiArray, '/rokae_control_joints', qos_profile)
         self.origin_data_pub_ = self.create_publisher(
@@ -33,10 +37,24 @@ class ArmTele_real(ArmTele):
         # if self._q is not None:
         #     self.real_q = self._q.copy()
 
+    def timer_callback(self):
+        if not self.received_first_msg:
+            goal_msg = Float32MultiArray()
+            goal_msg.data = self.zero_joints.tolist()
+            self.control_pub_.publish(goal_msg)
+
+
     def quat_callback(self, msg):
+
+        if not self.received_first_msg:
+                self.received_first_msg = True
+                self.timer.cancel()
+                self.timer.destroy()
+                self.get_logger().info('Received first valid message, stopped zero-joint timer.')
 
         self.quats = np.array(msg.data)
         rots = Quatnumpy_to_Rotation(self.quats) 
+        # print(f"last value:{self.last_valid_q}")
 
         self._q = self._ik.ori_inv(
             up_ori=rots[2].matrix(),

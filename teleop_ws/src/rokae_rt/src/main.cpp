@@ -248,10 +248,10 @@ private:
                 switch (ch)
                 {
                     case 'c':
-                        followed_position_loop();
+                        followed_loop(RtControllerMode::jointPosition);
                         break;
                     case 'v':
-                        followed_impedance_loop();
+                        followed_loop(RtControllerMode::jointImpedance);
                         break;
                     case 'q':
                         std::cout << "Exiting..." << std::endl;
@@ -265,7 +265,7 @@ private:
         }
     }
 
-    void followed_impedance_loop()
+    void followed_loop(RtControllerMode followed_mode)
     {
         if (!control_loop_started_) 
         {
@@ -290,102 +290,45 @@ private:
                 return;
             }
 
-            size_t que_size = 0;
-            do
+            motion_controller_->MoveJ(0.5,robot_.jointPos(ec),target_pos);
+            // size_t size_q = 0;
+            // {
+            //     std::lock_guard<std::mutex> lock(joint_positions_mutex_);
+            //     size_q = joint_queue_.size();
+            // }
+            // std::cout << size_q << std::endl;
+
+            if(followed_mode == RtControllerMode::jointImpedance)
             {
-                motion_controller_->MoveJ(0.3,robot_.jointPos(ec),target_pos);
-                {
-                    std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                    que_size = joint_queue_.size();
-                    target_pos = joint_queue_.back();
-                    joint_queue_.clear();
-                }
-                std::cout<< que_size << std::endl;
-            } while(que_size < 25);
+                RCLCPP_INFO(this->get_logger(),"Set joint impedance control mode");
+                motion_controller_->setJointImpedance({300, 300, 300, 500, 50, 100, 50}, ec);
+            }
+            else if(followed_mode == RtControllerMode::jointPosition)
+            {
+                RCLCPP_INFO(this->get_logger(),"Set joint position control mode");
+            }
+            else
+            {
+                RCLCPP_INFO(this->get_logger(),"This mode is unsupported now,exiting...");
+                rclcpp::shutdown();
+                return;
+            }
 
-
-            motion_controller_->setJointImpedance({300, 300, 300, 500, 50, 100, 50}, ec);
-            motion_controller_->startMove(RtControllerMode::jointImpedance);
+            motion_controller_->startMove(followed_mode);
+            
             {
                 std::lock_guard<std::mutex> lock(joint_positions_mutex_);
                 init_move_completed = true;
             }
+
             motion_controller_->setControlLoop(
                 std::function<JointPosition()>(std::bind(&rt_RobotCtrlNode::rokae_callback, this)),
                 0,
                 true
             );
+
             RCLCPP_INFO(this->get_logger(), "Control loop started.");
             control_thread_ = std::thread([this]() 
-            {
-                try 
-                {
-                    // t0 = std::chrono::high_resolution_clock::now();
-                    this->motion_controller_->startLoop(true);
-                } catch (const std::exception& e) 
-                {
-                    RCLCPP_ERROR(this->get_logger(), "startLoop exception: %s", e.what());
-                }
-            });
-            control_loop_started_ = true;
-        }
-    }
-
-    void followed_position_loop()
-    {
-        if (!control_loop_started_) 
-        {
-            std::error_code ec;
-            std::array<double, 7> target_pos {};
-            {
-                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                target_pos = joint_queue_.empty() ? zero_pos : joint_queue_.back();
-                joint_queue_.clear();
-            }
-            robot_.updateRobotState(5ms);
-
-            // std::this_thread::sleep_for(20ms);
-
-            std::cout << "Current target positions: ";
-            for (double value : target_pos) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-
-            if (!motion_controller_)
-            {
-                RCLCPP_FATAL(this->get_logger(),"Motion Controller error!");
-                rclcpp::shutdown();
-                return;
-            }
-
-            {
-                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                size_t que_size = joint_queue_.size();
-                std::cout <<"MoveJ before:"<< que_size << std::endl;
-            }
-
-            motion_controller_->MoveJ(0.3,robot_.jointPos(ec),target_pos);
-
-            {
-                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                size_t que_size = joint_queue_.size();
-                std::cout <<"MoveJ after:"<< que_size << std::endl;
-            }
-
-            {
-                std::lock_guard<std::mutex> lock(joint_positions_mutex_);
-                init_move_completed = true;
-            }
-            motion_controller_->setControlLoop(
-                std::function<JointPosition()>(std::bind(&rt_RobotCtrlNode::rokae_callback, this)),
-                0,
-                true
-            );
-            motion_controller_->startMove(RtControllerMode::jointPosition);
-            RCLCPP_INFO(this->get_logger(), "Control loop started.");
-
-            control_thread_ = std::thread([this]()
             {
                 try 
                 {
@@ -417,7 +360,7 @@ private:
     //线程共享数据
     std::mutex joint_positions_mutex_;
     std::deque<std::array<double,7>> joint_queue_;
-    const size_t max_queue_size_ = 30; // 定长队列大小
+    const size_t max_queue_size_ = 100; // 定长队列大小
 
 
     bool init_joint_pos_set_ = false;

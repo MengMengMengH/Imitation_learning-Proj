@@ -1,7 +1,7 @@
 #include "../include/mpc_interpolation/mpc_spline.hpp"
 
 template <int Horizon, int InputNum>
-MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
+MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index,double pos_w, double vel_w, double acc_w, double ctrl_w) :
     mpcspline_(InputNum * Horizon, 3 * Horizon),
     xOpt_(new real_t[InputNum * Horizon])
 {
@@ -13,9 +13,9 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
           0.0, 1.0, dt_,
           0.0, 0.0, 1.0,
 
-    B_ << dt_ * dt_ / 2.0,
-          dt_,
-          1.0;
+    B_ << dt_ * dt_ * dt_ / 6.0,
+          dt_ * dt_/ 2.0,
+          dt_ / 1.0;
     // initialize A_phi and B_phi 
     A_phi.setZero();
     B_phi.setZero();
@@ -41,14 +41,13 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     R_.setZero();
     for(int i = 0; i < Horizon; i++)
     {
-        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << 1.0e4, 5.0e1, 5.0e-1;
-        R_(i, i) = 5.0e-3;
+        Q_.block(i * StateDim, i * StateDim, StateDim, StateDim).diagonal() << pos_w, vel_w, acc_w; //4.0e0, 6.0e-3, 5.0e-6;
+        R_(i, i) =  ctrl_w;     //5.0e-10;
     }
     // std::cout<<"Q_ = \n" << Q_ << std::endl;
     // compute H and g
     H_ = (B_phi.transpose() * Q_ * B_phi + R_);
     g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
-
 
     // QP constraints
     C_.setZero();
@@ -66,12 +65,6 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     int base = 2 * Horizon;
     for (int i = 0; i < Horizon; ++i) {
         C_(base + i, i) = 1.0; // pick u_i
-    }
-        // delta-u rows (jerk ~ (u_{k+1}-u_k)/dt_)
-    base += Horizon;
-    for (int k = 0; k < Horizon - 1; ++k) {
-        C_(base + k, k) = -1.0 / (dt_);
-        C_(base + k, k+1) = 1.0 / (dt_);
     }
 
 
@@ -96,7 +89,12 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index) :
     {
         printf("init failed with return value %d\n", status);
     }
+    // std::cout << "init Q_ : " << Q_ << std::endl;
+    // std::cout << "init R_ : " << R_ << std::endl;
+    // std::cout << "init C_ : " << C_ << "\n"<< std::endl;
+    // std::cout << "init H_ : " << H_ << "\n"<< std::endl;
     mpcspline_.getPrimalSolution(xOpt_);
+    
 
 }
 
@@ -118,15 +116,15 @@ void MpcSpline<Horizon, InputNum>::setReferenceTrajectory(const Eigen::Matrix<re
 {
     for (int i = 0; i < Horizon; i++) {
         x_ref_.block(i * StateDim, 0, 1, 1) << ref_traj(i);
-        if(i < Horizon - 1)
-        {
-            x_ref_(i * StateDim + 1, 0) = (ref_traj(i+1) - ref_traj(i)) / dt_ ;
-        }
-        else
-        {
-            x_ref_(i * StateDim + 1, 0) = 0.0;
-        }
-        x_ref_(i * StateDim + 2, 0) = 0.0;
+        // if(i < Horizon - 1)
+        // {
+        //     x_ref_(i * StateDim + 1, 0) = (ref_traj(i+1) - ref_traj(i)) / dt_ ;
+        // }
+        // else
+        // {
+        //     x_ref_(i * StateDim + 1, 0) = 0.0;
+        // }
+        // x_ref_(i * StateDim + 2, 0) = 0.0;
     }
     ref_ready_ = true;
 }
@@ -146,20 +144,14 @@ void MpcSpline<Horizon, InputNum>::UpdateConstrains()
         lb_C(Horizon + i) = aMin[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
         ub_C(Horizon + i) = aMax[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
     }
-    // direct u bounds (u is acceleration)
+    // direct u bounds (u is jerk)
     int base = 2 * Horizon;
     for (int i = 0; i < Horizon; i++) 
     {
-        lb_C(base + i) = aMin[constrain_index];
-        ub_C(base + i) = aMax[constrain_index];
+        lb_C(base + i) = jMin[constrain_index];
+        ub_C(base + i) = jMax[constrain_index];
     }
-    // delta-u (jerk) bounds: (u_{k+1}-u_k)/dt_ ∈ [jMin, jMax]
-    base += Horizon;
-    for (int k = 0; k < Horizon - 1; k++) 
-    {
-        lb_C(base + k) = jMin[constrain_index];
-        ub_C(base + k) = jMax[constrain_index];
-    }
+
 }
 
 template<int Horizon, int InputNum>
@@ -173,7 +165,7 @@ bool MpcSpline<Horizon, InputNum>::computeMPC()
     g_ = B_phi.transpose() * Q_ * (A_phi * x_0_ - x_ref_);
     UpdateConstrains();
 
-    nWSR_ = 50;
+    nWSR_ = 100;
     returnValue status = mpcspline_.hotstart(
         g_.data(),
         NULL,
@@ -182,7 +174,7 @@ bool MpcSpline<Horizon, InputNum>::computeMPC()
         ub_C.data(),
         nWSR_
     );
-
+    // std::cout << "WSR used: " << nWSR_ << std::endl;
     if (status != SUCCESSFUL_RETURN) {
         std::cerr << "[MPC] Hotstart failed! status = " << status << std::endl;
         return false;
@@ -195,7 +187,6 @@ bool MpcSpline<Horizon, InputNum>::computeMPC()
     for (int i = 0; i < Horizon; i++) {
         prediction_pos_(i) = pred_state(i * StateDim);
     }
-
     return true;
 }
 

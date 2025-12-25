@@ -29,6 +29,8 @@ class ForceSrv(Node):
         self.send_continous(self.ser)
         self.timer_ = self.create_timer(0.01, self.timer_callback)
 
+        self.stop_continue = False
+
     def timer_callback(self):
 
         force_data = self.send_once(self.ser)
@@ -69,7 +71,9 @@ class ForceSrv(Node):
         pass
 
     def send_once(self,ser):
-        self.send_stop(ser)
+        if not self.send_continous:
+            self.send_stop(ser)
+            self.send_continous = True
         bytes = [0x49,0xAA,0x0D,0x0A]
         ser.write(bytes)
         time.sleep(0.05)
@@ -88,7 +92,7 @@ class ForceSrv(Node):
     
     def parsing_dataFrame(self, dataFrame, fst_byte:bytes):
         if len(dataFrame) < 28:
-            self.get_logger().warn("接收到的数据长度不足28字节")
+            self.get_logger().warn(f"接收到的数据长度不足28字节:{len(dataFrame)}")
             return
         # self.get_logger().info(f"接收到数据长度：{len(dataFrame)}")
         frm_header = fst_byte + b'\xAA'

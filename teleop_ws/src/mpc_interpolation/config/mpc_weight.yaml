@@ -1,0 +1,7 @@
+interpolation_node:
+  ros__parameters:
+    mpc_weights:
+      position: [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]
+      velocity: [0.006, 0.006, 0.006, 0.006, 0.006, 0.006, 0.006]
+      acceleration: [5e-6, 5e-6, 5e-6, 5e-6, 5e-6, 5e-6, 5e-6]
+      control: [5e-10, 5e-10, 5e-10, 5e-10, 5e-10, 5e-10, 5e-10]

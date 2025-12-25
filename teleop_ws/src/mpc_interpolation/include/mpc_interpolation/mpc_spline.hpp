@@ -12,7 +12,7 @@ class MpcSpline
 {
 
 public:
-    MpcSpline(double dt, size_t Index);
+    MpcSpline(double dt, size_t Index,double pos_w, double vel_w, double acc_w, double ctrl_w);
     ~MpcSpline(){delete[] xOpt_;};
 
     // -------------------- 状态更新 --------------------
@@ -58,7 +58,7 @@ private:
 
     Eigen::Matrix<real_t, StateDim * Horizon, StateDim> A_phi;
     Eigen::Matrix<real_t, StateDim * Horizon, InputNum * Horizon> B_phi;
-    Eigen::Matrix<real_t, StateDim * Horizon,1> x_ref_;
+    Eigen::Matrix<real_t, StateDim * Horizon,1> x_ref_ ;
     Eigen::Matrix<real_t, StateDim, 1> x_0_;
     Eigen::Matrix<real_t, StateDim * Horizon, StateDim * Horizon> Q_;
     Eigen::Matrix<real_t, InputNum * Horizon, InputNum * Horizon> R_;
@@ -67,7 +67,7 @@ private:
     Eigen::Matrix<real_t, InputNum * Horizon, 1> u_;
 
     // Constraints: v, a
-    static constexpr int ConstrRows = 4 * Horizon - 1;
+    static constexpr int ConstrRows = 3 * Horizon;
     Eigen::Matrix<real_t, ConstrRows, InputNum * Horizon> C_;
     Eigen::Matrix<real_t, ConstrRows, 1> lb_C;
     Eigen::Matrix<real_t, ConstrRows, 1> ub_C;
@@ -81,6 +81,7 @@ private:
     real_t jMax[7] = { 5000,  3500,  5000,  5000,  7500,  7500,  7500};
 
 
+
     real_t real_vMin[7] = {-2.175, -2.175, -2.175, -2.175, -2.610, -2.610, -2.610};
     real_t real_vMax[7] = { 2.175,  2.175,  2.175,  2.175,  2.610,  2.610,  2.610};
     real_t real_aMin[7] = {-15, -7.5, -10, -10, -15, -15, -20};
@@ -89,7 +90,7 @@ private:
     real_t real_jMax[7] = { 5000,  3500,  5000,  5000,  7500,  7500,  7500};
 
     real_t dt_;
-    int nWSR_ = 10;
+    int_t nWSR_ = 50;
     size_t constrain_index;
     QProblem mpcspline_;
     Options option_mpcspline_;
