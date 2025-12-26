@@ -148,7 +148,7 @@ class InspireSub(Node):
         
     def on_press(self,key):
         try:
-            if key.char == 'q':
+            if key == keyboard.Key.f12:
                 rclpy.shutdown()  # Stop listener
             elif key.char == '1':
                 self.low_force = not self.low_force
@@ -158,9 +158,9 @@ class InspireSub(Node):
                 else:
                     self.inspire_set_force(self.ser,1,self.force_threshold)
                     self.get_logger().info(f"force theshold set to {self.force_threshold}")
-            elif key.char == '2':
+            elif key.char == '0':
                 self.disp_force = not self.disp_force
-            elif key.char == '3':
+            elif key.char == '9':
                 self.disp_angle = not self.disp_angle
             elif key.char == 'm':
                 self.inspire_ready = not self.inspire_ready

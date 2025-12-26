@@ -28,8 +28,24 @@ def generate_launch_description():
         name="arm_tele_real"
     )
 
+    force_node = Node(
+        package='force_srv',
+        executable='force_srv',
+        output='screen',
+        name='six_dim_force'
+    )
+
+    camera_node = Node(
+        package='cam_srv',
+        executable='wrist_cam_capture',
+        output='screen',
+        name='camera'
+    )
+
     ld.add_action(IK_node)
     ld.add_action(interpolation_node)
+    ld.add_action(force_node)
+    ld.add_action(camera_node)
 
     return ld
 
