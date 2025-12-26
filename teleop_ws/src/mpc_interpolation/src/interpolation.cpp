@@ -104,7 +104,7 @@ public:
                 ctrl_weights_[i]
             );
             std::cout << "Joint_" << i << ": " << "pos_w:" << pos_weights_[i]
-            << "; vel_w: " << vel_weights_[i] << "; acc_w: " << acc_weights_[i] <<std::endl;
+            << "; vel_w: " << vel_weights_[i] << "; acc_w: " << acc_weights_[i] <<"; ctrl_w: " << ctrl_weights_[i]<<std::endl;
         }
         // MPCsplines_= [this]<size_t... I>(std::index_sequence<I...>) {
         //         return std::vector{
@@ -265,6 +265,7 @@ private:
         rclcpp::Rate rate(1000);
         std::deque<JointArray> ref_window;
 
+
         while(rclcpp::ok() && running_)
         {
 
@@ -325,6 +326,7 @@ private:
 
                 if (!MPCsplines_[j].computeMPC()) {
                     mpc_compute_ok = false;
+                    RCLCPP_ERROR(this->get_logger(),"MPC_%d Compute Failed!",j);
                     break;
                 }
                 mpc_out.row(j) = MPCsplines_[j].getPrediction().transpose();
@@ -362,14 +364,14 @@ private:
             }
             else
             {
-                RCLCPP_ERROR(this->get_logger(),"MPC Compute Failed!");
+                // RCLCPP_ERROR(this->get_logger(),"MPC Compute Failed!");
             }
 
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(
                           std::chrono::high_resolution_clock::now() - t0)
                           .count();
 
-            if (dt > 1200)
+            if (dt > 1000)
                 RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
                                      "MPC loop took %ld us", dt);
 

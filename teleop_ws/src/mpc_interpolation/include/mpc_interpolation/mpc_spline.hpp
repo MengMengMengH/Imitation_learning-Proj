@@ -5,7 +5,7 @@
 USING_NAMESPACE_QPOASES
 
 constexpr int InputNum = 1;
-constexpr int Horizon = 5;
+constexpr int Horizon = 8;
 
 template <int Horizon, int InputNum>
 class MpcSpline

@@ -10,7 +10,7 @@ def generate_launch_description():
     config_path = os.path.join(
             get_package_share_directory('mpc_interpolation'),
             'config',
-            'mpc_config.yaml'
+            'mpc_weight.yaml'
         )
 
     interpolation_node = Node(
@@ -18,6 +18,7 @@ def generate_launch_description():
         executable='mpc_interpolation_node',
         output='screen',
         name='mpc_interpolation_node',
+        parameters=[config_path]
     )
 
     IK_node = Node(

@@ -216,6 +216,5 @@ Eigen::Matrix<real_t, 3, 1> MpcSpline<Horizon, InputNum>::getCurrentState() cons
 // Template instantiations (example)
 template class MpcSpline<3, 1>;
 template class MpcSpline<5, 1>;
+template class MpcSpline<8, 1>;
 template class MpcSpline<10, 1>;
-template class MpcSpline<20, 1>;
-// template class MpcSpline<50, 1>;

@@ -34,12 +34,12 @@ class ArmTele(Node):
 
         self._ik = arm_ik(f'{self.robot.sdf_model}',self.model_name)
         if  '_7dof' in self.model_name:
-            self._q = np.array([0.2, 0.4, 0.6, 1.5, -0.3, -1.0,0.7])
+            self._q = np.zeros(7)
         elif '_6dof' in self.model_name:
-            self._q = np.array([0.2, 0.4, 0.6, 0.5, -0.3,0]) 
+            self._q = np.zeros(6)
+        self.last_valid_q = self._q
 
-        
-
+    
     def quat_callback(self, msg):
         # now = int(time.time())
         self.quats = np.array(msg.data) # 50HZ

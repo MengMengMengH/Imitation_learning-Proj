@@ -76,13 +76,9 @@ class arm_ik():
     
     def ori_inv(self,up_ori = None,elbow_ori = None,wrist_ori = None,q_last = None):
         
-        if q_last is not None:
-            q_nominal = q_last
-        else:
-            q_nominal = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0]) \
-            if '_7dof' in self.arm_type else np.array([0.0, 0.0, 0.0, 0.0, -0.0, 0.0])
 
-  
+        q_nominal = q_last
+
         self.plant.SetPositions(self.context, q_nominal)
 
         if up_ori is None:

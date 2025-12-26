@@ -32,7 +32,7 @@ class ArmTele_real(ArmTele):
             Float32MultiArray, '/rokae_control_joints', qos_profile)
         self.origin_data_pub_ = self.create_publisher(
             Stampfloat32array, 'origin_quat_data_used', 10)
-        self.last_valid_q = self._q
+
 
         # if self._q is not None:
         #     self.real_q = self._q.copy()
@@ -60,7 +60,7 @@ class ArmTele_real(ArmTele):
             up_ori=rots[2].matrix(),
             elbow_ori=rots[1].matrix(),
             wrist_ori=rots[0].matrix(),
-            q_last=self._q
+            q_last=self._q if self._q is not None else self.last_valid_q,
         )
         if self._q is not None:
             self.last_valid_q = self._q

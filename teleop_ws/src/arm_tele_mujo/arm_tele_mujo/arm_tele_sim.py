@@ -59,8 +59,11 @@ class ArmTele_sim(ArmTele):
             up_ori=rots[2].matrix(),
             elbow_ori=rots[1].matrix(),
             wrist_ori=rots[0].matrix(),
-            q_last=self._q
-            )
+            q_last=self._q if self._q is not None else self.last_valid_q,
+        )
+
+        if self._q is None:
+            self.last_valid_q = self._q
         
         # print(self._q)
 
