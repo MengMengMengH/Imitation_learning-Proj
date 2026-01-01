@@ -54,7 +54,7 @@ public:
             std::bind(&GloveDataPub::timer_callback_hand, this));
             
         keyboard_thread_ = std::thread(&GloveDataPub::keyboard_input_thread, this);
-        char port[] = "/dev/ttyUSB0";
+        char port[] = "/dev/teleop/glove";
         if (wg_init(port))
         {
             RCLCPP_INFO(this->get_logger(), "wiseglove init success!");

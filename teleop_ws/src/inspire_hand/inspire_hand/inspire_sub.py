@@ -20,7 +20,7 @@ class InspireSub(Node):
             10)
         self.pub_hand_states_ = self.create_publisher(
             Stampint32array, 'hand_states', 10)
-        self.port = '/dev/ttyUSB1'
+        self.port = '/dev/teleop/inspire_hand'
         self.baudrate = 115200
         self.joints = {
                         "Thu_MCP": 0,"Thu_IP": 1,

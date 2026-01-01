@@ -17,7 +17,7 @@ class ForceSrv(Node):
         print("force_srv node started")
         self.force_srv = self.create_service(SixDForce, 'force_srv', self.force_callback)
         self.force_pub_ = self.create_publisher(Stampfloat32array, 'force_data', 10)
-        self.port = '/dev/ttyUSB2'
+        self.port = '/dev/teleop/force_sensor'
         self.baudrate = 460800
         self.grav = 9.8015   #  gravity in Beijing
         np.set_printoptions(precision=3)
