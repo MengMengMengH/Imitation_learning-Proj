@@ -16,6 +16,11 @@ from cust_msgs.msg import Stampfloat32array,Stampint32array
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import message_filters
+from pydrake.all import (
+    RotationMatrix,
+    Quaternion,
+    AngleAxis,
+)
 
 class DataCollector(Node):
     def __init__(self):
@@ -112,7 +117,7 @@ class DataCollector(Node):
                 (img_path,img_data) = task
 
                 cv_img = self.bridge.imgmsg_to_cv2(img_data,desired_encoding='bgr8')
-                cv2.imwrite(img_path,cv_img)
+                cv2.imwrite(img_path,cv_img,[int(cv2.IMWRITE_JPEG_QUALITY),95])
             except queue.Empty:
                 pass
             except Exception as e:
@@ -158,7 +163,7 @@ class DataCollector(Node):
         # ---- 图像数据 ----
         image_data = self.latest_cam_image
         # cv_image = self.bridge.imgmsg_to_cv2(image_data, desired_encoding='bgr8')
-        image_filename = f"img_{self.frame_count:06d}.png"
+        image_filename = f"img_{self.frame_count:06d}.jpg"
         img_path = os.path.join(self.save_dir, "images", image_filename)
         try:
             # self.save_que.put_nowait((img_path, cv_image))
@@ -171,7 +176,14 @@ class DataCollector(Node):
         self.timestamps.append(timestamp)
         self.image_paths.append(img_path)
 
-        self.arm_states.append(np.array(arm_msg.data,dtype=np.float32))
+        rots = []
+        quats = np.array(arm_msg.data).reshape(-1, 4)
+        for quat in quats:
+            rot = Quaternion(quat).rotation()
+            rots.append(rot[:,:2].flatten())
+        arm_data = np.concatenate(rots) 
+
+        self.arm_states.append(np.array(arm_data,dtype=np.float32))
         self.hand_states.append(np.array(hand_msg.data,dtype=np.int32))
         self.force_data.append(np.array(self.latest_force_data.data,dtype=np.float32))
 
@@ -181,7 +193,7 @@ class DataCollector(Node):
             self.get_logger().info(f"Collected {self.frame_count} frames.")
 
     def save2hdf5(self):
-        h5_path = os.path.join(self.save_dir, "data_log.h5")
+        h5_path = os.path.join(self.save_dir, "episode_0000.hdf5")
         self.get_logger().info(f"💾 Converting to HDF5: {h5_path}")
         if not self.image_paths:
             self.get_logger().warn("⚠️ No images captured, skipping HDF5 save.")
@@ -200,9 +212,14 @@ class DataCollector(Node):
         arm = np.stack(self.arm_states)
         hand = np.stack(self.hand_states)
         force = np.stack(self.force_data)
-        ts = np.array(self.timestamps)
+        # ts = np.array(self.timestamps)
+
+        action = np.concatenate([arm, hand], axis=1)
 
         with h5py.File(h5_path, "w") as f:
+            # ========== observations ==========
+            obs = f.create_group("observations")
+
             img_dset = f.create_dataset(
                 "images",
                 shape=(N, H, W, C),
@@ -223,12 +240,14 @@ class DataCollector(Node):
                 if i % 100 == 0 or i == N - 1:
                     self.get_logger().info(f"  ... saving image {i+1}/{N}")
 
-            f.create_dataset("arm_states", data=arm)
-            f.create_dataset("hand_states", data=hand)
-            f.create_dataset("forces", data=force)
-            f.create_dataset("timestamps", data=ts)
+            # --- low-dim observations ---
+            obs.create_dataset("arm_states", data=arm)
+            obs.create_dataset("hand_states", data=hand)
+            obs.create_dataset("force", data=force)
 
-            f.create_dataset("image_paths", data=np.array(self.image_paths, dtype='S'))
+            # ========== actions ==========
+            f.create_dataset("actions", data=action)
+
         self.get_logger().info("✅ HDF5 dataset saved successfully.")
     
     def stop_and_save(self):

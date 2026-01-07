@@ -67,12 +67,14 @@ private:
     Eigen::Matrix<real_t, InputNum * Horizon, 1> u_;
 
     // Constraints: v, a
-    static constexpr int ConstrRows = 3 * Horizon;
+    static constexpr int ConstrRows = 4 * Horizon;
     Eigen::Matrix<real_t, ConstrRows, InputNum * Horizon> C_;
     Eigen::Matrix<real_t, ConstrRows, 1> lb_C;
     Eigen::Matrix<real_t, ConstrRows, 1> ub_C;
 
 
+    real_t pMin[7] = {-2.8,-2.0,-2.8,-2.0,-2.8,-2.0,-3.1};
+    real_t pMax[7] = { 2.8, 2.0, 2.8, 2.0, 2.8, 2.0, 3.1};
     real_t vMin[7] = {-2.175, -2.175, -2.175, -2.175, -2.610, -2.610, -2.610};
     real_t vMax[7] = { 2.175,  2.175,  2.175,  2.175,  2.610,  2.610,  2.610};
     real_t aMin[7] = {-15, -7.5, -10, -10, -15, -15, -20};

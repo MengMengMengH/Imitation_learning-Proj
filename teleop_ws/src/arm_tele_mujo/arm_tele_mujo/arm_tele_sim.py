@@ -62,7 +62,7 @@ class ArmTele_sim(ArmTele):
             q_last=self._q if self._q is not None else self.last_valid_q,
         )
 
-        if self._q is None:
+        if self._q is not None:
             self.last_valid_q = self._q
         
         # print(self._q)

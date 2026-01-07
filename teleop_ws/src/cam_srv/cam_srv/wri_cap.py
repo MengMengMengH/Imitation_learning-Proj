@@ -23,7 +23,7 @@ class Wri_Cam_Cap(Node):
         self.cam_pub_ = self.create_publisher(Image, "wrist_camera_Image", 10)
         self.bridge_ = CvBridge()
         # self.get_logger().info(f"{cv2.__file__}")
-        self.target_fps = 10
+        self.target_fps = 30
         self.timer_period = 1.0 / self.target_fps
         self.timer_ = self.create_timer(self.timer_period, self.timer_callback)
         

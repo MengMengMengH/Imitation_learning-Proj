@@ -13,4 +13,9 @@ robot_dataset/
 teleop_ws/.cache/
 teleop_ws/readme_chuanke.md
 teleop_ws/src/arm_tele_mujo/arm_tele_mujo/__pycache__/arm_tele_real.cpython-310.pyc
+teleop_ws/src/force_srv/force_srv/__pycache__/force_srv.cpython-310.pyc
+teleop_ws/src/arm_tele_mujo/arm_tele_mujo/__pycache__/
+teleop_ws/src/force_srv/force_srv/__pycache__/
+teleop_ws/run_test.sh
+
 

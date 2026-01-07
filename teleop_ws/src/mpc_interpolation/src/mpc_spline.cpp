@@ -2,7 +2,7 @@
 
 template <int Horizon, int InputNum>
 MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index,double pos_w, double vel_w, double acc_w, double ctrl_w) :
-    mpcspline_(InputNum * Horizon, 3 * Horizon),
+    mpcspline_(InputNum * Horizon, 4 * Horizon),
     xOpt_(new real_t[InputNum * Horizon])
 {
     assert(Index < 7 && "This implementation supports for 7 joints only");
@@ -56,17 +56,15 @@ MpcSpline<Horizon,InputNum>::MpcSpline(double dt, size_t Index,double pos_w, dou
     // std::cout << "B_phi = \n" << B_phi << std::endl;
     for (int i = 0; i < Horizon; i++)
     {
+        // position constraints
+        C_.block(i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 0, 0, 1, InputNum * Horizon);
         // velocity constraints
-        C_.block(i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 1, 0, 1, InputNum * Horizon);
+        C_.block(Horizon + i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 1, 0, 1, InputNum * Horizon);
         // acceleration constraints
-        C_.block(Horizon + i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 2, 0, 1, InputNum * Horizon);
+        C_.block(2*Horizon + i, 0, 1, InputNum * Horizon) = B_phi.block(i * StateDim + 2, 0, 1, InputNum * Horizon);
+        //direct u rows
+        C_(3*Horizon+i, i) = 1.0;
     }
-        // direct u rows
-    int base = 2 * Horizon;
-    for (int i = 0; i < Horizon; ++i) {
-        C_(base + i, i) = 1.0; // pick u_i
-    }
-
 
     // initialize options
     option_mpcspline_.printLevel = PL_NONE;
@@ -137,21 +135,19 @@ void MpcSpline<Horizon, InputNum>::UpdateConstrains()
     ub_C.setZero();
     for (int i = 0; i < Horizon; i++)
     {
+        //position constrains
+        lb_C(i) = pMin[constrain_index] - (A_phi.block(i * StateDim + 0, 0, 1, StateDim) * x_0_)(0);
+        ub_C(i) = pMax[constrain_index] - (A_phi.block(i * StateDim + 0, 0, 1, StateDim) * x_0_)(0);
         // velocity constraints
-        lb_C(i) = vMin[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
-        ub_C(i) = vMax[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
+        lb_C(Horizon + i) = vMin[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
+        ub_C(Horizon + i) = vMax[constrain_index] - (A_phi.block(i * StateDim + 1, 0, 1, StateDim) * x_0_)(0);
         // acceleration constraints
-        lb_C(Horizon + i) = aMin[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
-        ub_C(Horizon + i) = aMax[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
+        lb_C(2 * Horizon + i) = aMin[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
+        ub_C(2 * Horizon + i) = aMax[constrain_index] - (A_phi.block(i * StateDim + 2, 0, 1, StateDim) * x_0_)(0);
+        // direct u bounds (u is jerk)
+        lb_C(3 * Horizon + i) = jMin[constrain_index];
+        ub_C(3 * Horizon + i) = jMax[constrain_index];
     }
-    // direct u bounds (u is jerk)
-    int base = 2 * Horizon;
-    for (int i = 0; i < Horizon; i++) 
-    {
-        lb_C(base + i) = jMin[constrain_index];
-        ub_C(base + i) = jMax[constrain_index];
-    }
-
 }
 
 template<int Horizon, int InputNum>

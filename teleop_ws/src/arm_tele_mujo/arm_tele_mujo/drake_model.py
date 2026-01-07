@@ -171,9 +171,12 @@ class arm_ik():
 
         weight = 1e3
         Q = weight * np.eye(len(q_nominal))
+        Q_zero = 0.05 * Q
         # b = -Q.dot(q_nominal)
         # prog.AddQuadraticCost(Q,b,q_variables)
+        zero_state = np.zeros(len(q_nominal))
         prog.AddQuadraticErrorCost(Q,q_nominal,q_variables)
+        prog.AddQuadraticErrorCost(Q_zero,zero_state,q_variables)
 
         result = Solve(prog)
         if not result.is_success():
