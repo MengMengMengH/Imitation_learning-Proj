@@ -7,6 +7,7 @@ import numpy as np
 from datetime import datetime
 import threading
 import queue
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -15,6 +16,7 @@ from std_msgs.msg import Float32MultiArray
 from cust_msgs.msg import Stampfloat32array,Stampint32array
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+from concurrent.futures import ThreadPoolExecutor
 import message_filters
 from pydrake.all import (
     RotationMatrix,
@@ -46,6 +48,16 @@ class DataCollector(Node):
         self.image_paths = []
         self.frame_count = 0
 
+
+        # === 性能压测变量 ===
+        self.target_fps = 30.0
+        self.start_time = None
+        
+        # 详细丢帧计数器
+        self.drop_cam_stale = 0
+        self.drop_force_stale = 0
+        self.drop_queue_full = 0
+
         # === 最新消息缓存 ===
         self.latest_cam_image = None
         self.latest_force_data = None
@@ -58,11 +70,9 @@ class DataCollector(Node):
 
         # === 创建I/O线程和队列
 
-        self.save_que = queue.Queue(maxsize=500)
-        self.save_thread = threading.Thread(target=self.img_save_loop)
-        self.save_thread_running = True
-        self.save_thread.start()
-        self.get_logger().info("✅ I/O 线程已启动，用于异步保存图像")
+        self.save_pool = ThreadPoolExecutor(max_workers=4)
+        self.get_logger().info("✅ 4线程并行 I/O 线程池已启动")
+
 
         # === QoS 配置 ===
         qos_profile = QoSProfile(
@@ -108,22 +118,15 @@ class DataCollector(Node):
         self.get_logger().info("✅ (Arm, Hand) 动作同步器已启动。")
         self.get_logger().info("...等待所有数据源的初始消息...")
 
-    def img_save_loop(self):
-        while self.save_thread_running:
+    def _async_save_image_task(self, img_path, img_data):
+            """🌟 新增：独立的并行图像保存任务"""
             try:
-                task = self.save_que.get(timeout=1)
-                if task is None:
-                    continue
-                (img_path,img_data) = task
-
-                cv_img = self.bridge.imgmsg_to_cv2(img_data,desired_encoding='bgr8')
-                cv2.imwrite(img_path,cv_img,[int(cv2.IMWRITE_JPEG_QUALITY),95])
-            except queue.Empty:
-                pass
+                cv_img = self.bridge.imgmsg_to_cv2(img_data, desired_encoding='bgr8')
+                cv2.imwrite(img_path, cv_img, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
             except Exception as e:
-                self.get_logger().error(f'图像线程保存出错:{e}')
-        self.get_logger().info("图像保存线程已退出")
-        
+                # 退出时 logger 失效，使用 print 兜底
+                print(f'❌ 图像保存出错 ({img_path}): {e}')
+
     # === 简单更新回调 ===
     def force_callback(self, msg):
         self.latest_force_data = msg
@@ -146,17 +149,22 @@ class DataCollector(Node):
         # 数据新鲜度检查
         t_camera = rclpy.time.Time.from_msg(self.latest_cam_image.header.stamp)
         dt_camera_ns = (t_anchor - t_camera).nanoseconds
-        if dt_camera_ns < 0 or dt_camera_ns > self.tolerances_ns['camera']:
-            self.get_logger().warn(f'⚠️ 丢弃帧：相机数据陈旧 (dt={dt_camera_ns/1e6:.1f}ms)')
+        if abs(dt_camera_ns) > self.tolerances_ns['camera']:
+            self.drop_cam_stale += 1
+            self.get_logger().warn(f'⚠️ 丢弃帧：相机数据陈旧 (dt={dt_camera_ns/1e6:.1f}ms)',throttle_duration_sec=1.0)
             return
 
         t_force = rclpy.time.Time.from_msg(self.latest_force_data.header.stamp)
         dt_force_ns = (t_anchor - t_force).nanoseconds
-        if dt_force_ns < 0 or dt_force_ns > self.tolerances_ns['force']:
-            self.get_logger().warn(f'⚠️ 丢弃帧：力传感器数据陈旧 (dt={dt_force_ns/1e6:.1f}ms)')
+        if abs(dt_force_ns) > self.tolerances_ns['force']:
+            self.drop_force_stale += 1
+            self.get_logger().warn(f'⚠️ 丢弃帧：力传感器数据陈旧 (dt={dt_force_ns/1e6:.1f}ms)',throttle_duration_sec=1.0)
             return
 
-        
+        if self.start_time is None:
+            self.start_time = time.monotonic()
+            self.get_logger().info("⏱️ 成功接收首个完美对齐帧，开始压测计时！")
+
         #  === 检查通过 ===
         timestamp = t_anchor.seconds_nanoseconds()[0] + t_anchor.seconds_nanoseconds()[1] * 1e-9
         
@@ -165,12 +173,13 @@ class DataCollector(Node):
         # cv_image = self.bridge.imgmsg_to_cv2(image_data, desired_encoding='bgr8')
         image_filename = f"img_{self.frame_count:06d}.jpg"
         img_path = os.path.join(self.save_dir, "images", image_filename)
-        try:
-            # self.save_que.put_nowait((img_path, cv_image))
-            self.save_que.put_nowait((img_path, image_data))
-        except queue.Full:
-            self.get_logger().warn("I/O 队列已满！图像保存滞后，丢弃此帧。")
+
+        if self.save_pool._work_queue.qsize() > 500:
+            self.drop_queue_full += 1
+            self.get_logger().warn("I/O 线程池满载！硬盘跟不上，丢弃此帧。", throttle_duration_sec=1.0)
             return
+        else:
+            self.save_pool.submit(self._async_save_image_task, img_path, image_data)
 
         # ---- 缓存数据 ----
         self.timestamps.append(timestamp)
@@ -206,7 +215,7 @@ class DataCollector(Node):
             N = len(self.image_paths) # 总帧数
             dtype = sample_img.dtype
         except Exception as e:
-            self.get_logger().error(f"无法读取样本图像！错误: {e}")
+            print(f"无法读取样本图像！错误: {e}")
             return
 
         arm = np.stack(self.arm_states)
@@ -235,10 +244,10 @@ class DataCollector(Node):
                 if img_data is not None:
                     img_dset[i] = img_data
                 else:
-                    self.get_logger().warn(f"无法读取图像 {img_path}，跳过该帧！")
+                    print(f"无法读取图像 {img_path}，跳过该帧！")
                 
                 if i % 100 == 0 or i == N - 1:
-                    self.get_logger().info(f"  ... saving image {i+1}/{N}")
+                    print(f"  ... saving image {i+1}/{N}")
 
             # --- low-dim observations ---
             obs.create_dataset("arm_states", data=arm)
@@ -251,22 +260,70 @@ class DataCollector(Node):
         self.get_logger().info("✅ HDF5 dataset saved successfully.")
     
     def stop_and_save(self):
-        """任务结束时调用：保存所有文件"""
-        self.get_logger().info("🧹 Stopping collector, saving all data...")
-        self.get_logger().info("Stopping I/O threading,等待所有图像写入磁盘...")
-        self.save_thread_running = False
-        self.save_que.put(None)
-        self.save_thread.join(timeout=10.0)
-        if self.save_thread.is_alive():
-             self.get_logger().error("I/O 线程未能及时停止！")
-        else:
-             self.get_logger().info("✅ I/O 线程已停止。所有图像均已写入磁盘。")
+            """保存所有文件 (🌟 全部替换为 print)"""
+            self.gen_stress_report()
+            print("\n🧹 Stopping collector, saving all data...")
+            print("⏳ 正在停止并行 I/O 线程池，等待所有缓存图像榨干 CPU 存入硬盘...")
+            
+            # 🌟 修复：shutdown(wait=True) 会阻塞在这里，直到池子里所有图像全部完美存完！
+            self.save_pool.shutdown(wait=True)
+            print("✅ I/O 线程池已安全退出。所有图像均已写入磁盘。")
 
-        if len(self.timestamps) == 0:
-            self.get_logger().warn("⚠️ No data captured, skipping save.")
-            return
-        self.save2hdf5()
-        self.get_logger().info("🎉 All data saved successfully.")
+            if len(self.timestamps) == 0:
+                print("⚠️ No data captured, skipping save.")
+                return
+                
+            self.save2hdf5()
+            print("🎉 All data saved successfully.")
+
+
+    def gen_stress_report(self):
+            """生成压测报告"""
+            end_time = time.monotonic()
+            if self.start_time is not None:
+                actual_duration = end_time - self.start_time
+                theoretical_frames = actual_duration * self.target_fps
+                
+                retention_rate = 0.0
+                if theoretical_frames > 0:
+                    retention_rate = (self.frame_count / theoretical_frames) * 100.0
+
+                print("\n==================================================")
+                print("📊 系统高通量采集压测报告 (Throughput & Persistence)")
+                print("==================================================")
+                print(f"⏱️  物理持续时间 : {actual_duration:.2f} 秒")
+                print(f"🎯  目标采集频率 : {self.target_fps} Hz")
+                print(f"📈  理论应存帧数 : {int(theoretical_frames)} 帧")
+                print(f"✅  实际落盘帧数 : {self.frame_count} 帧")
+                print(f"🏆  最终有效留存率: {retention_rate:.2f}%")
+                print("--------------------------------------------------")
+                print("🔍 丢包溯源详情 (Packet Loss Breakdown):")
+                print(f"   ❌ 相机陈旧丢帧  : {self.drop_cam_stale}")
+                print(f"   ❌ 力觉陈旧丢帧  : {self.drop_force_stale}")
+                print(f"   ❌ I/O 队列满载  : {self.drop_queue_full}  <-- 证明并行队列有效性的关键！")
+                print("==================================================")
+
+                csv_filename = os.path.join(self.save_dir, "stress_test_report.csv")
+
+                report_data = {
+                                "Metric": "Value", 
+                                "Actual_Duration_Seconds": f"{actual_duration:.4f}",
+                                "Target_FPS_Hz": f"{self.target_fps:.1f}",
+                                "Theoretical_Frames": str(int(theoretical_frames)),
+                                "Actual_Saved_Frames": str(self.frame_count),
+                                "Retention_Rate_Percent": f"{retention_rate:.4f}",
+                                "Drop_Camera_Stale": str(self.drop_cam_stale),
+                                "Drop_Force_Stale": str(self.drop_force_stale),
+                                "Drop_IO_Queue_Full": str(self.drop_queue_full)
+                            }
+                try:
+                    with open(csv_filename, mode='w', newline='', encoding='utf-8') as file:
+                        writer = csv.writer(file)
+                        for key, value in report_data.items():
+                            writer.writerow([key, value])
+                    print(f"💾 压测报告已成功保存至: {csv_filename}")
+                except Exception as e:
+                    print(f"❌ 保存 CSV 压测报告失败: {e}")
 
 
 def main(args=None):

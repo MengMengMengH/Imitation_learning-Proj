@@ -163,7 +163,8 @@ class arm_ik():
             AddOrientationConstraint(ik, up_WG, orientation_bounds,base_frame=_Base,rela_frame=_UP_Arm)
             # print(f'up_ori: {up_WG.ToRollPitchYaw()}')
         
-        elbow_angle = elbow_ori.ToRollPitchYaw().roll_angle()
+        # elbow_angle = elbow_ori.ToRollPitchYaw().roll_angle()
+        elbow_angle = elbow_ori.ToRollPitchYaw().pitch_angle()
 
         if wrist_ori is not None:
             wrist_WG = wrist_ori @ self.amend_frame
@@ -185,10 +186,12 @@ class arm_ik():
         # assert result.is_success()
         result_q = result.GetSolution(q_variables)
         # print(f"result_q: {result_q}")
-        if 'iiwa14' in self.arm_type or 'roake' in self.arm_type:
+        if 'iiwa14' in self.arm_type :
+            result_q[3] = - np.abs(elbow_angle)
+        elif 'roake' in self.arm_type:
             result_q[3] = np.abs(elbow_angle)
         elif 'UR5' in self.arm_type:
-            result_q[2] = -elbow_angle
+            result_q[2] =  np.abs(elbow_angle)
         
         self._q = result_q
         return result_q

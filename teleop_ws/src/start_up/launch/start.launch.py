@@ -17,7 +17,7 @@ def generate_launch_description():
         package='mpc_interpolation',
         executable='mpc_interpolation_node',
         output='screen',
-        name='mpc_interpolation_node',
+        name='interpolation_node',
         parameters=[config_path]
     )
 

@@ -1,0 +1,3 @@
+[console_scripts]
+infer_client = infer_client.infer_client:main
+

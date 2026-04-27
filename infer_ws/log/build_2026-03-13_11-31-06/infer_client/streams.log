@@ -1,0 +1,24 @@
+[0.303s] Invoking command in '/home/hanmg/Imitation_learning-Proj/infer_ws/src/infer_client': PYTHONPATH=/home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/infer_client build --build-base /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build install --record /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/install.log --single-version-externally-managed install_data
+[0.417s] running egg_info
+[0.417s] writing ../../build/infer_client/infer_client.egg-info/PKG-INFO
+[0.417s] writing dependency_links to ../../build/infer_client/infer_client.egg-info/dependency_links.txt
+[0.417s] writing entry points to ../../build/infer_client/infer_client.egg-info/entry_points.txt
+[0.418s] writing requirements to ../../build/infer_client/infer_client.egg-info/requires.txt
+[0.418s] writing top-level names to ../../build/infer_client/infer_client.egg-info/top_level.txt
+[0.418s] reading manifest file '../../build/infer_client/infer_client.egg-info/SOURCES.txt'
+[0.419s] writing manifest file '../../build/infer_client/infer_client.egg-info/SOURCES.txt'
+[0.419s] running build
+[0.419s] running build_py
+[0.419s] copying infer_client/infer_client.py -> /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build/lib/infer_client
+[0.419s] running install
+[0.419s] running install_lib
+[0.419s] copying /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build/lib/infer_client/infer_client.py -> /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client
+[0.420s] byte-compiling /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client/infer_client.py to infer_client.cpython-310.pyc
+[0.421s] running install_data
+[0.421s] running install_egg_info
+[0.422s] removing '/home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client-0.0.0-py3.10.egg-info' (and everything under it)
+[0.422s] Copying ../../build/infer_client/infer_client.egg-info to /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client-0.0.0-py3.10.egg-info
+[0.422s] running install_scripts
+[0.432s] Installing infer_client script to /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/infer_client
+[0.432s] writing list of installed files to '/home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/install.log'
+[0.443s] Invoked command in '/home/hanmg/Imitation_learning-Proj/infer_ws/src/infer_client' returned '0': PYTHONPATH=/home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/infer_client build --build-base /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build install --record /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/install.log --single-version-externally-managed install_data

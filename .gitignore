@@ -17,5 +17,7 @@ teleop_ws/src/force_srv/force_srv/__pycache__/force_srv.cpython-310.pyc
 teleop_ws/src/arm_tele_mujo/arm_tele_mujo/__pycache__/
 teleop_ws/src/force_srv/force_srv/__pycache__/
 teleop_ws/run_test.sh
-
-
+teleop_ws/src/arm_tele_mujo/arm_tele_mujo/__pycache__/drake_model.cpython-310.pyc
+data_analyze/
+raw_data/
+teleop_ws/run_stress.sh

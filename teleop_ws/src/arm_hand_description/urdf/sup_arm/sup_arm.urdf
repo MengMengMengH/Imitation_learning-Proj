@@ -1,0 +1,2599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="sup_manipulator.SLDASM">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0147460736373359 -0.0147460736373359 -0.154072634826485"
+        rpy="0 0 0" />
+      <mass
+        value="37.0798435646699" />
+      <inertia
+        ixx="0.664187137565384"
+        ixy="-0.00428106078217048"
+        ixz="-0.00165223497878332"
+        iyy="0.664186303205487"
+        iyz="-0.00165223498569234"
+        izz="0.668340796908217" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="seg1_joint1_1">
+    <inertial>
+      <origin
+        xyz="2.37990326210893E-08 1.34291894271499E-09 4.60990415329016E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244316" />
+      <inertia
+        ixx="1.40955975042649E-08"
+        ixy="-1.24620563328014E-13"
+        ixz="-4.71443195802222E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183220169402E-14"
+        izz="9.70257235395591E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x1"
+    type="revolute">
+    <origin
+      xyz="0 0 0.152"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="seg1_joint1_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint1_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371467 9.16006049345201E-18 2.77791302566981E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872393" />
+      <inertia
+        ixx="6.76141930708367E-08"
+        ixy="2.78538112323332E-13"
+        ixz="5.03706207725921E-19"
+        iyy="2.13465462599408E-06"
+        iyz="-2.13285298348305E-13"
+        izz="2.13552424958681E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint1_1" />
+    <child
+      link="seg1_joint1_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint1_3">
+    <inertial>
+      <origin
+        xyz="2.37990326197976E-08 1.34291894271499E-09 4.60990415758228E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244317" />
+      <inertia
+        ixx="1.40955975042649E-08"
+        ixy="-1.2462056332385E-13"
+        ixz="-4.71443195771873E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183220086543E-14"
+        izz="9.70257235395591E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x2"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_joint1_2" />
+    <child
+      link="seg1_joint1_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_link1">
+    <inertial>
+      <origin
+        xyz="0.0399999999999999 9.6370045437092E-18 4.07090889195025E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.400552884433709" />
+      <inertia
+        ixx="0.000320859873890263"
+        ixy="-1.49500972691759E-22"
+        ixz="-6.90908307278689E-12"
+        iyy="0.000372931163429322"
+        iyz="-3.22228376734774E-14"
+        izz="0.000372096803532016" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint1_3" />
+    <child
+      link="seg1_link1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint2_1">
+    <inertial>
+      <origin
+        xyz="2.37990326152199E-08 1.34291894271499E-09 4.60990417053368E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244319" />
+      <inertia
+        ixx="1.40955975042649E-08"
+        ixy="-1.24620563325724E-13"
+        ixz="-4.71443195810243E-14"
+        iyy="2.21709208765485E-08"
+        iyz="-6.83183220161434E-14"
+        izz="9.7025723539559E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x3"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_link1" />
+    <child
+      link="seg1_joint2_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint2_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371466 3.53557495306628E-17 2.77791297868219E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872393" />
+      <inertia
+        ixx="6.76141930708367E-08"
+        ixy="2.78538111957568E-13"
+        ixz="5.03650491844273E-19"
+        iyy="2.13465462599408E-06"
+        iyz="-2.13285298346314E-13"
+        izz="2.13552424958681E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y3"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint2_1" />
+    <child
+      link="seg1_joint2_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint2_3">
+    <inertial>
+      <origin
+        xyz="2.37990326392096E-08 1.34291894271499E-09 4.60990413078443E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244314" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563326254E-13"
+        ixz="-4.71443196008405E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183220288254E-14"
+        izz="9.70257235395591E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint2_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x4"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_joint2_2" />
+    <child
+      link="seg1_joint2_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_link2">
+    <inertial>
+      <origin
+        xyz="0.04 3.03006523722174E-17 3.69165360447161E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.400552884433708" />
+      <inertia
+        ixx="0.000320859873890263"
+        ixy="-3.37996686799523E-21"
+        ixz="-6.90908307022351E-12"
+        iyy="0.000372931163429322"
+        iyz="-3.22228375274752E-14"
+        izz="0.000372096803532016" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y4"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint2_3" />
+    <child
+      link="seg1_link2" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint3_1">
+    <inertial>
+      <origin
+        xyz="2.37990326237441E-08 1.34291899822614E-09 4.6099041862637E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244322" />
+      <inertia
+        ixx="1.4095597504265E-08"
+        ixy="-1.24620563316172E-13"
+        ixz="-4.71443195845126E-14"
+        iyy="2.21709208765485E-08"
+        iyz="-6.83183220367908E-14"
+        izz="9.70257235395593E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x5"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_link2" />
+    <child
+      link="seg1_joint3_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint3_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371464 4.41115005727362E-17 2.77791311069272E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872393" />
+      <inertia
+        ixx="6.76141930708366E-08"
+        ixy="2.78538112093887E-13"
+        ixz="5.03539817608823E-19"
+        iyy="2.13465462599408E-06"
+        iyz="-2.13285298345285E-13"
+        izz="2.13552424958681E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y5"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint3_1" />
+    <child
+      link="seg1_joint3_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint3_3">
+    <inertial>
+      <origin
+        xyz="2.37990325849031E-08 1.34291888720384E-09 4.609904124049E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00058675077924431" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563337338E-13"
+        ixz="-4.71443195446013E-14"
+        iyy="2.21709208765482E-08"
+        iyz="-6.83183220029161E-14"
+        izz="9.70257235395584E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint3_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x6"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_joint3_2" />
+    <child
+      link="seg1_joint3_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_link3">
+    <inertial>
+      <origin
+        xyz="0.04 2.33408660059402E-17 3.72389876967996E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.400552884433709" />
+      <inertia
+        ixx="0.000320859873890263"
+        ixy="3.03971743323154E-21"
+        ixz="-6.90908307383207E-12"
+        iyy="0.000372931163429322"
+        iyz="-3.22228358195452E-14"
+        izz="0.000372096803532016" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y6"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint3_3" />
+    <child
+      link="seg1_link3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint4_1">
+    <inertial>
+      <origin
+        xyz="2.37990326265452E-08 1.34291899822614E-09 4.60990411454936E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244312" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563333172E-13"
+        ixz="-4.71443195800042E-14"
+        iyy="2.21709208765483E-08"
+        iyz="-6.83183220256199E-14"
+        izz="9.70257235395591E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x7"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_link3" />
+    <child
+      link="seg1_joint4_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint4_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371467 -1.58457420656137E-15 2.77791308147197E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872397" />
+      <inertia
+        ixx="6.76141930708368E-08"
+        ixy="2.78538111045061E-13"
+        ixz="5.03631410588427E-19"
+        iyy="2.13465462599411E-06"
+        iyz="-2.13285298348636E-13"
+        izz="2.13552424958684E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y7"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint4_1" />
+    <child
+      link="seg1_joint4_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_joint4_3">
+    <inertial>
+      <origin
+        xyz="2.37990326126197E-08 1.34291877618153E-09 4.60990414863749E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00058675077924432" />
+      <inertia
+        ixx="1.40955975042649E-08"
+        ixy="-1.24620563324084E-13"
+        ixz="-4.71443194983716E-14"
+        iyy="2.21709208765485E-08"
+        iyz="-6.83183219642126E-14"
+        izz="9.70257235395599E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_joint4_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_x8"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_joint4_2" />
+    <child
+      link="seg1_joint4_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg1_link4">
+    <inertial>
+      <origin
+        xyz="0.0386002439729353 4.70261262782897E-17 -4.50592162567496E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.361759560498704" />
+      <inertia
+        ixx="0.000262752698433165"
+        ixy="-3.68137059761034E-21"
+        ixz="-1.51482040188648E-12"
+        iyy="0.000322642437031739"
+        iyz="-2.92823774596578E-13"
+        izz="0.000321921766001634" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg1_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg1_y8"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg1_joint4_3" />
+    <child
+      link="seg1_link4" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint1_1">
+    <inertial>
+      <origin
+        xyz="2.37990326295947E-08 1.34291888720384E-09 4.60990421227483E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244327" />
+      <inertia
+        ixx="1.40955975042651E-08"
+        ixy="-1.24620563321565E-13"
+        ixz="-4.71443196207452E-14"
+        iyy="2.21709208765486E-08"
+        iyz="-6.83183220062816E-14"
+        izz="9.70257235395594E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x1"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg1_link4" />
+    <child
+      link="seg2_joint1_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint1_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371466 1.6846936435383E-14 2.77791307913195E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872391" />
+      <inertia
+        ixx="6.76141930708365E-08"
+        ixy="2.78538110603586E-13"
+        ixz="5.03636389558144E-19"
+        iyy="2.13465462599406E-06"
+        iyz="-2.13285298341923E-13"
+        izz="2.13552424958679E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint1_1" />
+    <child
+      link="seg2_joint1_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint1_3">
+    <inertial>
+      <origin
+        xyz="2.37990325727697E-08 1.34291910924844E-09 4.60990413410572E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244312" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563330793E-13"
+        ixz="-4.71443195024439E-14"
+        iyy="2.21709208765483E-08"
+        iyz="-6.83183220022789E-14"
+        izz="9.70257235395584E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x2"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_joint1_2" />
+    <child
+      link="seg2_joint1_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_link1">
+    <inertial>
+      <origin
+        xyz="0.0399999999999998 5.38368778396278E-17 8.45855570491911E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.324306605737454" />
+      <inertia
+        ixx="0.000210454770557818"
+        ixy="-6.17368671032025E-21"
+        ixz="-6.17024938448283E-12"
+        iyy="0.000277105146318099"
+        iyz="-3.60021484503546E-14"
+        izz="0.000276497512962447" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint1_3" />
+    <child
+      link="seg2_link1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint2_1">
+    <inertial>
+      <origin
+        xyz="2.37990326053376E-08 1.34291888720384E-09 4.60990413568403E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244315" />
+      <inertia
+        ixx="1.40955975042649E-08"
+        ixy="-1.2462056334083E-13"
+        ixz="-4.71443195363322E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183220298599E-14"
+        izz="9.70257235395589E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x3"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_link1" />
+    <child
+      link="seg2_joint2_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint2_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371464 1.2324445936026E-16 2.77791300435122E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872401" />
+      <inertia
+        ixx="6.76141930708371E-08"
+        ixy="2.78538110379155E-13"
+        ixz="5.03570070545187E-19"
+        iyy="2.13465462599413E-06"
+        iyz="-2.13285298358115E-13"
+        izz="2.13552424958686E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y3"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint2_1" />
+    <child
+      link="seg2_joint2_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint2_3">
+    <inertial>
+      <origin
+        xyz="2.37990326723034E-08 1.34291888720384E-09 4.60990412690695E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244322" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.2462056334142E-13"
+        ixz="-4.71443195809181E-14"
+        iyy="2.21709208765485E-08"
+        iyz="-6.83183220410108E-14"
+        izz="9.70257235395606E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint2_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x4"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_joint2_2" />
+    <child
+      link="seg2_joint2_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_link2">
+    <inertial>
+      <origin
+        xyz="0.0399999999999999 5.81243681909465E-17 3.02621469355943E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.324306605737454" />
+      <inertia
+        ixx="0.000210454770557818"
+        ixy="-8.79074932721665E-21"
+        ixz="-6.1702494088172E-12"
+        iyy="0.000277105146318099"
+        iyz="-3.60021512773381E-14"
+        izz="0.000276497512962447" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y4"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint2_3" />
+    <child
+      link="seg2_link2" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint3_1">
+    <inertial>
+      <origin
+        xyz="2.37990326148861E-08 1.34291888720384E-09 4.60990422688143E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244328" />
+      <inertia
+        ixx="1.40955975042651E-08"
+        ixy="-1.24620563327746E-13"
+        ixz="-4.71443195608735E-14"
+        iyy="2.21709208765487E-08"
+        iyz="-6.83183219974298E-14"
+        izz="9.70257235395598E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x5"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_link2" />
+    <child
+      link="seg2_joint3_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint3_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371466 -4.51341491702334E-18 2.777912904895E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872391" />
+      <inertia
+        ixx="6.76141930708366E-08"
+        ixy="2.78538111857178E-13"
+        ixz="5.03812523861191E-19"
+        iyy="2.13465462599407E-06"
+        iyz="-2.13285298340674E-13"
+        izz="2.1355242495868E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y5"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint3_1" />
+    <child
+      link="seg2_joint3_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint3_3">
+    <inertial>
+      <origin
+        xyz="2.37990326290784E-08 1.34291888720384E-09 4.60990410807221E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244317" />
+      <inertia
+        ixx="1.40955975042647E-08"
+        ixy="-1.24620563295923E-13"
+        ixz="-4.7144319543442E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183220398218E-14"
+        izz="9.70257235395599E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint3_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x6"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_joint3_2" />
+    <child
+      link="seg2_joint3_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_link3">
+    <inertial>
+      <origin
+        xyz="0.04 6.90433750462961E-17 3.63094910277678E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.324306605737454" />
+      <inertia
+        ixx="0.000210454770557818"
+        ixy="-3.16403082391253E-21"
+        ixz="-6.17024937124031E-12"
+        iyy="0.0002771051463181"
+        iyz="-3.60021485397781E-14"
+        izz="0.000276497512962447" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y6"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint3_3" />
+    <child
+      link="seg2_link3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint4_1">
+    <inertial>
+      <origin
+        xyz="2.37990326577221E-08 1.34291888720384E-09 4.60990409646583E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244309" />
+      <inertia
+        ixx="1.40955975042647E-08"
+        ixy="-1.24620563318835E-13"
+        ixz="-4.71443196055478E-14"
+        iyy="2.21709208765483E-08"
+        iyz="-6.83183220218986E-14"
+        izz="9.70257235395591E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x7"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_link3" />
+    <child
+      link="seg2_joint4_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint4_2">
+    <inertial>
+      <origin
+        xyz="0.0350000337371466 2.96757845482334E-17 2.77791288409257E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00537451421872394" />
+      <inertia
+        ixx="6.76141930708368E-08"
+        ixy="2.78538112072123E-13"
+        ixz="5.03711282269214E-19"
+        iyy="2.13465462599409E-06"
+        iyz="-2.1328529835004E-13"
+        izz="2.13552424958682E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y7"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint4_1" />
+    <child
+      link="seg2_joint4_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_joint4_3">
+    <inertial>
+      <origin
+        xyz="2.3799032559435E-08 1.34291888720384E-09 4.60990418681166E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244319" />
+      <inertia
+        ixx="1.4095597504265E-08"
+        ixy="-1.24620563322478E-13"
+        ixz="-4.71443195008795E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.83183219336047E-14"
+        izz="9.7025723539558E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_joint4_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_x8"
+    type="revolute">
+    <origin
+      xyz="0.07 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_joint4_2" />
+    <child
+      link="seg2_joint4_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg2_link4">
+    <inertial>
+      <origin
+        xyz="0.0388435481951928 5.2678597468987E-17 -4.84970042672489E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.297976223782411" />
+      <inertia
+        ixx="0.000178158733581243"
+        ixy="-8.79895012168466E-21"
+        ixz="-1.49618800302153E-12"
+        iyy="0.00024661905697869"
+        iyz="-2.23628748580265E-13"
+        izz="0.00024608163074151" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg2_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg2_y8"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg2_joint4_3" />
+    <child
+      link="seg2_link4" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint1_1">
+    <inertial>
+      <origin
+        xyz="2.37990326475729E-08 1.34291910924844E-09 4.60990417403295E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244325" />
+      <inertia
+        ixx="1.4095597504265E-08"
+        ixy="-1.2462056326653E-13"
+        ixz="-4.71443195257704E-14"
+        iyy="2.21709208765486E-08"
+        iyz="-6.83183220037667E-14"
+        izz="9.70257235395604E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_x1"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg2_link4" />
+    <child
+      link="seg3_joint1_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint1_2">
+    <inertial>
+      <origin
+        xyz="0.0310000334903404 -3.49040727424063E-15 2.79654537051103E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00474621688835276" />
+      <inertia
+        ixx="5.97604546968854E-08"
+        ixy="2.29589619149642E-13"
+        ixz="4.44537186633107E-19"
+        iyy="1.47733327111581E-06"
+        iyz="-1.88145567522422E-13"
+        izz="1.47820236373152E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_y1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg3_joint1_1" />
+    <child
+      link="seg3_joint1_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint1_3">
+    <inertial>
+      <origin
+        xyz="2.37990326728699E-08 1.34291910924844E-09 4.60990412667356E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244314" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563322E-13"
+        ixz="-4.71443196518044E-14"
+        iyy="2.21709208765484E-08"
+        iyz="-6.831832205282E-14"
+        izz="9.70257235395596E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_x2"
+    type="revolute">
+    <origin
+      xyz="0.062 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg3_joint1_2" />
+    <child
+      link="seg3_joint1_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_link1">
+    <inertial>
+      <origin
+        xyz="0.0390000000000001 4.42062288735675E-17 2.40958434533432E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.265557419971223" />
+      <inertia
+        ixx="0.000144829991527511"
+        ixy="-7.02045507359293E-22"
+        ixz="-5.34597556952168E-12"
+        iyy="0.000206078227015215"
+        iyz="-3.87864052734367E-14"
+        izz="0.0002056106749288" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_y2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg3_joint1_3" />
+    <child
+      link="seg3_link1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint2_1">
+    <inertial>
+      <origin
+        xyz="2.37990326871355E-08 1.34291888720384E-09 4.6099041772367E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244328" />
+      <inertia
+        ixx="1.4095597504265E-08"
+        ixy="-1.24620563291817E-13"
+        ixz="-4.71443195674787E-14"
+        iyy="2.21709208765487E-08"
+        iyz="-6.83183220630432E-14"
+        izz="9.70257235395613E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_x3"
+    type="revolute">
+    <origin
+      xyz="0.078 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg3_link1" />
+    <child
+      link="seg3_joint2_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint2_2">
+    <inertial>
+      <origin
+        xyz="0.0310000334903404 9.43107986183798E-17 2.79654539244347E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00474621688835278" />
+      <inertia
+        ixx="5.97604546968855E-08"
+        ixy="2.29589618824497E-13"
+        ixz="4.44480687468156E-19"
+        iyy="1.47733327111582E-06"
+        iyz="-1.88145567515964E-13"
+        izz="1.47820236373153E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_y3"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg3_joint2_1" />
+    <child
+      link="seg3_joint2_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_joint2_3">
+    <inertial>
+      <origin
+        xyz="2.37990326194737E-08 1.34291910924844E-09 4.60990412183669E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244313" />
+      <inertia
+        ixx="1.40955975042648E-08"
+        ixy="-1.24620563298636E-13"
+        ixz="-4.71443195287201E-14"
+        iyy="2.21709208765483E-08"
+        iyz="-6.83183220790589E-14"
+        izz="9.7025723539559E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_joint2_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_x4"
+    type="revolute">
+    <origin
+      xyz="0.062 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg3_joint2_2" />
+    <child
+      link="seg3_joint2_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg3_link2">
+    <inertial>
+      <origin
+        xyz="0.0377655162085531 5.37361920824299E-17 -5.40651438125528E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.242092175941735" />
+      <inertia
+        ixx="0.000120764731429317"
+        ixy="-8.94973763180334E-21"
+        ixz="-1.24341486025254E-12"
+        iyy="0.000181880070895717"
+        iyz="-2.05526595284501E-13"
+        izz="0.000181471047967605" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg3_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg3_y4"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg3_joint2_3" />
+    <child
+      link="seg3_link2" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg4_joint1_1">
+    <inertial>
+      <origin
+        xyz="2.37990326768146E-08 1.34291888720384E-09 4.60990415580981E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.000586750779244327" />
+      <inertia
+        ixx="1.4095597504265E-08"
+        ixy="-1.2462056326741E-13"
+        ixz="-4.71443195664408E-14"
+        iyy="2.21709208765486E-08"
+        iyz="-6.83183220095956E-14"
+        izz="9.70257235395608E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg4_x1"
+    type="revolute">
+    <origin
+      xyz="0.078 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg3_link2" />
+    <child
+      link="seg4_joint1_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg4_joint1_2">
+    <inertial>
+      <origin
+        xyz="0.0310000334903406 1.29400114533872E-16 2.79654539225503E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00474621688835272" />
+      <inertia
+        ixx="5.97604546968851E-08"
+        ixy="2.29589619785532E-13"
+        ixz="4.4467108494893E-19"
+        iyy="1.47733327111579E-06"
+        iyz="-1.88145567479694E-13"
+        izz="1.4782023637315E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg4_y1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg4_joint1_1" />
+    <child
+      link="seg4_joint1_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg4_joint1_3">
+    <inertial>
+      <origin
+        xyz="2.3799032635138E-08 1.34291910924844E-09 4.60990407065037E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.00058675077924431" />
+      <inertia
+        ixx="1.40955975042647E-08"
+        ixy="-1.24620563291524E-13"
+        ixz="-4.71443195038455E-14"
+        iyy="2.21709208765483E-08"
+        iyz="-6.83183220601082E-14"
+        izz="9.70257235395597E-09" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_joint1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg4_x2"
+    type="revolute">
+    <origin
+      xyz="0.062 0 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="seg4_joint1_2" />
+    <child
+      link="seg4_joint1_3" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="seg4_link4">
+    <inertial>
+      <origin
+        xyz="0.0390000000000001 2.64980062191102E-17 8.70651237720562E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.219362028368099" />
+      <inertia
+        ixx="9.8888462489962E-05"
+        ixy="5.32587701696007E-22"
+        ixz="-4.81014555253266E-12"
+        iyy="0.000159738031308213"
+        iyz="-4.36272896758882E-14"
+        izz="0.000159387220534547" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sup_manipulator.SLDASM/meshes/seg4_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="seg4_y2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="seg4_joint1_3" />
+    <child
+      link="seg4_link4" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

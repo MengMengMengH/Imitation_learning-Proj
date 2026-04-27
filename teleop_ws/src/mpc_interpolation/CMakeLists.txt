@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 find_package(Eigen3 REQUIRED)
 find_package(qpOASES REQUIRED)
@@ -56,11 +57,14 @@ ament_target_dependencies(mpc_interpolation_node
   # "Eigen3"
   # "qpOASES"
   "std_msgs"
+  "sensor_msgs"
 )
 ament_target_dependencies(cubic_spline_node
   # "Eigen3"
-  "qpOASES"
+  # "qpOASES"
   "std_msgs"
+  "rclcpp"
+  "sensor_msgs"
 )
 
 install(TARGETS mpc_interpolation_node 

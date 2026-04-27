@@ -1,0 +1,2 @@
+Test_Step,Latency_ms,Arm_MSE_Total,Arm_MSE_Step0,Hand_MSE_Total,Hand_MSE_Step0,Pos_Error_Step0_mm,Ori_Error_Step0_deg,Pos_Error_Step7_mm,Ori_Error_Step7_deg
+episode_0000.hdf5,1,1458.35,1.9671841e-05,2.526156e-05,141.28578,32.022034,-1.0,-1.0,-1.0,-1.0

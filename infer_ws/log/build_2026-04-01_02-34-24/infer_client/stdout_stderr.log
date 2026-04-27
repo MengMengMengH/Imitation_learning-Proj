@@ -1,0 +1,22 @@
+running egg_info
+writing ../../build/infer_client/infer_client.egg-info/PKG-INFO
+writing dependency_links to ../../build/infer_client/infer_client.egg-info/dependency_links.txt
+writing entry points to ../../build/infer_client/infer_client.egg-info/entry_points.txt
+writing requirements to ../../build/infer_client/infer_client.egg-info/requires.txt
+writing top-level names to ../../build/infer_client/infer_client.egg-info/top_level.txt
+reading manifest file '../../build/infer_client/infer_client.egg-info/SOURCES.txt'
+writing manifest file '../../build/infer_client/infer_client.egg-info/SOURCES.txt'
+running build
+running build_py
+copying infer_client/drake_model.py -> /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build/lib/infer_client
+running install
+running install_lib
+copying /home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/build/lib/infer_client/drake_model.py -> /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client
+byte-compiling /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client/drake_model.py to drake_model.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/infer_client/infer_client.egg-info to /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/python3.10/site-packages/infer_client-0.0.0-py3.10.egg-info
+running install_scripts
+Installing infer_client script to /home/hanmg/Imitation_learning-Proj/infer_ws/install/infer_client/lib/infer_client
+writing list of installed files to '/home/hanmg/Imitation_learning-Proj/infer_ws/build/infer_client/install.log'

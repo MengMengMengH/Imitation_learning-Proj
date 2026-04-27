@@ -1,102 +1,82 @@
-#include "../include/mpc_interpolation/cubic_spline.hpp"
-#include "../include/mpc_interpolation/mpc_spline.hpp"
-#include <iostream>
 #include <chrono>
-#include <random>
-// #include <QApplication>
-// #include <QMainWindow>
-// #include <QChart>
-// #include <QLineSeries>
-// #include <QScatterSeries>
-// #include <QChartView>
-// #include <QPainter>
+#include <functional>
+#include <memory>
+#include <vector>
+#include <cmath>
 
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/float32_multi_array.hpp"
 
+using namespace std::chrono_literals;
 
+class RokaeControlPublisher : public rclcpp::Node {
+public:
+  RokaeControlPublisher()
+  : Node("rokae_control_node"),
+    start_time_(std::chrono::steady_clock::now())
+  {
+    amplitudes_  = {0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    frequencies_ = {0.5, 0.5,0.5, 0.5,0.5, 0.5, 0.5};
+    phases_      = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-int main(int argc, char **argv) 
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(1))
+        .reliability(rclcpp::ReliabilityPolicy::Reliable)
+        .durability(rclcpp::DurabilityPolicy::Volatile)
+        .deadline(rclcpp::Duration(1ms));
+
+    publisher_ = this->create_publisher<std_msgs::msg::Float32MultiArray>(
+        "rokae_control_joints", qos);
+
+    timer_ = this->create_wall_timer(
+        20ms, std::bind(&RokaeControlPublisher::timer_callback, this));
+
+    RCLCPP_INFO(this->get_logger(),
+      "Rokae 50Hz node started. First 5s output zero.");
+  }
+
+private:
+  void timer_callback()
+  {
+    auto message = std_msgs::msg::Float32MultiArray();
+    message.data.resize(7, 0.0f);
+
+    auto now = std::chrono::steady_clock::now();
+    double t = std::chrono::duration<double>(now - start_time_).count();
+
+    // 前 5 秒：保持全零
+    if (t < 5.0) {
+      publisher_->publish(message);
+      return;
+    }
+
+    // 5 秒后：开始正弦
+    double ts = t - 5.0;  // 正弦时间，从 0 开始
+
+    for (size_t i = 0; i < 7; ++i) {
+      double angle =
+        amplitudes_[i] *
+        (std::cos(2.0 * M_PI * frequencies_[i] * ts + phases_[i])-1);
+
+      message.data[i] = static_cast<float>(angle);
+    }
+
+    publisher_->publish(message);
+  }
+
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr publisher_;
+
+  std::chrono::steady_clock::time_point start_time_;
+
+  std::vector<double> amplitudes_;
+  std::vector<double> frequencies_;
+  std::vector<double> phases_;
+};
+
+int main(int argc, char * argv[])
 {
-    // QApplication app(argc, argv);
-    // QMainWindow window;
-
-    // QChart *chart = new QChart();
-    // QLineSeries *lineSeries = new QLineSeries();
-    // QScatterSeries *cubicIPTScatter = new QScatterSeries();
-    // QScatterSeries *referencePoints = new QScatterSeries();
-
-
-    // referencePoints->setMarkerSize(10); // 放大参考点
-    // referencePoints->setColor(Qt::red); // 设置颜色为红色
-
-    // cubicIPTScatter->setColor(Qt::green);
-
-    // const int num_segs = 5;
-    // const int num_points = 20;
-    // const double delta = 1.5;
-
-    // std::random_device rd;
-    // std::mt19937 gen(rd());
-    // std::uniform_real_distribution<> dis(-delta, delta);
-
-
-    // Eigen::VectorXd start_pos(7);
-    // Eigen::VectorXd start_vel(7);
-    // Eigen::VectorXd start_acc(7);
-    // Eigen::VectorXd end_pos(7);
-    // start_pos << 0, 0, 0, 0, 0, 0, 0; // 起始位置
-    // start_vel << 0, 0, 0, 0, 0, 0, 0; // 起始速度
-
-    // end_pos << 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15; // 终点位置
-
-
-    // for(int seg = 0;seg<num_segs; seg++)
-    // {   
-    //     CubicSplineTrajectoryPlanner planner(start_pos, start_vel, end_pos, num_points);
-
-    //     try {
-    //         // auto start = std::chrono::high_resolution_clock::now();
-
-    //         //cubic interpolation method
-    //         auto trajectory = planner.generateTrajectory();
-    //         // auto end = std::chrono::high_resolution_clock::now();
-    //         // auto solve_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    //         for (int i = 0; i < num_points; ++i) {
-    //             double t = static_cast<double>(i) / num_points + seg;
-    //             // std::cout << "t: " << t << std::endl;
-    //             double y = trajectory[i](0); // 可视化第一个维度的数据
-    //             lineSeries->append(t, y);
-    //             cubicIPTScatter->append(t, y);
-    //         }
-    //         referencePoints->append(seg + 1, end_pos(0));
-    //         if (seg < num_segs - 1) 
-    //         {
-    //             // Update start conditions for next segment
-    //             start_pos = end_pos;
-    //             start_vel = planner.evaluatePolynomial(1.0, planner.coeffs, 1);
-    //             // Randomly adjust end_pos for next segment
-    //             for (int i = 0; i < 7; ++i) {
-    //                 // end_pos[i] += dis(gen);
-    //                 end_pos[i] += 0.5;
-    //             }
-    //         }
-            
-    //     } catch (const std::exception& e) {
-    //         std::cerr << "Error: " << e.what() << std::endl;
-    //     }
-    // }
-    // chart->addSeries(lineSeries);
-    // chart->addSeries(cubicIPTScatter);
-    // chart->addSeries(referencePoints);
-    // chart->createDefaultAxes();
-
-    // QChartView *chartView = new QChartView(chart);
-    // chartView->setRenderHint(QPainter::Antialiasing);
-    // chartView->setRubberBand(QChartView::RectangleRubberBand);
-
-    // window.setCentralWidget(chartView);
-    // window.resize(800, 600);
-    // window.show();
-
-    // return app.exec();
-    // return 0;
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<RokaeControlPublisher>());
+  rclcpp::shutdown();
+  return 0;
 }

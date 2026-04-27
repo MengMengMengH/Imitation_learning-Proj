@@ -38,6 +38,7 @@ public:
         }
         robot_.setOperateMode(OperateMode::automatic, ec);
         robot_.setRtNetworkTolerance(20, ec);
+        // robot_.setMotionControlMode(MotionControlMode::NrtCommand, ec);
         robot_.setMotionControlMode(MotionControlMode::RtCommand, ec);
         robot_.setPowerState(true,ec);
 
@@ -95,7 +96,6 @@ public:
             // }
             // std::cout << "Robot power state: " << state_str << std::endl;
             
-            
             motion_controller_->MoveJ(0.5,robot_.jointPos(ec),zero_pos);
             RCLCPP_INFO(this->get_logger(), "Robot joint positions initialized to zero.");
 
@@ -134,6 +134,7 @@ public:
         }
         std::error_code ec;
         robot_.setPowerState(false, ec);
+        robot_.setMotionControlMode(MotionControlMode::Idle,ec);
         std::cout<< "Robot power off." << std::endl;
     }
 
@@ -301,7 +302,8 @@ private:
             if(followed_mode == RtControllerMode::jointImpedance)
             {
                 RCLCPP_INFO(this->get_logger(),"Set joint impedance control mode");
-                motion_controller_->setJointImpedance({300, 300, 300, 500, 50, 100, 50}, ec);
+                motion_controller_->setJointImpedance({500, 500, 500, 500, 50, 50, 50}, ec);
+                
             }
             else if(followed_mode == RtControllerMode::jointPosition)
             {
@@ -315,7 +317,6 @@ private:
             }
 
             motion_controller_->startMove(followed_mode);
-            
             {
                 std::lock_guard<std::mutex> lock(joint_positions_mutex_);
                 init_move_completed = true;
@@ -326,7 +327,6 @@ private:
                 0,
                 true
             );
-
             RCLCPP_INFO(this->get_logger(), "Control loop started.");
             control_thread_ = std::thread([this]() 
             {
@@ -352,7 +352,6 @@ private:
     // rclcpp::Publisher<std_msgs::msg::Float32MultiArray>::SharedPtr filted_joints;
     
     const std::array<double, 7> zero_pos = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    const std::array<double, 7> debug_pos = {0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0};
 
 
     const std::array<double, 7> torqueThresholds = { 75, 75, 60, 45, 30, 30, 20 };

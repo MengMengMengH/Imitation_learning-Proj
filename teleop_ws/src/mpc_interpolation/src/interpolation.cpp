@@ -7,12 +7,14 @@
 #include <sched.h>
 #include <unistd.h>
 #include <queue>
+#include <fstream>
 
 #include <boost/lockfree/queue.hpp>
 #include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float32_multi_array.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
 
 #include "mpc_interpolation/mpc_spline.hpp"
 #include "mpc_interpolation/cubic_spline.hpp"
@@ -62,6 +64,7 @@ public:
 
     explicit interpolation() : Node("interpolation_node"),running_(true)
     {
+        mpc_exec_times_.reserve(MAX_LOG_SAMPLES);
         // Initialize the node
         RCLCPP_INFO(this->get_logger(), "Interpolation node started.");
 
@@ -74,10 +77,10 @@ public:
             "/rokae_control_joints", qos, std::bind(&interpolation::update_ref_points, this,std::placeholders::_1));
         
 
-        std::vector<double> default_pos(7, 4.0);
-        std::vector<double> default_vel(7, 0.006);
-        std::vector<double> default_acc(7, 0.000005);
-        std::vector<double> default_ctrl(7, 5e-10);
+        std::vector<double> default_pos(7, 4.05);
+        std::vector<double> default_vel(7, 0.03);
+        std::vector<double> default_acc(7, 0.0000125);
+        std::vector<double> default_ctrl(7, 8e-9);
 
         this->declare_parameter<std::vector<double>>("mpc_weights.position", default_pos);
         this->declare_parameter<std::vector<double>>("mpc_weights.velocity", default_vel);
@@ -106,12 +109,6 @@ public:
             std::cout << "Joint_" << i << ": " << "pos_w:" << pos_weights_[i]
             << "; vel_w: " << vel_weights_[i] << "; acc_w: " << acc_weights_[i] <<"; ctrl_w: " << ctrl_weights_[i]<<std::endl;
         }
-        // MPCsplines_= [this]<size_t... I>(std::index_sequence<I...>) {
-        //         return std::vector{
-        //             MpcSpline<Horizon, InputNum>
-        //             (mpc_dt, I,pos_weights_[I], vel_weights_[I], acc_weights_[I], ctrl_weights_[I])
-        //             ...};
-        //     }(std::make_index_sequence<7>{});
 
         exec_plan_thread_ = std::thread(&interpolation::exec_planning,this);
         pthread_t handle_exec = exec_plan_thread_.native_handle();
@@ -140,8 +137,12 @@ public:
     ~interpolation()
     {
         running_ = false;
+        if (mpc_exec_times_.size() > 0) {
+            saveExecTimesToFile();
+        }
         if (mpc_thread_.joinable()) mpc_thread_.join();
         if (mimic_thread_.joinable())mimic_thread_.join();
+        if (exec_plan_thread_.joinable())mimic_thread_.join();
     }
 
 private:
@@ -152,7 +153,15 @@ private:
         Vector7d new_target = conv2EigenVec(msg->data);
         {
             std::lock_guard<std::mutex> lk(target_mtx_);
-            end_position_ = new_target;
+            if (!filter_initialized_) {
+                filtered_target_ = new_target;
+                filter_initialized_ = true;
+            } else {
+                filtered_target_ =
+                    target_alpha_ * new_target +
+                    (1.0 - target_alpha_) * filtered_target_;
+            }
+            end_position_ = filtered_target_;
             target_updated_ = true;
         }
     }
@@ -172,24 +181,47 @@ private:
                     target_updated_ = false;
                 }
             }
+            /* ------------------三次曲线插值----------------- */
+            // CubicSplineTrajectoryPlanner planner(
+            //     start_position_, start_velocity_, local_end_position, IPT_NUM);
+            // planner.coeffs = planner.computeCubicCoefficients();
+            // for (int i = 0; i < IPT_NUM; ++i)
+            // {
+            //     double t = static_cast<double>(i) / (IPT_NUM - 1);
+            //     JointArray pt{};
+            //     Vector7d eigen_pt = planner.evaluatePolynomial(t, planner.coeffs);
+            //     for (int j = 0; j < jointSize; ++j)
+            //     {
+            //         pt[j] = eigen_pt(j);
+            //     }
+            //     if (ref_traj_queue_.push(pt)) 
+            //     {
+            //         ref_produced_.fetch_add(1, std::memory_order_relaxed);
+            //     }
+            // }
 
-            CubicSplineTrajectoryPlanner planner(
-                start_position_, start_velocity_, local_end_position, IPT_NUM);
-            planner.coeffs = planner.computeCubicCoefficients();
+            /* ---------------线性插值----------------------*/
             for (int i = 0; i < IPT_NUM; ++i)
             {
-                double t = static_cast<double>(i) / (IPT_NUM - 1);
+                double alpha = static_cast<double>(i) / (IPT_NUM - 1);
+
+                Vector7d eigen_pt =
+                    (1.0 - alpha) * start_position_ +
+                    alpha * local_end_position;
+
                 JointArray pt{};
-                Vector7d eigen_pt = planner.evaluatePolynomial(t, planner.coeffs);
                 for (int j = 0; j < jointSize; ++j)
                 {
                     pt[j] = eigen_pt(j);
                 }
-                if (ref_traj_queue_.push(pt)) 
+
+                if (ref_traj_queue_.push(pt))
                 {
                     ref_produced_.fetch_add(1, std::memory_order_relaxed);
                 }
             }
+
+
 
             if (!mpc_enabled_.load(std::memory_order_acquire) &&
                 ref_produced_.load(std::memory_order_relaxed) >= MPC_START_REF)
@@ -198,7 +230,7 @@ private:
             }
 
             start_position_ = local_end_position;
-            start_velocity_ = planner.evaluatePolynomial(1.0, planner.coeffs, 1);
+            // start_velocity_ = planner.evaluatePolynomial(1.0, planner.coeffs, 1); // 三次曲线特有
 
             rate.sleep();
         }
@@ -251,6 +283,16 @@ private:
             for (int i = 0; i < jointSize; ++i)
                 cube_msg.data[i] = static_cast<float>(cmd_ref[i]);
             mimic_send_cuberef_->publish(cube_msg);
+
+
+            // static uint64_t seq = 0;
+            // auto now = std::chrono::high_resolution_clock::now();
+            // auto us = std::chrono::duration_cast<std::chrono::microseconds>(
+            //             now.time_since_epoch()).count();
+
+            // RCLCPP_INFO(this->get_logger(),
+            //     "PUB seq=%lu time=%ld us q0=%.6f",
+            //     seq++, us, cmd_ref[0]);
 
             rate.sleep();
         }
@@ -332,8 +374,19 @@ private:
                 mpc_out.row(j) = MPCsplines_[j].getPrediction().transpose();
                 auto full = MPCsplines_[j].getFullStatePrediction();
                 
+                // Eigen::IOFormat fmt(
+                //     Eigen::StreamPrecision,
+                //     Eigen::DontAlignCols,
+                //     ", ",
+                //     ", ",
+                //     "[",
+                //     "]"
+                // );
+
                 // std::cout << "ref traj:" << "(joint"<< j  << ") "<< ref_horizon.row(j) << std::endl;
-                // std::cout << "real traj:" << "(joint"<< j  << ") "<< full << std::endl;
+                // std::cout << "real traj:(joint" << j << ") "
+                //         << full.transpose().format(fmt)
+                //         << std::endl;
 
                 last_vel_(j) = full(1);
                 last_acc_(j) = full(2);
@@ -370,7 +423,16 @@ private:
             auto dt = std::chrono::duration_cast<std::chrono::microseconds>(
                           std::chrono::high_resolution_clock::now() - t0)
                           .count();
-
+            if (mpc_exec_times_.size() < MAX_LOG_SAMPLES)
+                        {
+                            mpc_exec_times_.push_back(dt);
+                        }
+            else if (!dt_log_saved_.load())
+            {
+                // 凑满 10万次了，直接写文件
+                saveExecTimesToFile(); 
+            }
+            
             if (dt > 1000)
                 RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
                                      "MPC loop took %ld us", dt);
@@ -445,6 +507,37 @@ private:
     std::atomic<bool> mimic_enabled_{false};  // mimic 启动闸门
 
     const unsigned int N_apply = 1;
+
+    // filter
+    Vector7d filtered_target_ = Vector7d::Zero();
+    bool filter_initialized_ = false;
+    const double target_alpha_ = 0.8;
+
+// ===================== 压测与耗时记录 =====================
+    std::vector<int64_t> mpc_exec_times_;
+    const size_t MAX_LOG_SAMPLES = 100000; // 记录 10万条数据 (1000Hz 下等于 100 秒)
+    std::atomic<bool> dt_log_saved_{false};
+
+    void saveExecTimesToFile()
+    {
+        if (dt_log_saved_.exchange(true)) return; // 确保只存一次
+        
+        std::ofstream outfile("mpc_exec_times.csv");
+        if (outfile.is_open())
+        {
+            outfile << "dt_us\n";
+            for (auto t : mpc_exec_times_)
+            {
+                outfile << t << "\n";
+            }
+            outfile.close();
+            RCLCPP_INFO(this->get_logger(), "✅ 成功将 %zu 条 MPC 耗时数据落盘到 mpc_exec_times.csv", mpc_exec_times_.size());
+        }
+        else
+        {
+            RCLCPP_ERROR(this->get_logger(), "❌ 无法打开文件保存耗时数据！");
+        }
+    }
 
 
 };

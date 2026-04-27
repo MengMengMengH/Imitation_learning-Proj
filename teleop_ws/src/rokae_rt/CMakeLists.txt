@@ -45,7 +45,6 @@ target_link_libraries(rokae_rt_node
   Eigen3::Eigen
 )
 
-
 target_include_directories(rokae_rt_node PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -60,7 +59,6 @@ install(TARGETS
   rokae_rt_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
 
 
 add_executable(topictest

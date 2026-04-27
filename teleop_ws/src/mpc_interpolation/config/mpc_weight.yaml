@@ -1,7 +1,7 @@
-mpc_interpolation_node:
+interpolation_node:
   ros__parameters:
     mpc_weights:
-      position: [3.9, 3.8, 4.0, 3.8, 3.8, 4.0, 3.9]
-      velocity: [3e-2, 1e-2, 2e-2, 2e-2, 2e-2, 1.5e-2, 2e-2]
-      acceleration: [1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5]
-      control: [5e-9, 8e-9, 8e-9, 6e-9, 6e-9, 6e-9, 6e-9]
+      position: [4.05, 4.05, 4.05, 4.05, 4.05, 4.05, 4.05]
+      velocity: [3.0e-2, 3.0e-2, 3.0e-2, 3.0e-2, 3.0e-2, 3.0e-2, 3.0e-2]
+      acceleration: [1.25e-5, 1.25e-5, 1.25e-5, 1.25e-5, 1.25e-5, 1.25e-5, 1.25e-5]
+      control: [8e-9, 8e-9, 8e-9, 8e-9, 8e-9, 8e-9, 8e-9]
