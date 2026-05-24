@@ -21,3 +21,4 @@ teleop_ws/src/arm_tele_mujo/arm_tele_mujo/__pycache__/drake_model.cpython-310.py
 data_analyze/
 raw_data/
 teleop_ws/run_stress.sh
+teleop_ws/mpc_exec_times.csv

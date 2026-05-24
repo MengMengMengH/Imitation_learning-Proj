@@ -1,0 +1,2280 @@
+<sdf version='1.7'>
+  <model name='sup_manipulator'>
+    <link name='base_link'>
+      <inertial>
+        <pose>-0.014746 -0.014746 -0.154073 0 -0 0</pose>
+        <mass>37.0798</mass>
+        <inertia>
+          <ixx>0.664187</ixx>
+          <ixy>-0.00428106</ixy>
+          <ixz>-0.00165223</ixz>
+          <iyy>0.664186</iyy>
+          <iyz>-0.00165223</iyz>
+          <izz>0.668341</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/base_link.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/base_link.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x1' type='revolute'>
+      <pose relative_to='base_link'>0 0 0.152 1.5708 -0 1.5708</pose>
+      <parent>base_link</parent>
+      <child>seg1_joint1_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint1_1'>
+      <pose relative_to='seg1_x1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint1_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint1_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y1' type='revolute'>
+      <pose relative_to='seg1_joint1_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint1_1</parent>
+      <child>seg1_joint1_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint1_2'>
+      <pose relative_to='seg1_y1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.03706e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint1_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint1_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x2' type='revolute'>
+      <pose relative_to='seg1_joint1_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_joint1_2</parent>
+      <child>seg1_joint1_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint1_3'>
+      <pose relative_to='seg1_x2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint1_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint1_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y2' type='revolute'>
+      <pose relative_to='seg1_joint1_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint1_3</parent>
+      <child>seg1_link1</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_link1'>
+      <pose relative_to='seg1_y2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.400553</mass>
+        <inertia>
+          <ixx>0.00032086</ixx>
+          <ixy>-1.49501e-22</ixy>
+          <ixz>-6.90908e-12</ixz>
+          <iyy>0.000372931</iyy>
+          <iyz>-3.22228e-14</iyz>
+          <izz>0.000372097</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_link1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x3' type='revolute'>
+      <pose relative_to='seg1_link1'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_link1</parent>
+      <child>seg1_joint2_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint2_1'>
+      <pose relative_to='seg1_x3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint2_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint2_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y3' type='revolute'>
+      <pose relative_to='seg1_joint2_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint2_1</parent>
+      <child>seg1_joint2_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint2_2'>
+      <pose relative_to='seg1_y3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.0365e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint2_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint2_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x4' type='revolute'>
+      <pose relative_to='seg1_joint2_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_joint2_2</parent>
+      <child>seg1_joint2_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint2_3'>
+      <pose relative_to='seg1_x4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint2_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint2_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y4' type='revolute'>
+      <pose relative_to='seg1_joint2_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint2_3</parent>
+      <child>seg1_link2</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_link2'>
+      <pose relative_to='seg1_y4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.400553</mass>
+        <inertia>
+          <ixx>0.00032086</ixx>
+          <ixy>-3.37997e-21</ixy>
+          <ixz>-6.90908e-12</ixz>
+          <iyy>0.000372931</iyy>
+          <iyz>-3.22228e-14</iyz>
+          <izz>0.000372097</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_link2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x5' type='revolute'>
+      <pose relative_to='seg1_link2'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_link2</parent>
+      <child>seg1_joint3_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint3_1'>
+      <pose relative_to='seg1_x5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint3_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint3_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y5' type='revolute'>
+      <pose relative_to='seg1_joint3_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint3_1</parent>
+      <child>seg1_joint3_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint3_2'>
+      <pose relative_to='seg1_y5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.0354e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint3_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint3_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x6' type='revolute'>
+      <pose relative_to='seg1_joint3_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_joint3_2</parent>
+      <child>seg1_joint3_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint3_3'>
+      <pose relative_to='seg1_x6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint3_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint3_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint3_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y6' type='revolute'>
+      <pose relative_to='seg1_joint3_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint3_3</parent>
+      <child>seg1_link3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_link3'>
+      <pose relative_to='seg1_y6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.400553</mass>
+        <inertia>
+          <ixx>0.00032086</ixx>
+          <ixy>3.03972e-21</ixy>
+          <ixz>-6.90908e-12</ixz>
+          <iyy>0.000372931</iyy>
+          <iyz>-3.22228e-14</iyz>
+          <izz>0.000372097</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_link3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_link3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x7' type='revolute'>
+      <pose relative_to='seg1_link3'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_link3</parent>
+      <child>seg1_joint4_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint4_1'>
+      <pose relative_to='seg1_x7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint4_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint4_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y7' type='revolute'>
+      <pose relative_to='seg1_joint4_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint4_1</parent>
+      <child>seg1_joint4_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint4_2'>
+      <pose relative_to='seg1_y7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 -0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.03631e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint4_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint4_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_x8' type='revolute'>
+      <pose relative_to='seg1_joint4_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_joint4_2</parent>
+      <child>seg1_joint4_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_joint4_3'>
+      <pose relative_to='seg1_x8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_joint4_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_joint4_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_joint4_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg1_y8' type='revolute'>
+      <pose relative_to='seg1_joint4_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg1_joint4_3</parent>
+      <child>seg1_link4</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg1_link4'>
+      <pose relative_to='seg1_y8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.0386 0 -0 0 -0 0</pose>
+        <mass>0.36176</mass>
+        <inertia>
+          <ixx>0.000262753</ixx>
+          <ixy>-3.68137e-21</ixy>
+          <ixz>-1.51482e-12</ixz>
+          <iyy>0.000322642</iyy>
+          <iyz>-2.92824e-13</iyz>
+          <izz>0.000321922</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg1_link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg1_link4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg1_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x1' type='revolute'>
+      <pose relative_to='seg1_link4'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg1_link4</parent>
+      <child>seg2_joint1_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint1_1'>
+      <pose relative_to='seg2_x1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint1_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint1_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y1' type='revolute'>
+      <pose relative_to='seg2_joint1_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint1_1</parent>
+      <child>seg2_joint1_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint1_2'>
+      <pose relative_to='seg2_y1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.03636e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint1_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint1_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x2' type='revolute'>
+      <pose relative_to='seg2_joint1_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_joint1_2</parent>
+      <child>seg2_joint1_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint1_3'>
+      <pose relative_to='seg2_x2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint1_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint1_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y2' type='revolute'>
+      <pose relative_to='seg2_joint1_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint1_3</parent>
+      <child>seg2_link1</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_link1'>
+      <pose relative_to='seg2_y2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.324307</mass>
+        <inertia>
+          <ixx>0.000210455</ixx>
+          <ixy>-6.17369e-21</ixy>
+          <ixz>-6.17025e-12</ixz>
+          <iyy>0.000277105</iyy>
+          <iyz>-3.60021e-14</iyz>
+          <izz>0.000276498</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_link1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x3' type='revolute'>
+      <pose relative_to='seg2_link1'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_link1</parent>
+      <child>seg2_joint2_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint2_1'>
+      <pose relative_to='seg2_x3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint2_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint2_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y3' type='revolute'>
+      <pose relative_to='seg2_joint2_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint2_1</parent>
+      <child>seg2_joint2_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint2_2'>
+      <pose relative_to='seg2_y3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.0357e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint2_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint2_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x4' type='revolute'>
+      <pose relative_to='seg2_joint2_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_joint2_2</parent>
+      <child>seg2_joint2_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint2_3'>
+      <pose relative_to='seg2_x4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint2_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint2_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y4' type='revolute'>
+      <pose relative_to='seg2_joint2_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint2_3</parent>
+      <child>seg2_link2</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_link2'>
+      <pose relative_to='seg2_y4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.324307</mass>
+        <inertia>
+          <ixx>0.000210455</ixx>
+          <ixy>-8.79075e-21</ixy>
+          <ixz>-6.17025e-12</ixz>
+          <iyy>0.000277105</iyy>
+          <iyz>-3.60022e-14</iyz>
+          <izz>0.000276498</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_link2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x5' type='revolute'>
+      <pose relative_to='seg2_link2'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_link2</parent>
+      <child>seg2_joint3_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint3_1'>
+      <pose relative_to='seg2_x5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint3_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint3_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y5' type='revolute'>
+      <pose relative_to='seg2_joint3_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint3_1</parent>
+      <child>seg2_joint3_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint3_2'>
+      <pose relative_to='seg2_y5'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 -0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.03813e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint3_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint3_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x6' type='revolute'>
+      <pose relative_to='seg2_joint3_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_joint3_2</parent>
+      <child>seg2_joint3_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint3_3'>
+      <pose relative_to='seg2_x6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint3_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint3_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint3_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y6' type='revolute'>
+      <pose relative_to='seg2_joint3_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint3_3</parent>
+      <child>seg2_link3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_link3'>
+      <pose relative_to='seg2_y6'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.04 0 0 0 -0 0</pose>
+        <mass>0.324307</mass>
+        <inertia>
+          <ixx>0.000210455</ixx>
+          <ixy>-3.16403e-21</ixy>
+          <ixz>-6.17025e-12</ixz>
+          <iyy>0.000277105</iyy>
+          <iyz>-3.60021e-14</iyz>
+          <izz>0.000276498</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_link3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_link3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x7' type='revolute'>
+      <pose relative_to='seg2_link3'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_link3</parent>
+      <child>seg2_joint4_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint4_1'>
+      <pose relative_to='seg2_x7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint4_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint4_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y7' type='revolute'>
+      <pose relative_to='seg2_joint4_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint4_1</parent>
+      <child>seg2_joint4_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint4_2'>
+      <pose relative_to='seg2_y7'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.035 0 0 0 -0 0</pose>
+        <mass>0.00537451</mass>
+        <inertia>
+          <ixx>6.76142e-08</ixx>
+          <ixy>2.78538e-13</ixy>
+          <ixz>5.03711e-19</ixz>
+          <iyy>2.13465e-06</iyy>
+          <iyz>-2.13285e-13</iyz>
+          <izz>2.13552e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint4_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint4_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_x8' type='revolute'>
+      <pose relative_to='seg2_joint4_2'>0.07 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_joint4_2</parent>
+      <child>seg2_joint4_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_joint4_3'>
+      <pose relative_to='seg2_x8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_joint4_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_joint4_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_joint4_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg2_y8' type='revolute'>
+      <pose relative_to='seg2_joint4_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg2_joint4_3</parent>
+      <child>seg2_link4</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg2_link4'>
+      <pose relative_to='seg2_y8'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.038844 0 -0 0 -0 0</pose>
+        <mass>0.297976</mass>
+        <inertia>
+          <ixx>0.000178159</ixx>
+          <ixy>-8.79895e-21</ixy>
+          <ixz>-1.49619e-12</ixz>
+          <iyy>0.000246619</iyy>
+          <iyz>-2.23629e-13</iyz>
+          <izz>0.000246082</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg2_link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg2_link4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg2_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_x1' type='revolute'>
+      <pose relative_to='seg2_link4'>0.08 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg2_link4</parent>
+      <child>seg3_joint1_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint1_1'>
+      <pose relative_to='seg3_x1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint1_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint1_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_y1' type='revolute'>
+      <pose relative_to='seg3_joint1_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg3_joint1_1</parent>
+      <child>seg3_joint1_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint1_2'>
+      <pose relative_to='seg3_y1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.031 -0 0 0 -0 0</pose>
+        <mass>0.00474622</mass>
+        <inertia>
+          <ixx>5.97605e-08</ixx>
+          <ixy>2.2959e-13</ixy>
+          <ixz>4.44537e-19</ixz>
+          <iyy>1.47733e-06</iyy>
+          <iyz>-1.88146e-13</iyz>
+          <izz>1.4782e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint1_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint1_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_x2' type='revolute'>
+      <pose relative_to='seg3_joint1_2'>0.062 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg3_joint1_2</parent>
+      <child>seg3_joint1_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint1_3'>
+      <pose relative_to='seg3_x2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint1_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint1_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_y2' type='revolute'>
+      <pose relative_to='seg3_joint1_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg3_joint1_3</parent>
+      <child>seg3_link1</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_link1'>
+      <pose relative_to='seg3_y2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.039 0 0 0 -0 0</pose>
+        <mass>0.265557</mass>
+        <inertia>
+          <ixx>0.00014483</ixx>
+          <ixy>-7.02046e-22</ixy>
+          <ixz>-5.34598e-12</ixz>
+          <iyy>0.000206078</iyy>
+          <iyz>-3.87864e-14</iyz>
+          <izz>0.000205611</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_link1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_link1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_link1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_x3' type='revolute'>
+      <pose relative_to='seg3_link1'>0.078 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg3_link1</parent>
+      <child>seg3_joint2_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint2_1'>
+      <pose relative_to='seg3_x3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint2_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint2_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_y3' type='revolute'>
+      <pose relative_to='seg3_joint2_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg3_joint2_1</parent>
+      <child>seg3_joint2_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint2_2'>
+      <pose relative_to='seg3_y3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.031 0 0 0 -0 0</pose>
+        <mass>0.00474622</mass>
+        <inertia>
+          <ixx>5.97605e-08</ixx>
+          <ixy>2.2959e-13</ixy>
+          <ixz>4.44481e-19</ixz>
+          <iyy>1.47733e-06</iyy>
+          <iyz>-1.88146e-13</iyz>
+          <izz>1.4782e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint2_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint2_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_x4' type='revolute'>
+      <pose relative_to='seg3_joint2_2'>0.062 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg3_joint2_2</parent>
+      <child>seg3_joint2_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_joint2_3'>
+      <pose relative_to='seg3_x4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_joint2_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_joint2_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_joint2_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg3_y4' type='revolute'>
+      <pose relative_to='seg3_joint2_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg3_joint2_3</parent>
+      <child>seg3_link2</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg3_link2'>
+      <pose relative_to='seg3_y4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.037766 0 -0 0 -0 0</pose>
+        <mass>0.242092</mass>
+        <inertia>
+          <ixx>0.000120765</ixx>
+          <ixy>-8.94974e-21</ixy>
+          <ixz>-1.24341e-12</ixz>
+          <iyy>0.00018188</iyy>
+          <iyz>-2.05527e-13</iyz>
+          <izz>0.000181471</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg3_link2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg3_link2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg3_link2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg4_x1' type='revolute'>
+      <pose relative_to='seg3_link2'>0.078 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg3_link2</parent>
+      <child>seg4_joint1_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg4_joint1_1'>
+      <pose relative_to='seg4_x1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg4_joint1_1_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg4_joint1_1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_1.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg4_y1' type='revolute'>
+      <pose relative_to='seg4_joint1_1'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg4_joint1_1</parent>
+      <child>seg4_joint1_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg4_joint1_2'>
+      <pose relative_to='seg4_y1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.031 0 0 0 -0 0</pose>
+        <mass>0.00474622</mass>
+        <inertia>
+          <ixx>5.97605e-08</ixx>
+          <ixy>2.2959e-13</ixy>
+          <ixz>4.44671e-19</ixz>
+          <iyy>1.47733e-06</iyy>
+          <iyz>-1.88146e-13</iyz>
+          <izz>1.4782e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg4_joint1_2_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg4_joint1_2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_2.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg4_x2' type='revolute'>
+      <pose relative_to='seg4_joint1_2'>0.062 0 0 -1.57079 1.57079 3.14159</pose>
+      <parent>seg4_joint1_2</parent>
+      <child>seg4_joint1_3</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg4_joint1_3'>
+      <pose relative_to='seg4_x2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.000586751</mass>
+        <inertia>
+          <ixx>1.40956e-08</ixx>
+          <ixy>-1.24621e-13</ixy>
+          <ixz>-4.71443e-14</ixz>
+          <iyy>2.21709e-08</iyy>
+          <iyz>-6.83183e-14</iyz>
+          <izz>9.70257e-09</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg4_joint1_3_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg4_joint1_3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_joint1_3.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='seg4_y2' type='revolute'>
+      <pose relative_to='seg4_joint1_3'>0 0 0 1.5708 -0 1.5708</pose>
+      <parent>seg4_joint1_3</parent>
+      <child>seg4_link4</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='seg4_link4'>
+      <pose relative_to='seg4_y2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.039 0 0 0 -0 0</pose>
+        <mass>0.219362</mass>
+        <inertia>
+          <ixx>9.88885e-05</ixx>
+          <ixy>5.32588e-22</ixy>
+          <ixz>-4.81015e-12</ixz>
+          <iyy>0.000159738</iyy>
+          <iyz>-4.36273e-14</iyz>
+          <izz>0.000159387</izz>
+        </inertia>
+      </inertial>
+      <collision name='seg4_link4_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='seg4_link4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>visual/seg4_link4.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -26,6 +26,7 @@ setup(
             "arm_tele_real = arm_tele_mujo.arm_tele_real:main",
             "drake_model = arm_tele_mujo.drake_model:main",
             "arm_tele_sim = arm_tele_mujo.arm_tele_sim:main",
+            "arm_tele_sup = arm_tele_mujo.arm_tele_sim_sup:main"
         ],
     },
 )

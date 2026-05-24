@@ -1,0 +1,106 @@
+#! /usr/bin/env python3
+import os
+import rclpy
+from std_msgs.msg import Float32MultiArray
+
+import mujoco
+import mujoco.viewer
+import numpy as np
+import time
+import threading
+
+from .arm_tele import ArmTele
+from .drake_model_sup import arm_ik,Quatnumpy_to_Rotation
+
+
+class ArmTele_sim_sup(ArmTele):
+    def __init__(self,):
+        super().__init__()
+
+        self.quat_sub = self.create_subscription(
+            Float32MultiArray,
+            'quat_data', self.quat_callback, 10)
+        self.model = self.robot.model
+        self.data = self.robot.data
+
+        self.exit_event = threading.Event() # 退出事件
+        self.start_time = time.time()
+
+        self._ik = arm_ik(f'{self.robot.sdf_model}',self.model_name)
+        if self.model_name == 'sup_arm':
+            self._q = np.zeros(44)
+        else:
+            raise ValueError(f"不支持的 model_name: '{self.model_name}'。此节点仅支持 'sup_arm'。")
+
+        self.viewer = None
+        self.visual_thread = threading.Thread(target=self.visualize)
+        self.visual_thread.start()
+        self.get_logger().info("Visual thread start!")
+
+        self.file_counter = 0
+
+        
+    def quat_callback(self, msg):
+
+        self.quats = np.array(msg.data) # 50HZ
+        rots = Quatnumpy_to_Rotation(self.quats)
+        
+        self._q = self._ik.ori_inv_sup(
+            up_ori=rots[2].matrix(),
+            elbow_ori=rots[1].matrix(),
+            wrist_ori=rots[0].matrix(),
+            q_last=self._q if self._q is not None else self.last_valid_q,
+        )
+
+        if self._q is not None:
+            self.last_valid_q = self._q
+        
+        # print(self._q)
+
+        if self.viewer is not None:
+            with self.viewer.lock():
+                if self._q is not None:
+                    self.data.ctrl = self._q 
+                mujoco.mj_step(self.model, self.data)
+
+
+
+    def visualize(self):
+        try:
+            mujoco.mj_resetData(self.model, self.data)
+            self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
+            self.viewer.cam.lookat = np.array([0, 0, 0.5])
+            self.viewer.cam.distance = 2.5
+            self.viewer.cam.azimuth = 0
+            self.viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
+            self.model.vis.scale.framewidth = 0.1
+            self.model.vis.scale.framelength = 3
+
+            while self.viewer.is_running() and not self.exit_event.is_set():
+                # now = time.time()
+                # with self.viewer.lock():
+                #     mujoco.mj_step(self.model, self.data)
+
+                self.viewer.sync()
+                # rclpy.spin_once(self, timeout_sec=0.001)
+        except Exception as e:
+            self.get_logger().error(f"可视化线程错误：{e}")
+        finally:
+            if self.viewer is not None:
+                self.viewer.close()  # 确保关闭 Viewer
+            self.exit_event.set()
+            self.get_logger().info("visual线程结束")
+
+
+def main(args=None):
+
+    rclpy.init(args=args)
+    arm_tele_sim = ArmTele_sim_sup()
+
+    try:
+        rclpy.spin(arm_tele_sim)  # 运行ROS事件循环
+    except KeyboardInterrupt:
+        pass
+
+    arm_tele_sim.destroy_node()
+    rclpy.shutdown()

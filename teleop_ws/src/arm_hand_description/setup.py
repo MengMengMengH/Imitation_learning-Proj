@@ -37,6 +37,12 @@ setup(
         (os.path.join('share', package_name, 'roake/mjcf'),glob('mjcf/roake/**.xml')),
         (os.path.join('share', package_name, 'roake/mjcf/visual'), glob('mjcf/roake/visual/**')),
 
+        (os.path.join('share',package_name,'sup_arm/urdf'),glob('urdf/sup_arm/**.**')),
+        (os.path.join('share',package_name,'sup_arm/urdf/visual'),glob('urdf/sup_arm/visual/**')),
+        (os.path.join('share', package_name, 'sup_arm/mjcf'),glob('mjcf/sup_arm/**.xml')),
+        (os.path.join('share', package_name, 'sup_arm/mjcf/visual'), glob('mjcf/sup_arm/meshes/**')),
+
+
     ],
     install_requires=['setuptools'],
     zip_safe=True,

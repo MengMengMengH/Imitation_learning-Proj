@@ -76,7 +76,6 @@ class arm_ik():
     
     def ori_inv(self,up_ori = None,elbow_ori = None,wrist_ori = None,q_last = None):
         
-
         q_nominal = q_last
 
         self.plant.SetPositions(self.context, q_nominal)

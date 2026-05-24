@@ -37,6 +37,8 @@ class ArmTele(Node):
             self._q = np.zeros(7)
         elif '_6dof' in self.model_name:
             self._q = np.zeros(6)
+        elif 'sup_arm' in self.model_name:
+            self._q = np.zeros(44)
         self.last_valid_q = self._q
 
     

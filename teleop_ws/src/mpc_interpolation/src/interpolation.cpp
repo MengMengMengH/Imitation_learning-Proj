@@ -138,7 +138,7 @@ public:
     {
         running_ = false;
         if (mpc_exec_times_.size() > 0) {
-            saveExecTimesToFile();
+            // saveExecTimesToFile();
         }
         if (mpc_thread_.joinable()) mpc_thread_.join();
         if (mimic_thread_.joinable())mimic_thread_.join();
@@ -430,7 +430,7 @@ private:
             else if (!dt_log_saved_.load())
             {
                 // 凑满 10万次了，直接写文件
-                saveExecTimesToFile(); 
+                // saveExecTimesToFile(); 
             }
             
             if (dt > 1000)

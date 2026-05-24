@@ -1,0 +1,326 @@
+<mujoco model="sup_arm">
+  <compiler angle="radian" meshdir="./visual/"/>
+  <option gravity="0 0 -9.81" integrator = "implicitfast"/>
+
+  <asset>
+    <mesh name="base_link" file="base_link.STL"/>
+    <mesh name="seg1_joint1_1" file="seg1_joint1_1.STL"/>
+    <mesh name="seg1_joint1_2" file="seg1_joint1_2.STL"/>
+    <mesh name="seg1_joint1_3" file="seg1_joint1_3.STL"/>
+    <mesh name="seg1_link1" file="seg1_link1.STL"/>
+    <mesh name="seg1_joint2_1" file="seg1_joint2_1.STL"/>
+    <mesh name="seg1_joint2_2" file="seg1_joint2_2.STL"/>
+    <mesh name="seg1_joint2_3" file="seg1_joint2_3.STL"/>
+    <mesh name="seg1_link2" file="seg1_link2.STL"/>
+    <mesh name="seg1_joint3_1" file="seg1_joint3_1.STL"/>
+    <mesh name="seg1_joint3_2" file="seg1_joint3_2.STL"/>
+    <mesh name="seg1_joint3_3" file="seg1_joint3_3.STL"/>
+    <mesh name="seg1_link3" file="seg1_link3.STL"/>
+    <mesh name="seg1_joint4_1" file="seg1_joint4_1.STL"/>
+    <mesh name="seg1_joint4_2" file="seg1_joint4_2.STL"/>
+    <mesh name="seg1_joint4_3" file="seg1_joint4_3.STL"/>
+    <mesh name="seg1_link4" file="seg1_link4.STL"/>
+    <mesh name="seg2_joint1_1" file="seg2_joint1_1.STL"/>
+    <mesh name="seg2_joint1_2" file="seg2_joint1_2.STL"/>
+    <mesh name="seg2_joint1_3" file="seg2_joint1_3.STL"/>
+    <mesh name="seg2_link1" file="seg2_link1.STL"/>
+    <mesh name="seg2_joint2_1" file="seg2_joint2_1.STL"/>
+    <mesh name="seg2_joint2_2" file="seg2_joint2_2.STL"/>
+    <mesh name="seg2_joint2_3" file="seg2_joint2_3.STL"/>
+    <mesh name="seg2_link2" file="seg2_link2.STL"/>
+    <mesh name="seg2_joint3_1" file="seg2_joint3_1.STL"/>
+    <mesh name="seg2_joint3_2" file="seg2_joint3_2.STL"/>
+    <mesh name="seg2_joint3_3" file="seg2_joint3_3.STL"/>
+    <mesh name="seg2_link3" file="seg2_link3.STL"/>
+    <mesh name="seg2_joint4_1" file="seg2_joint4_1.STL"/>
+    <mesh name="seg2_joint4_2" file="seg2_joint4_2.STL"/>
+    <mesh name="seg2_joint4_3" file="seg2_joint4_3.STL"/>
+    <mesh name="seg2_link4" file="seg2_link4.STL"/>
+    <mesh name="seg3_joint1_1" file="seg3_joint1_1.STL"/>
+    <mesh name="seg3_joint1_2" file="seg3_joint1_2.STL"/>
+    <mesh name="seg3_joint1_3" file="seg3_joint1_3.STL"/>
+    <mesh name="seg3_link1" file="seg3_link1.STL"/>
+    <mesh name="seg3_joint2_1" file="seg3_joint2_1.STL"/>
+    <mesh name="seg3_joint2_2" file="seg3_joint2_2.STL"/>
+    <mesh name="seg3_joint2_3" file="seg3_joint2_3.STL"/>
+    <mesh name="seg3_link2" file="seg3_link2.STL"/>
+    <mesh name="seg4_joint1_1" file="seg4_joint1_1.STL"/>
+    <mesh name="seg4_joint1_2" file="seg4_joint1_2.STL"/>
+    <mesh name="seg4_joint1_3" file="seg4_joint1_3.STL"/>
+    <mesh name="seg4_link4" file="seg4_link4.STL"/>
+  </asset>
+
+  <worldbody> 
+    <body name="xMatePro3_base" pos = "0 0 2.0" euler = "3.1415 0 0">
+      <geom type="mesh" rgba="1 1 1 1" mesh="base_link" contype="0" conaffinity="0"/>
+      <body name="seg1_joint1_1" pos="0 0 0.152" quat="0.499998 0.5 0.500002 0.5">
+        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+        <joint name="seg1_x1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+        <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint1_1" contype="0" conaffinity="0"/>
+        <body name="seg1_joint1_2" quat="0.499998 0.5 0.500002 0.5">
+          <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+          <joint name="seg1_y1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+          <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint1_2" contype="0" conaffinity="0"/>
+          <body name="seg1_joint1_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+            <joint name="seg1_x2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+            <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint1_3" contype="0" conaffinity="0"/>
+            <body name="seg1_link1" quat="0.499998 0.5 0.500002 0.5">
+              <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.400553" diaginertia="0.000372931 0.000372097 0.00032086"/>
+              <joint name="seg1_y2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+              <geom type="mesh" rgba="1 1 1 1" mesh="seg1_link1" contype="0" conaffinity="0"/>
+              <body name="seg1_joint2_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                <joint name="seg1_x3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint2_1" contype="0" conaffinity="0"/>
+                <body name="seg1_joint2_2" quat="0.499998 0.5 0.500002 0.5">
+                  <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                  <joint name="seg1_y3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                  <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint2_2" contype="0" conaffinity="0"/>
+                  <body name="seg1_joint2_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                    <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                    <joint name="seg1_x4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                    <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint2_3" contype="0" conaffinity="0"/>
+                    <body name="seg1_link2" quat="0.499998 0.5 0.500002 0.5">
+                      <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.400553" diaginertia="0.000372931 0.000372097 0.00032086"/>
+                      <joint name="seg1_y4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                      <geom type="mesh" rgba="1 1 1 1" mesh="seg1_link2" contype="0" conaffinity="0"/>
+                      <body name="seg1_joint3_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                        <joint name="seg1_x5" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                        <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint3_1" contype="0" conaffinity="0"/>
+                        <body name="seg1_joint3_2" quat="0.499998 0.5 0.500002 0.5">
+                          <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                          <joint name="seg1_y5" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                          <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint3_2" contype="0" conaffinity="0"/>
+                          <body name="seg1_joint3_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                            <joint name="seg1_x6" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                            <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint3_3" contype="0" conaffinity="0"/>
+                            <body name="seg1_link3" quat="0.499998 0.5 0.500002 0.5">
+                              <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.400553" diaginertia="0.000372931 0.000372097 0.00032086"/>
+                              <joint name="seg1_y6" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                              <geom type="mesh" rgba="1 1 1 1" mesh="seg1_link3" contype="0" conaffinity="0"/>
+                              <body name="seg1_joint4_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                <joint name="seg1_x7" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint4_1" contype="0" conaffinity="0"/>
+                                <body name="seg1_joint4_2" quat="0.499998 0.5 0.500002 0.5">
+                                  <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                                  <joint name="seg1_y7" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                  <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint4_2" contype="0" conaffinity="0"/>
+                                  <body name="seg1_joint4_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                    <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                    <joint name="seg1_x8" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                    <geom type="mesh" rgba="1 1 1 1" mesh="seg1_joint4_3" contype="0" conaffinity="0"/>
+                                    <body name="seg1_link4" quat="0.499998 0.5 0.500002 0.5">
+                                      <inertial pos="0.0386002 0 -4.50592e-10" quat="0.5 0.5 0.5 0.5" mass="0.36176" diaginertia="0.000322642 0.000321922 0.000262753"/>
+                                      <joint name="seg1_y8" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                      <geom type="mesh" rgba="1 1 1 1" mesh="seg1_link4" contype="0" conaffinity="0"/>
+                                      <body name="seg2_joint1_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                        <joint name="seg2_x1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                        <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint1_1" contype="0" conaffinity="0"/>
+                                        <body name="seg2_joint1_2" quat="0.499998 0.5 0.500002 0.5">
+                                          <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                                          <joint name="seg2_y1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                          <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint1_2" contype="0" conaffinity="0"/>
+                                          <body name="seg2_joint1_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                            <joint name="seg2_x2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                            <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint1_3" contype="0" conaffinity="0"/>
+                                            <body name="seg2_link1" quat="0.499998 0.5 0.500002 0.5">
+                                              <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.324307" diaginertia="0.000277105 0.000276498 0.000210455"/>
+                                              <joint name="seg2_y2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                              <geom type="mesh" rgba="1 1 1 1" mesh="seg2_link1" contype="0" conaffinity="0"/>
+                                              <body name="seg2_joint2_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                <joint name="seg2_x3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint2_1" contype="0" conaffinity="0"/>
+                                                <body name="seg2_joint2_2" quat="0.499998 0.5 0.500002 0.5">
+                                                  <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                                                  <joint name="seg2_y3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                  <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint2_2" contype="0" conaffinity="0"/>
+                                                  <body name="seg2_joint2_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                    <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                    <joint name="seg2_x4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                    <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint2_3" contype="0" conaffinity="0"/>
+                                                    <body name="seg2_link2" quat="0.499998 0.5 0.500002 0.5">
+                                                      <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.324307" diaginertia="0.000277105 0.000276498 0.000210455"/>
+                                                      <joint name="seg2_y4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                      <geom type="mesh" rgba="1 1 1 1" mesh="seg2_link2" contype="0" conaffinity="0"/>
+                                                      <body name="seg2_joint3_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                        <joint name="seg2_x5" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                        <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint3_1" contype="0" conaffinity="0"/>
+                                                        <body name="seg2_joint3_2" quat="0.499998 0.5 0.500002 0.5">
+                                                          <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                                                          <joint name="seg2_y5" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                          <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint3_2" contype="0" conaffinity="0"/>
+                                                          <body name="seg2_joint3_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                            <joint name="seg2_x6" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                            <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint3_3" contype="0" conaffinity="0"/>
+                                                            <body name="seg2_link3" quat="0.499998 0.5 0.500002 0.5">
+                                                              <inertial pos="0.04 0 0" quat="0.5 0.5 0.5 0.5" mass="0.324307" diaginertia="0.000277105 0.000276498 0.000210455"/>
+                                                              <joint name="seg2_y6" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                              <geom type="mesh" rgba="1 1 1 1" mesh="seg2_link3" contype="0" conaffinity="0"/>
+                                                              <body name="seg2_joint4_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                <joint name="seg2_x7" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint4_1" contype="0" conaffinity="0"/>
+                                                                <body name="seg2_joint4_2" quat="0.499998 0.5 0.500002 0.5">
+                                                                  <inertial pos="0.035 0 2.77791e-09" quat="0 0.707107 0 0.707107" mass="0.537451" diaginertia="2.13552e-04 2.13465e-04 6.76142e-06"/>
+                                                                  <joint name="seg2_y7" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                  <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint4_2" contype="0" conaffinity="0"/>
+                                                                  <body name="seg2_joint4_3" pos="0.07 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                    <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                    <joint name="seg2_x8" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                    <geom type="mesh" rgba="1 1 1 1" mesh="seg2_joint4_3" contype="0" conaffinity="0"/>
+                                                                    <body name="seg2_link4" quat="0.499998 0.5 0.500002 0.5">
+                                                                      <inertial pos="0.0388435 0 -4.8497e-10" quat="0.5 0.5 0.5 0.5" mass="0.297976" diaginertia="0.000246619 0.000246082 0.000178159"/>
+                                                                      <joint name="seg2_y8" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                      <geom type="mesh" rgba="1 1 1 1" mesh="seg2_link4" contype="0" conaffinity="0"/>
+                                                                      <body name="seg3_joint1_1" pos="0.08 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                        <joint name="seg3_x1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                        <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint1_1" contype="0" conaffinity="0"/>
+                                                                        <body name="seg3_joint1_2" quat="0.499998 0.5 0.500002 0.5">
+                                                                          <inertial pos="0.031 0 2.79655e-09" quat="0 0.707107 0 0.707107" mass="0.474622" diaginertia="1.4782e-04 1.47733e-04 5.97605e-06"/>
+                                                                          <joint name="seg3_y1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                          <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint1_2" contype="0" conaffinity="0"/>
+                                                                          <body name="seg3_joint1_3" pos="0.062 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                            <joint name="seg3_x2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                            <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint1_3" contype="0" conaffinity="0"/>
+                                                                            <body name="seg3_link1" quat="0.499998 0.5 0.500002 0.5">
+                                                                              <inertial pos="0.039 0 0" quat="0.5 0.5 0.5 0.5" mass="0.265557" diaginertia="0.000206078 0.000205611 0.00014483"/>
+                                                                              <joint name="seg3_y2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                              <geom type="mesh" rgba="1 1 1 1" mesh="seg3_link1" contype="0" conaffinity="0"/>
+                                                                              <body name="seg3_joint2_1" pos="0.078 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                                <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                                <joint name="seg3_x3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                                <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint2_1" contype="0" conaffinity="0"/>
+                                                                                <body name="seg3_joint2_2" quat="0.499998 0.5 0.500002 0.5">
+                                                                                  <inertial pos="0.031 0 2.79655e-09" quat="0 0.707107 0 0.707107" mass="0.474622" diaginertia="1.4782e-04 1.47733e-04 5.97605e-06"/>
+                                                                                  <joint name="seg3_y3" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                                  <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint2_2" contype="0" conaffinity="0"/>
+                                                                                  <body name="seg3_joint2_3" pos="0.062 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                                    <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                                    <joint name="seg3_x4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                                    <geom type="mesh" rgba="1 1 1 1" mesh="seg3_joint2_3" contype="0" conaffinity="0"/>
+                                                                                    <body name="seg3_link2" quat="0.499998 0.5 0.500002 0.5">
+                                                                                      <inertial pos="0.0377655 0 -5.40651e-10" quat="0.5 0.5 0.5 0.5" mass="0.242092" diaginertia="0.00018188 0.000181471 0.000120765"/>
+                                                                                      <joint name="seg3_y4" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                                      <geom type="mesh" rgba="1 1 1 1" mesh="seg3_link2" contype="0" conaffinity="0"/>
+                                                                                      <body name="seg4_joint1_1" pos="0.078 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                                        <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                                        <joint name="seg4_x1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                                        <geom type="mesh" rgba="1 1 1 1" mesh="seg4_joint1_1" contype="0" conaffinity="0"/>
+                                                                                        <body name="seg4_joint1_2" quat="0.499998 0.5 0.500002 0.5">
+                                                                                          <inertial pos="0.031 0 2.79655e-09" quat="0 0.707107 0 0.707107" mass="0.474622" diaginertia="1.4782e-04 1.47733e-04 5.97605e-06"/>
+                                                                                          <joint name="seg4_y1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57"/>
+                                                                                          <geom type="mesh" rgba="1 1 1 1" mesh="seg4_joint1_2" contype="0" conaffinity="0"/>
+                                                                                          <body name="seg4_joint1_3" pos="0.062 0 0" quat="0.499998 0.5 0.5 -0.500002">
+                                                                                            <inertial pos="2.3799e-08 1.34292e-09 4.6099e-09" quat="0.707107 0 0 0.707107" mass="0.586751" diaginertia="2.21709e-05 1.40956e-05 9.70257e-06"/>
+                                                                                            <joint name="seg4_x2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                                            <geom type="mesh" rgba="1 1 1 1" mesh="seg4_joint1_3" contype="0" conaffinity="0"/>
+                                                                                            <body name="seg4_link4" quat="0.499998 0.5 0.500002 0.5">
+                                                                                              <inertial pos="0.039 0 0" quat="0.5 0.5 0.5 0.5" mass="0.219362" diaginertia="0.000159738 0.000159387 9.88885e-05"/>
+                                                                                              <joint name="seg4_y2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57"/>
+                                                                                              <geom type="mesh" rgba="1 1 1 1" mesh="seg4_link4" contype="0" conaffinity="0"/>
+                                                                                            </body>
+                                                                                          </body>
+                                                                                        </body>
+                                                                                      </body>
+                                                                                    </body>
+                                                                                  </body>
+                                                                                </body>
+                                                                              </body>
+                                                                            </body>
+                                                                          </body>
+                                                                        </body>
+                                                                      </body>
+                                                                    </body>
+                                                                  </body>
+                                                                </body>
+                                                              </body>
+                                                            </body>
+                                                          </body>
+                                                        </body>
+                                                      </body>
+                                                    </body>
+                                                  </body>
+                                                </body>
+                                              </body>
+                                            </body>
+                                          </body>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+      <position name="seg1_x1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x1" kp="2000" kv="200"/>
+      <position name="seg1_y1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y1" kp="2000" kv="200"/>
+      <position name="seg1_x2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x2" kp="2000" kv="200"/>
+      <position name="seg1_y2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y2" kp="2000" kv="200"/>
+      <position name="seg1_x3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x3" kp="2000" kv="200"/>
+      <position name="seg1_y3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y3" kp="2000" kv="200"/>
+      <position name="seg1_x4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x4" kp="2000" kv="200"/>
+      <position name="seg1_y4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y4" kp="2000" kv="200"/>
+      <position name="seg1_x5" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x5" kp="2000" kv="200"/>
+      <position name="seg1_y5" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y5" kp="2000" kv="200"/>
+      <position name="seg1_x6" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x6" kp="2000" kv="200"/>
+      <position name="seg1_y6" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y6" kp="2000" kv="200"/>
+      <position name="seg1_x7" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x7" kp="2000" kv="200"/>
+      <position name="seg1_y7" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y7" kp="2000" kv="200"/>
+      <position name="seg1_x8" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_x8" kp="2000" kv="200"/>
+      <position name="seg1_y8" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg1_y8" kp="2000" kv="200"/>
+      <position name="seg2_x1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x1" kp="2000" kv="200"/>
+      <position name="seg2_y1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y1" kp="2000" kv="200"/>
+      <position name="seg2_x2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x2" kp="2000" kv="200"/>
+      <position name="seg2_y2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y2" kp="2000" kv="200"/>
+      <position name="seg2_x3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x3" kp="2000" kv="200"/>
+      <position name="seg2_y3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y3" kp="2000" kv="200"/>
+      <position name="seg2_x4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x4" kp="2000" kv="200"/>
+      <position name="seg2_y4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y4" kp="2000" kv="200"/>
+      <position name="seg2_x5" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x5" kp="2000" kv="200"/>
+      <position name="seg2_y5" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y5" kp="2000" kv="200"/>
+      <position name="seg2_x6" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x6" kp="2000" kv="200"/>
+      <position name="seg2_y6" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y6" kp="2000" kv="200"/>
+      <position name="seg2_x7" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x7" kp="2000" kv="200"/>
+      <position name="seg2_y7" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y7" kp="2000" kv="200"/>
+      <position name="seg2_x8" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_x8" kp="2000" kv="200"/>
+      <position name="seg2_y8" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg2_y8" kp="2000" kv="200"/>
+      <position name="seg3_x1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_x1" kp="2000" kv="200"/>
+      <position name="seg3_y1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_y1" kp="2000" kv="200"/>
+      <position name="seg3_x2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_x2" kp="2000" kv="200"/>
+      <position name="seg3_y2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_y2" kp="2000" kv="200"/>
+      <position name="seg3_x3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_x3" kp="2000" kv="200"/>
+      <position name="seg3_y3" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_y3" kp="2000" kv="200"/>
+      <position name="seg3_x4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_x4" kp="2000" kv="200"/>
+      <position name="seg3_y4" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg3_y4" kp="2000" kv="200"/>
+      <position name="seg4_x1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg4_x1" kp="2000" kv="200"/>
+      <position name="seg4_y1" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg4_y1" kp="2000" kv="200"/>
+      <position name="seg4_x2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg4_x2" kp="2000" kv="200"/>
+      <position name="seg4_y2" ctrllimited = "true" ctrlrange="-1.57 1.57" joint="seg4_y2" kp="2000" kv="200"/>
+  </actuator>
+
+</mujoco>
